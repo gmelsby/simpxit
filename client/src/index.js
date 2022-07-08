@@ -1,10 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
 import App from './App';
-import HomePage from './pages/HomePage';
-import RoomPage from './pages/RoomPage';
 import reportWebVitals from './reportWebVitals';
 // gets bootstrap style sheet
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -12,12 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="room/:roomId" element={<RoomPage />} />
-      </Routes>
-    </BrowserRouter>
+    <App />
   </React.StrictMode>
 );
 
