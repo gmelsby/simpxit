@@ -1,13 +1,14 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import RulesModal from '../components/RulesModal'
 
 export default function RoomPage() {
   
   const { roomId } = useParams();
 
   return (
-      <div>
-      <button>View Rules</button>
+    <>
+      <RulesModal />
       <p>Share this code (or the page's url) to let players join this room!</p>
       <h1>Room Code: {roomId}</h1>
       
@@ -22,6 +23,6 @@ export default function RoomPage() {
 
       
       <button>Leave Room</button>
-    </div>
+    </>
   );
 }

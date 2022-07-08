@@ -14,7 +14,7 @@ function App() {
     <BrowserRouter>
       <Switch>
         <Route path="/" exact>
-          <HomePage onRoomIdSubmit={setUserId} />
+          <HomePage />
         </Route>
         <Route path="/room/:roomId">
           <RoomPage />

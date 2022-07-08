@@ -1,19 +1,26 @@
-import React, {useState} from 'react';
-import { Button, Container, Form} from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Button, Container, Form } from 'react-bootstrap';
+import { Redirect } from 'react-router-dom';
+import RulesModal from '../components/RulesModal';
 
 
-export default function HomePage({ onRoomIdSubmit }) {
+export default function HomePage() {
   const [enteredRoomId, setEnteredRoomId] = useState('');
-
+  const [roomIdSubmitted, setroomIdSubmitted] = useState(false);
+  
   function roomCodeSubmit(e) {
     e.preventDefault();
-    onRoomIdSubmit(enteredRoomId);
+    setroomIdSubmitted(true);
   }  
   
+  if (roomIdSubmitted) {
+    return (<Redirect to={`/room/${enteredRoomId}`} />);
+  }
+  
   return (
-    <div>
-      <Button>View Rules</Button>
-      <Container align="center">
+    <>
+      <RulesModal />
+          <Container align="center">
           <h1>Welcome to Greg's Image Game!</h1>
           <p>To play, create a room or join an already existing room.</p>
           <Button>Create Room</Button>
@@ -30,6 +37,6 @@ export default function HomePage({ onRoomIdSubmit }) {
             </Form.Group>
           </Form>
       </Container>
-    </div>
+    </>
   );
 }
