@@ -1,23 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {BrowserRouter, Route, Switch } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RoomPage from './pages/RoomPage';
-import useLocalStorage from './hooks/useLocalStorage';
 
 
 
 function App() {
-  const [userId, setUserId] = useLocalStorage('user-id');
+  const [userId, setUserId] = useState('');
+
+  const getUuid = async () => {
+    const response = await fetch('/uuid');
+    const data = await response.json();
+    
+    setUserId(data.uuid);
+  };
+  
+  useEffect(() => {
+    getUuid();
+  }, []);
 
   return (
     <>
     <BrowserRouter>
       <Switch>
         <Route path="/" exact>
-          <HomePage />
+          <HomePage userId={userId} />
         </Route>
         <Route path="/room/:roomId">
-          <RoomPage />
+          <RoomPage userId={userId} />
         </Route>
       </Switch>
     </BrowserRouter>

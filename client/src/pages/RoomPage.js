@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import RulesModal from '../components/RulesModal'
 
-export default function RoomPage() {
+export default function RoomPage({ userId }) {
   
   const { roomId } = useParams();
 
@@ -23,6 +23,7 @@ export default function RoomPage() {
 
       
       <button>Leave Room</button>
+      <footer><p>UUID: {userId}</p></footer>
     </>
   );
 }

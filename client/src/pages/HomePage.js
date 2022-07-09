@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import RulesModal from '../components/RulesModal';
 
 
-export default function HomePage() {
+export default function HomePage( { userId }) {
   const [enteredRoomId, setEnteredRoomId] = useState('');
   const [roomIdSubmitted, setroomIdSubmitted] = useState(false);
   
@@ -17,13 +17,35 @@ export default function HomePage() {
     return (<Redirect to={`/room/${enteredRoomId}`} />);
   }
   
+  const handleCreateRoom = async () => {
+    const adminId = { userId: '12345' };
+    const response = await fetch('/createroom', {
+      method: 'POST',
+      body: JSON.stringify(adminId),
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    if (response.status === 201) {
+      const data = await response.json();
+      setEnteredRoomId(data.newRoomCode);
+      setroomIdSubmitted(true);
+    }
+    
+    else {
+      alert('Failed to create room');
+    }
+  };
+  
   return (
     <>
       <RulesModal />
           <Container align="center">
           <h1>Welcome to Greg's Image Game!</h1>
           <p>To play, create a room or join an already existing room.</p>
-          <Button>Create Room</Button>
+          <Button onClick={handleCreateRoom}>Create Room</Button>
+    
 
           <p>Join Existing Room</p>
           <Form onSubmit={roomCodeSubmit}>
@@ -37,6 +59,7 @@ export default function HomePage() {
             </Form.Group>
           </Form>
       </Container>
+      <footer><p>UUID: {userId}</p></footer>
     </>
   );
 }

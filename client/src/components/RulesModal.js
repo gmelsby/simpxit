@@ -41,7 +41,7 @@ export default function RulesModal() {
             </p>
         </Modal.Body>
         <Modal.Footer>
-          <div class="col text-center">
+          <div className="col text-center">
             <Button variant="secondary" onClick={handleCloseRules}>
               Close
             </Button>
