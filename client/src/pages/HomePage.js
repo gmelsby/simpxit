@@ -8,10 +8,10 @@ export default function HomePage( { userId }) {
   const [enteredRoomId, setEnteredRoomId] = useState('');
   const [roomIdSubmitted, setroomIdSubmitted] = useState(false);
   
-  function roomCodeSubmit(e) {
+  const roomCodeSubmit = e => {
     e.preventDefault();
     setroomIdSubmitted(true);
-  }  
+  };
   
   if (roomIdSubmitted) {
     return (<Redirect to={`/room/${enteredRoomId}`} />);
@@ -53,7 +53,8 @@ export default function HomePage( { userId }) {
                   <Form.Label htmlFor="input_room_code">Room Code:</Form.Label>
                   <Form.Control className="w-auto" type="text" name="input_room_code" 
                     required size="4" maxLength="4" placeholder="XYZW" pattern="[A-Z]{4}"
-                    onChange={e => setEnteredRoomId(e.target.value)}>
+                    value={enteredRoomId}
+                    onChange={e => setEnteredRoomId(e.target.value.toUpperCase())}>
                   </Form.Control>
                   <Button type="submit">Join!</Button>
             </Form.Group>
