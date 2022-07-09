@@ -36,8 +36,9 @@ app.post('/createroom', (req, res) => {
 });
 
 app.get('/uuid', (req, res) => {
-  console.log('received generate uuid request');
-  res.send({uuid: generateUuid()});
+  const uuid = generateUuid();
+  console.log(`new UUID: ${uuid}`);
+  res.send({ uuid });
 });
 
 app.listen(PORT, () => {

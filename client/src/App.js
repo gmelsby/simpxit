@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {BrowserRouter, Route, Switch } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RoomPage from './pages/RoomPage';
+import useLocalStorage from './hooks/useLocalStorage';
 
 
 
 function App() {
-  const [userId, setUserId] = useState('');
+
+  const [userId, setUserId] = useLocalStorage('image-app', '');
 
   const getUuid = async () => {
     const response = await fetch('/uuid');
@@ -14,9 +16,12 @@ function App() {
     
     setUserId(data.uuid);
   };
-  
-  useEffect(() => {
-    getUuid();
+
+   useEffect(() => {
+    if (userId === '') {
+       getUuid();
+    }
+  // eslint-disable-next-line
   }, []);
 
   return (
