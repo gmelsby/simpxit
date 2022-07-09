@@ -2,13 +2,13 @@ import React, { useEffect } from 'react';
 import {BrowserRouter, Route, Switch } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RoomPage from './pages/RoomPage';
-import useLocalStorage from './hooks/useLocalStorage';
+import useSessionStorage from './hooks/useSessionStorage';
 
 
 
 function App() {
 
-  const [userId, setUserId] = useLocalStorage('image-app', '');
+  const [userId, setUserId] = useSessionStorage('image-app', '');
 
   const getUuid = async () => {
     const response = await fetch('/uuid');
