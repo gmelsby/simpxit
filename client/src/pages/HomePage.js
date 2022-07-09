@@ -18,7 +18,7 @@ export default function HomePage( { userId }) {
   }
   
   const handleCreateRoom = async () => {
-    const adminId = { userId: '12345' };
+    const adminId = { userId };
     const response = await fetch('/createroom', {
       method: 'POST',
       body: JSON.stringify(adminId),

@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import RulesModal from '../components/RulesModal'
+import RulesModal from '../components/RulesModal';
+import { io } from "socket.io-client";
 
 export default function RoomPage({ userId }) {
   
   const { roomId } = useParams();
+  const [roomState, setroomState] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
+  
+  useEffect(() => {
+    if (!userId) {
+      return;
+    }
+    const socket = io("127.0.0.1:3000");
+    console.log("attempting to join room")
+    socket.emit('joinRoom', { roomId, userId }, error => {
+      if(error) {
+        setErrorMessage(error)
+      }
+    });
+    
+  }, [userId, roomId])
 
   return (
     <>
