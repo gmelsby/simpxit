@@ -34,13 +34,17 @@ io.on('connection', socket => {
       return callback("Room not found");
     }
     
+    if (rooms[roomId].isKicked(userId)) {
+      console.log('user has been kicked from room previously');
+      return callback("You have been kicked from this room");
+    }
+
     if (rooms[roomId].isCurrentPlayer(userId)) {
-      console.log(`${userId} is current player`)
+      console.log(`${userId} is current player`);
       socket.join(roomId);
     }
     
     else {
-
       if (!rooms[roomId].isJoinable()) {
         console.log(`${userId} could not join room: room is full`)
         return callback("Room is full");
@@ -59,16 +63,27 @@ io.on('connection', socket => {
     callback();
   });
   
-  socket.on("leaveRoom", (request) => {
+  socket.on("kickPlayer", request => {
+    const { roomId, userId, kickUserId } = request;
+    if (rooms[roomId] && rooms[roomId].kickPlayer(userId, kickUserId)) {
+      console.log(`kicked player ${kickUserId}`);
+      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+    }
+    else {
+      console.log(`could not kick player ${kickUserId}`);
+    }
+  });
+
+  socket.on("leaveRoom", request => {
     const { roomId, userId } = request;
     console.log(`player ${userId} attempting to leave room ${roomId}`);
-    if (rooms[roomId].removePlayer(userId)) {
+    if (rooms[roomId] && rooms[roomId].removePlayer(userId)) {
       console.log("player removed successfully");
+      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
     }
     else {
       console.log("unable to remove player");
     }
-    io.to(roomId).emit("receiveRoomState", rooms[roomId]);
   });
 
 });

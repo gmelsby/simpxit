@@ -62,6 +62,20 @@
       return false;
     }
   }
+   
+  // removes player with kickId if adminId is admin
+  kickPlayer(adminId, kickId) {
+    if (this.playerCount && adminId === this.players[0].playerId) {
+      this.kickedPlayers.push(kickId);
+      return this.removePlayer(kickId);
+    }
+    return false;
+  }
+  
+  // returns if the player is in the kickedPlayers array
+  isKicked(uuid) {
+    return this.kickedPlayers.includes(uuid);
+  }
   
 
   advanceGamePhase() {

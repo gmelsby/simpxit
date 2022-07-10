@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Redirect } from 'react-router-dom';
-import RulesModal from '../components/RulesModal';
+import { Button } from 'react-bootstrap';
+import RulesModal  from '../components/RulesModal';
+import KickRedirect from '../components/KickRedirect';
+import PlayerList from '../components/PlayerList';
 import { io } from "socket.io-client";
 
 export default function RoomPage({ userId }) {
@@ -28,6 +31,11 @@ export default function RoomPage({ userId }) {
     setLeaveRoom(true);
   }
   
+  const handleKick = (kickUserId) => {
+    console.log('Attempting to kick')
+    socket.emit('kickPlayer', { roomId, userId, kickUserId });
+  };
+  
   useEffect(() => {
     if (!userId) {
       return;
@@ -54,7 +62,6 @@ export default function RoomPage({ userId }) {
 
     socket.on("receiveRoomState", data => {
       setRoomState(data);
-      console.log(data);
     })
   }, [socket]);
   
@@ -62,11 +69,11 @@ export default function RoomPage({ userId }) {
     return(<p>Error: {errorMessage}</p>);
   }
   if (roomState.kickedPlayers.includes(userId)) {
-    return(<p>You have been kicked from the room</p>);
+    return (<KickRedirect />);
   }
   
   if (!(roomState.players.map(player => player.playerId).includes(userId))) {
-    return(<p>Joining Room Unsuccessful</p>)
+    return(<p>Joining Room Unsuccessful</p>);
   }
 
   if (leaveRoom) {
@@ -83,17 +90,10 @@ export default function RoomPage({ userId }) {
       <h1>Room Code: {roomId}</h1>
       <h3>Your Name: {roomState.players.filter(player => player.playerId === userId)[0].playerName}</h3>
       
-      <ul>
-        {roomState.players.map((player) => 
-          <li key={player.playerId}>
-            {player.playerName}
-          </li>)}
-      </ul>
-
-
+      <PlayerList players={roomState.players} handleKick={handleKick} userId={userId} isAdmin={isAdmin} />
       
-      <button onClick={handleLeave}>Leave Room</button>
-      {isAdmin && <button>Start Game</button>}
+      <Button onClick={handleLeave} variant="danger">Leave Room</Button>
+      {isAdmin && <Button>Start Game</Button>}
       <footer><p>UUID: {userId}</p></footer>
     </>
   );
