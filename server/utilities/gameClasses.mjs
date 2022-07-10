@@ -1,6 +1,6 @@
  export class Room {
   constructor(adminId) {
-    this.players = [new Player(adminId, "Player 1")];
+    this.players = [];
     this.gamePhase = "lobby";
     this.storyCard = undefined;
     this.kickedPlayers = [];
@@ -9,6 +9,8 @@
     this.maxPlayers = 6;
     this.targetScore = 25;
     this.playerTurn = 0;
+    this.defaultPlayerNumber = 1;
+    this.addPlayer(adminId);
   }
 
 
@@ -47,7 +49,8 @@
   
   // adds a player with the passed-in id
   addPlayer(uuid) {
-    this.players.push(new Player(uuid, `Player ${this.playerCount + 1}`));
+    this.players.push(new Player(uuid, `Player ${this.defaultPlayerNumber}`));
+    this.defaultPlayerNumber += 1;
   }
   
   // removes the player with the passed-in id

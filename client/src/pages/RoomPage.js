@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Redirect } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import RulesModal  from '../components/RulesModal';
+import KickModal from '../components/KickModal';
 import KickRedirect from '../components/KickRedirect';
 import PlayerList from '../components/PlayerList';
 import { io } from "socket.io-client";
@@ -24,17 +25,13 @@ export default function RoomPage({ userId }) {
     playerTurn: 0,
   });
   const [errorMessage, setErrorMessage] = useState('');
+  const [kickUserId, setKickUserId] = useState('');
   
   const handleLeave = () => {
     socket.emit('leaveRoom', { roomId, userId });
     socket.disconnect();
     setLeaveRoom(true);
   }
-  
-  const handleKick = (kickUserId) => {
-    console.log('Attempting to kick')
-    socket.emit('kickPlayer', { roomId, userId, kickUserId });
-  };
   
   useEffect(() => {
     if (!userId) {
@@ -80,17 +77,18 @@ export default function RoomPage({ userId }) {
     return (<Redirect to={'/'} />);
   }
  
-  let isAdmin = roomState.players[0].playerId === userId ? true : false;
+  const isAdmin = roomState.players[0].playerId === userId ? true : false;
   
 
   return (
     <>
       <RulesModal />
+      <KickModal socket={socket} roomId={roomId} userId={userId} kickUserId={kickUserId} setKickUserId={setKickUserId} />
       <p>Share this code (or the page's url) to let players join this room!</p>
       <h1>Room Code: {roomId}</h1>
       <h3>Your Name: {roomState.players.filter(player => player.playerId === userId)[0].playerName}</h3>
       
-      <PlayerList players={roomState.players} handleKick={handleKick} userId={userId} isAdmin={isAdmin} />
+      <PlayerList players={roomState.players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
       
       <Button onClick={handleLeave} variant="danger">Leave Room</Button>
       {isAdmin && <Button>Start Game</Button>}

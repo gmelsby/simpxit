@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 
-export default function PlayerList({ players, handleKick, userId, isAdmin }) {
+export default function PlayerList({ players, setKickUserId, userId, isAdmin }) {
   return (
   <ul>
     {players.map((player) => <PlayerEntry player={player} 
-      handleKick={handleKick} 
+      setKickUserId={setKickUserId} 
       userId={userId} 
       isAdmin={isAdmin} 
       key={player.playerId} />)}
@@ -13,15 +13,15 @@ export default function PlayerList({ players, handleKick, userId, isAdmin }) {
   );
 }
 
-function PlayerEntry({ player, handleKick, userId, isAdmin }) {
+function PlayerEntry({ player, setKickUserId, userId, isAdmin }) {
   const handleKickThisPlayer = () => {
-    handleKick(player.playerId);
+    setKickUserId(player.playerId);
   };
   return (
   <li>
     {player.playerName}
     {isAdmin && player.playerId !== userId && 
-    <Button variant="danger" onClick= {handleKickThisPlayer}>Kick</Button>}
+    <Button variant="danger" onClick={handleKickThisPlayer}>Kick</Button>}
   </li>
   )
 }
