@@ -22,7 +22,9 @@ const io = new Server(server, {
 const rooms = {};
 
 io.on('connection', socket => {
+
   console.log('connection made');
+
   socket.on('joinRoom', (request, callback) => {
     const { roomId, userId } = request;
     console.log(`attempt to join room: roomId: ${roomId}, userId: ${userId}`);
@@ -53,9 +55,22 @@ io.on('connection', socket => {
     
     console.log(`player list = ${JSON.stringify(rooms[roomId].players)}`)
 
-    io.to(roomId).emit(rooms.roomId);
+    io.to(roomId).emit("receiveRoomState", rooms[roomId]);
     callback();
-  })
+  });
+  
+  socket.on("leaveRoom", (request) => {
+    const { roomId, userId } = request;
+    console.log(`player ${userId} attempting to leave room ${roomId}`);
+    if (rooms[roomId].removePlayer(userId)) {
+      console.log("player removed successfully");
+    }
+    else {
+      console.log("unable to remove player");
+    }
+    io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+  });
+
 });
 
 app.post('/createroom', (req, res) => {
@@ -72,7 +87,6 @@ app.post('/createroom', (req, res) => {
   console.log(`new room code is ${newRoomCode}`)
   
   rooms[newRoomCode] = new Room(uuid);
-  console.log(`new room player list: ${JSON.stringify(rooms[newRoomCode].players)}`)
   res.status(201).send({ newRoomCode });
 });
 

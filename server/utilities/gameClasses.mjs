@@ -1,9 +1,9 @@
  export class Room {
   constructor(adminId) {
-    this.adminId = adminId;
     this.players = [new Player(adminId, "Player 1")];
     this.gamePhase = "lobby";
     this.storyCard = undefined;
+    this.kickedPlayers = [];
     this.submittedCards = {};
     this.handSize = 6;
     this.maxPlayers = 6;
@@ -52,7 +52,15 @@
   
   // removes the player with the passed-in id
   removePlayer(uuid) {
-    this.players = this.players.filter(player => player[playerId] !== uuid);
+    const initialPlayerCount = this.playerCount;
+    this.players = this.players.filter(player => player.playerId !== uuid);
+    if (this.playerCount < initialPlayerCount) {
+      return true;
+    }
+    
+    else {
+      return false;
+    }
   }
   
 
