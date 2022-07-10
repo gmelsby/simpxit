@@ -1,17 +1,15 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
-export default function KickModal({ socket, roomId, userId, kickUserId, setKickUserId }) {
+export default function KickModal({ kickUserId, setKickUserId, kickPlayer }) {
   // from https://react-bootstrap.github.io/components/modal/
 
   const handleCloseKick = () => {
     setKickUserId('');
-  }
+  };
   const handleKickButton = () => {
-    socket.emit('kickPlayer', { roomId, userId, kickUserId });
-    setKickUserId('');
-  }
-
+    kickPlayer();
+  };
 
   return (
     <>
@@ -37,5 +35,5 @@ export default function KickModal({ socket, roomId, userId, kickUserId, setKickU
         </Modal.Footer>
       </Modal>
     </>
-  )
+  );
 }

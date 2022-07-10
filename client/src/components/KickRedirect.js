@@ -1,5 +1,6 @@
 import React, { useState, useEffect }from 'react';
 import { Redirect } from 'react-router-dom';
+import { Alert } from 'react-bootstrap';
 
 export default function KickRedirect() {
   
@@ -15,5 +16,5 @@ export default function KickRedirect() {
     return(<Redirect to='/'/>);
   }
 
-  return(<p>You have been kicked from the room. Taking you back to the homepage in 3 seconds...</p>);
+  return(<Alert variant="danger">You have been kicked from the room. Taking you back to the homepage in 3 seconds...</Alert>);
 }

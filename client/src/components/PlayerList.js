@@ -1,15 +1,15 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, ListGroup } from 'react-bootstrap';
 
 export default function PlayerList({ players, setKickUserId, userId, isAdmin }) {
   return (
-  <ul>
+  <ListGroup className="w-50 p-3">
     {players.map((player) => <PlayerEntry player={player} 
       setKickUserId={setKickUserId} 
       userId={userId} 
       isAdmin={isAdmin} 
       key={player.playerId} />)}
-  </ul>
+  </ListGroup>
   );
 }
 
@@ -18,10 +18,10 @@ function PlayerEntry({ player, setKickUserId, userId, isAdmin }) {
     setKickUserId(player.playerId);
   };
   return (
-  <li>
+  <ListGroup.Item>
     {player.playerName}
     {isAdmin && player.playerId !== userId && 
     <Button variant="danger" onClick={handleKickThisPlayer}>Kick</Button>}
-  </li>
+  </ListGroup.Item>
   )
 }

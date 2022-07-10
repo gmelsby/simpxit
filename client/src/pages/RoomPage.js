@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Redirect } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import RulesModal  from '../components/RulesModal';
 import KickModal from '../components/KickModal';
+import NameModal from '../components/NameModal'
 import KickRedirect from '../components/KickRedirect';
-import PlayerList from '../components/PlayerList';
+import Lobby from './Lobby.js';
 import { io } from "socket.io-client";
 
 export default function RoomPage({ userId }) {
@@ -27,15 +28,11 @@ export default function RoomPage({ userId }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [kickUserId, setKickUserId] = useState('');
   
-  const handleLeave = () => {
-    socket.emit('leaveRoom', { roomId, userId });
-    socket.disconnect();
-    setLeaveRoom(true);
-  }
-  
+ 
   useEffect(() => {
     if (!userId) {
       return;
+    
     }
     
     // https://developer.okta.com/blog/2021/07/14/socket-io-react-tutorial
@@ -63,7 +60,7 @@ export default function RoomPage({ userId }) {
   }, [socket]);
   
   if (errorMessage) {
-    return(<p>Error: {errorMessage}</p>);
+    return(<Alert variant="warning">Error: {errorMessage}</Alert>);
   }
   if (roomState.kickedPlayers.includes(userId)) {
     return (<KickRedirect />);
@@ -78,20 +75,36 @@ export default function RoomPage({ userId }) {
   }
  
   const isAdmin = roomState.players[0].playerId === userId ? true : false;
+
+  const handleLeave = () => {
+    socket.emit('leaveRoom', { roomId, userId });
+    socket.disconnect();
+    setLeaveRoom(true);
+  }
+  
+  const kickPlayer = () => {
+    socket.emit('kickPlayer', { roomId, userId, kickUserId });
+    setKickUserId('');
+  }
+  
+  const changeName = newName => {
+    socket.emit('changeName', { roomId, userId, newName });
+  }
+  
+  const changeOptions = newOptions => {
+    socket.emit('changeOptions', { roomId, userId, newOptions });
+  }
   
 
   return (
     <>
       <RulesModal />
-      <KickModal socket={socket} roomId={roomId} userId={userId} kickUserId={kickUserId} setKickUserId={setKickUserId} />
-      <p>Share this code (or the page's url) to let players join this room!</p>
-      <h1>Room Code: {roomId}</h1>
-      <h3>Your Name: {roomState.players.filter(player => player.playerId === userId)[0].playerName}</h3>
-      
-      <PlayerList players={roomState.players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
-      
-      <Button onClick={handleLeave} variant="danger">Leave Room</Button>
-      {isAdmin && <Button>Start Game</Button>}
+      <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
+      <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} />
+    
+      <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
+        isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions}/>
+
       <footer><p>UUID: {userId}</p></footer>
     </>
   );

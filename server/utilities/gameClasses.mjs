@@ -9,7 +9,6 @@
     this.maxPlayers = 6;
     this.targetScore = 25;
     this.playerTurn = 0;
-    this.defaultPlayerNumber = 1;
     this.addPlayer(adminId);
   }
 
@@ -49,8 +48,11 @@
   
   // adds a player with the passed-in id
   addPlayer(uuid) {
-    this.players.push(new Player(uuid, `Player ${this.defaultPlayerNumber}`));
-    this.defaultPlayerNumber += 1;
+    let playerNumber = 1;
+    while(this.players.map(p => p.playerName).includes(`Player ${playerNumber}`)) {
+      playerNumber++;
+    }
+    this.players.push(new Player(uuid, `Player ${playerNumber}`));
   }
   
   // removes the player with the passed-in id
@@ -75,10 +77,51 @@
     return false;
   }
   
-  // returns if the player is in the kickedPlayers array
+  // returns true if the player is in the kickedPlayers array, false otherwise
   isKicked(uuid) {
     return this.kickedPlayers.includes(uuid);
   }
+   
+  // returns true if name change is successful, false otherwise
+  changeName(uuid, newName) {
+    // check that target player is a player
+    if (!(this.players.map(player => player.playerId).includes(uuid))) {
+      return false;
+    }
+    
+    console.log('uuid okay');
+    
+    // check that name is not already in use
+    if(this.players.map(player => player.playerName).includes(newName)) {
+      return false;
+    }
+    
+    // renames player
+    this.players.filter(player => player.playerId === uuid)[0].playerName = newName;
+    return true;
+  }
+   
+  // return true if options change is successful, false otherwise
+  changeOptions(uuid, newOptions) {
+    // checks that room is populated
+    if (!(this.playerCount)) {
+      return false;
+    }
+
+    // check that requesting player is admin
+    if (this.players[0].playerId !== uuid) {
+      return false;
+    }
+    
+    // check that target value is within range
+    if (newOptions < 5 || newOptions > 100) {
+      return false;
+    }
+    
+    this.targetScore = newOptions;
+    return true;
+  }
+     
   
 
   advanceGamePhase() {

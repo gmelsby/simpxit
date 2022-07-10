@@ -85,6 +85,32 @@ io.on('connection', socket => {
       console.log("unable to remove player");
     }
   });
+  
+  socket.on("changeName", request => {
+    const { roomId, userId, newName } = request;
+    const trimmedNewName = newName.trim();
+    console.log(`player ${userId} attempting to change name to ${trimmedNewName}`);
+    if (rooms[roomId] && rooms[roomId].changeName(userId, trimmedNewName)) {
+      console.log("name changed");
+      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+    }
+    else {
+      console.log("unable to change name");
+    }
+  });
+
+  socket.on("changeOptions", request => {
+    const { roomId, userId, newOptions } = request;
+    console.log(`player ${userId} attempting to change options to ${newOptions}`);
+    if (rooms[roomId] && rooms[roomId].changeOptions(userId, newOptions)) {
+      console.log("options changed");
+      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+    }
+    else {
+      console.log("unable to change options");
+    }
+  });
+
 
 });
 

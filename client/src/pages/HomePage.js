@@ -50,13 +50,12 @@ export default function HomePage( { userId }) {
           <p>Join Existing Room</p>
           <Form onSubmit={roomCodeSubmit}>
             <Form.Group>
-                  <Form.Label htmlFor="input_room_code">Room Code:</Form.Label>
-                  <Form.Control className="w-auto" type="text" name="input_room_code" 
-                    required size="4" maxLength="4" placeholder="XYZW" pattern="[A-Z]{4}"
-                    value={enteredRoomId}
-                    onChange={e => setEnteredRoomId(e.target.value.toUpperCase())}>
-                  </Form.Control>
-                  <Button type="submit">Join!</Button>
+              <Form.Label htmlFor="input-room-code">Room Code:</Form.Label>
+              <Form.Control className="w-auto" type="text" name="input-room-code" 
+                required size="4" maxLength="4" placeholder="XYZW" pattern="[A-Z]{4}"
+                value={enteredRoomId}
+                onChange={e => setEnteredRoomId(e.target.value.toUpperCase())} />
+              <Button type="submit">Join!</Button>
             </Form.Group>
           </Form>
       </Container>
