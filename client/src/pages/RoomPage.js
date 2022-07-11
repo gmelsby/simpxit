@@ -6,6 +6,7 @@ import KickModal from '../components/KickModal';
 import NameModal from '../components/NameModal'
 import KickRedirect from '../components/KickRedirect';
 import Lobby from './Lobby.js';
+import StoryTellerPick from './StoryTellerPick.js'
 import { io } from "socket.io-client";
 
 export default function RoomPage({ userId }) {
@@ -75,6 +76,7 @@ export default function RoomPage({ userId }) {
   }
  
   const isAdmin = roomState.players[0].playerId === userId ? true : false;
+  const isStoryTeller = roomState.players[roomState.playerTurn] === userId ? true : false;
 
   const handleLeave = () => {
     socket.emit('leaveRoom', { roomId, userId });
@@ -102,8 +104,10 @@ export default function RoomPage({ userId }) {
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} />
     
-      <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
-        isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions}/>
+      {roomState.gamePhase === "lobby" && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
+        isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions}/>}
+
+      {roomState.gamePhase === "storyTellerPick" && <StoryTellerPick isStoryTeller={isStoryTeller}/>}
 
       <footer><p>UUID: {userId}</p></footer>
     </>

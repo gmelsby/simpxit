@@ -19,8 +19,7 @@
                         "storytellerPick": "otherPlayersPick",
                         "otherPlayersPick": "otherPlayersGuess",
                         "otherPlayersGuess": "scoring",
-                        "scoring": "drawCards",
-                        "drawCards": "storyTellerPick"
+                        "scoring": "storyTellerPick"
                          };
   // returns the count of players
   get playerCount() {

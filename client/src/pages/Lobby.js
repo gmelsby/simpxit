@@ -24,7 +24,9 @@ export default function Lobby({ players,
         <PlayerList players={players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
         
         <Button onClick={handleLeave} variant="danger">Leave Room</Button>
-        {isAdmin && <Button>Start Game</Button>}
+        {isAdmin && players.length > 2 && <Button>Start Game</Button>}
+        {isAdmin && players.length <= 2 && <Button disabled>Start Game</Button>}
+        {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
       </Container>
       <p>Target score: {currentOptions}</p>
     </>
