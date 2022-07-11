@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import RulesModal from '../components/RulesModal';
 
 
@@ -8,13 +8,15 @@ export default function HomePage( { userId }) {
   const [enteredRoomId, setEnteredRoomId] = useState('');
   const [roomIdSubmitted, setroomIdSubmitted] = useState(false);
   
+  const history = useHistory();
+  
   const roomCodeSubmit = e => {
     e.preventDefault();
     setroomIdSubmitted(true);
   };
   
   if (roomIdSubmitted) {
-    return (<Redirect to={`/room/${enteredRoomId}`} />);
+    history.push(`/room/${enteredRoomId}`);
   }
   
   const handleCreateRoom = async () => {
