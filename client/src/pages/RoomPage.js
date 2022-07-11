@@ -66,6 +66,7 @@ export default function RoomPage({ userId }) {
     return(<Alert variant="warning">Error: {errorMessage}</Alert>);
   }
   if (roomState.kickedPlayers.includes(userId)) {
+    socket.disconnect();
     return (<KickRedirect />);
   }
   
