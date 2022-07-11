@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
 export default function OptionsModal({ currentOptions, changeOptions }) {
-  // from https://react-bootstrap.github.io/components/modal/
+  // citation:
+  // Modified from https://react-bootstrap.github.io/components/modal/
+  // Date: 07/09/2022
 
   const [showOptions, setShowOptions] = useState(false);
   const [newOptions, setNewOptions] = useState(currentOptions);
@@ -18,7 +20,7 @@ export default function OptionsModal({ currentOptions, changeOptions }) {
   
   return (
     <>
-     <Button onClick={handleShowOptions}>
+      <Button variant="warning" onClick={handleShowOptions}>
         Advanced Options
       </Button>
 

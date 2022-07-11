@@ -33,8 +33,13 @@ export default function HomePage( { userId }) {
       setroomIdSubmitted(true);
     }
     
+    else if (response.status === 403) {
+      const data = await response.json();
+      alert(`Failed to create room: ${data.error}`);
+    }
+    
     else {
-      alert('Failed to create room');
+      alert('Failed to create room')
     }
   };
   

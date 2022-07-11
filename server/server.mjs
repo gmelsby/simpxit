@@ -117,6 +117,9 @@ io.on('connection', socket => {
 app.post('/createroom', (req, res) => {
   console.log(`received create room request with UUID ${req.body.userId}`);
   const uuid  = req.body.userId;
+  if (!uuid) {
+    res.status(403).send({error: "User does not have UUID. Refresh page and try again."});
+  }
   let newRoomCode = 'ABCD'
   // maybe need a way to return no room available if takes longer than X seconds
   while (1) {
