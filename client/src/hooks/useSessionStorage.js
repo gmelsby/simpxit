@@ -1,4 +1,9 @@
+// Citation:
 // Source: https://usehooks.com/useLocalStorage/
+// Date: 07/09/2022
+// Modified to use sessionStorage instead of localStorage
+// For future release it will maybe be better to use local storage
+// But for testing in my browsers I need storage by tab, not browser
 import { useState } from 'react';
 
 const PREFIX = "image-game-";

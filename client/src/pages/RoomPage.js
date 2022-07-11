@@ -36,7 +36,9 @@ export default function RoomPage({ userId }) {
     
     }
     
-    // https://developer.okta.com/blog/2021/07/14/socket-io-react-tutorial
+    // Citation
+    // Socket logic adapted from https://developer.okta.com/blog/2021/07/14/socket-io-react-tutorial
+    // Date: 07/09/2022
     const newSocket = io('127.0.0.1:3000');
     setSocket(newSocket);
 

@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
 export default function NameModal({ currentName, changeName}) {
-  // from https://react-bootstrap.github.io/components/modal/
+  // Citation:
+  // Modified from https://react-bootstrap.github.io/components/modal/
+  // Date: 07/09/2022
 
   const [showName, setShowName] = useState(false);
   const [newName, setNewName] = useState(currentName);

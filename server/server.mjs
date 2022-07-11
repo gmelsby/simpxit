@@ -1,5 +1,5 @@
 import { generateUuid, generateRoomCode } from './utilities/generateUtils.mjs';
-import { Room, Player, Card } from './utilities/gameClasses.mjs';
+import { Room } from './utilities/gameClasses.mjs';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -18,7 +18,7 @@ const io = new Server(server, {
   }
 });
 
-// will be changed to a database at some point
+// will probably be changed to a database at some point
 const rooms = {};
 
 io.on('connection', socket => {
@@ -118,6 +118,7 @@ app.post('/createroom', (req, res) => {
   console.log(`received create room request with UUID ${req.body.userId}`);
   const uuid  = req.body.userId;
   let newRoomCode = 'ABCD'
+  // maybe need a way to return no room available if takes longer than X seconds
   while (1) {
     newRoomCode = generateRoomCode();
     if (!(newRoomCode in rooms)) {

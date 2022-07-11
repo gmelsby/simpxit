@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
 export default function RulesModal() {
-  // from https://react-bootstrap.github.io/components/modal/
+  // Citation:
+  // Modified from https://react-bootstrap.github.io/components/modal/
+  // Date: 07/09/2022
+
+
   const [showRules, setShowRules] = useState(false);
 
   const handleCloseRules = () => setShowRules(false);
@@ -49,5 +53,5 @@ export default function RulesModal() {
         </Modal.Footer>
       </Modal>
     </>
-  )
+  );
 }

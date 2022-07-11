@@ -2,7 +2,9 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
 export default function KickModal({ kickUserId, setKickUserId, kickPlayer }) {
-  // from https://react-bootstrap.github.io/components/modal/
+  // Citation:
+  // Modified from https://react-bootstrap.github.io/components/modal/
+  // Date: 07/09/2022
 
   const handleCloseKick = () => {
     setKickUserId('');
