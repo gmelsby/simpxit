@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Redirect } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
 import RulesModal  from '../components/RulesModal';
 import KickModal from '../components/KickModal';
 import NameModal from '../components/NameModal'
 import KickRedirect from '../components/KickRedirect';
+import LeaveRedirect from '../components/LeaveRedirect'
 import Lobby from './Lobby.js';
 import StoryTellerPick from './StoryTellerPick.js'
 import { io } from "socket.io-client";
@@ -13,10 +14,9 @@ export default function RoomPage({ userId }) {
   
   const { roomId } = useParams();
   const [socket, setSocket] = useState(null);
-  const [leaveRoom, setLeaveRoom] = useState(false);
   const [roomState, setRoomState] = useState({
     adminId: "placeholder", 
-    players: [], 
+    players: [{playerId: userId}], 
     gamePhase: "lobby", 
     submittedCards: {}, 
     playersToSubmit: [],
@@ -33,7 +33,6 @@ export default function RoomPage({ userId }) {
   useEffect(() => {
     if (!userId) {
       return;
-    
     }
     
     // Citation
@@ -66,25 +65,18 @@ export default function RoomPage({ userId }) {
     return(<Alert variant="warning">Error: {errorMessage}</Alert>);
   }
   if (roomState.kickedPlayers.includes(userId)) {
-    socket.disconnect();
     return (<KickRedirect />);
   }
   
   if (!(roomState.players.map(player => player.playerId).includes(userId))) {
-    return(<p>Joining Room Unsuccessful</p>);
+    return (<LeaveRedirect />);
   }
 
-  if (leaveRoom) {
-    return (<Redirect to={'/'} />);
-  }
- 
   const isAdmin = roomState.players[0].playerId === userId ? true : false;
   const isStoryTeller = roomState.players[roomState.playerTurn] === userId ? true : false;
 
   const handleLeave = () => {
     socket.emit('leaveRoom', { roomId, userId });
-    socket.disconnect();
-    setLeaveRoom(true);
   }
   
   const kickPlayer = () => {
