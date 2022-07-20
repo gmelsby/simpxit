@@ -10,9 +10,15 @@ export default function Lobby({ players,
                                 isAdmin,
                                 setKickUserId,
                                 currentOptions,
-                                changeOptions
+                                changeOptions,
+                                socket
                               }) {
 
+  function handleStartGame() {
+    console.log("trying to start game")
+    socket.emit('startGame', { roomId, userId } );
+  }
+  
   return (
     <>
       {isAdmin && <OptionsModal currentOptions={currentOptions} changeOptions={changeOptions} />}
@@ -24,7 +30,7 @@ export default function Lobby({ players,
         <PlayerList players={players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
         
         <Button onClick={handleLeave} variant="danger">Leave Room</Button>
-        {isAdmin && players.length > 2 && <Button>Start Game</Button>}
+        {isAdmin && players.length > 2 && <Button onClick={handleStartGame}>Start Game</Button>}
         {isAdmin && players.length <= 2 && <Button disabled>Start Game</Button>}
         {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
       </Container>

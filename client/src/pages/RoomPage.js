@@ -16,7 +16,7 @@ export default function RoomPage({ userId }) {
   const [socket, setSocket] = useState(null);
   const [roomState, setRoomState] = useState({
     adminId: "placeholder", 
-    players: [{playerId: ''}, {playerId: userId}], 
+    players: [{playerId: '', playerName: ''}, {playerId: userId}], 
     gamePhase: "lobby", 
     submittedCards: {}, 
     playersToSubmit: [],
@@ -62,7 +62,8 @@ export default function RoomPage({ userId }) {
   }, [socket]);
   
   if (errorMessage) {
-    return(<Alert variant="warning">Error: {errorMessage}</Alert>);
+    return(
+      <Alert variant="warning">Error: {errorMessage}</Alert>);
   }
   if (roomState.kickedPlayers.includes(userId)) {
     return (<KickRedirect />);
@@ -73,7 +74,7 @@ export default function RoomPage({ userId }) {
   }
 
   const isAdmin = roomState.players[0].playerId === userId ? true : false;
-  const isStoryTeller = roomState.players[roomState.playerTurn] === userId ? true : false;
+  const storyTeller = roomState.players[roomState.playerTurn];
 
   const handleLeave = () => {
     socket.emit('leaveRoom', { roomId, userId });
@@ -100,9 +101,9 @@ export default function RoomPage({ userId }) {
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} />
     
       {roomState.gamePhase === "lobby" && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
-        isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions}/>}
+        isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions} socket={socket}/>}
 
-      {roomState.gamePhase === "storyTellerPick" && <StoryTellerPick isStoryTeller={isStoryTeller}/>}
+      {roomState.gamePhase === "storyTellerPick" && <StoryTellerPick userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket} />}
 
       <footer><p>UUID: {userId}</p></footer>
     </>

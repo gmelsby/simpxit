@@ -110,6 +110,26 @@ io.on('connection', socket => {
       console.log("unable to change options");
     }
   });
+  
+  socket.on("startGame", request => {
+    const { roomId, userId } = request;
+    console.log(`player ${userId} attempting to start game in room ${roomId}`);
+    if (rooms[roomId] && rooms[roomId].startGame(userId)) {
+      console.log("game started");
+      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+    }
+    else {
+      console.log("unable to start game");
+    }
+  });
+  
+  socket.on("submitStoryCard", request => {
+    const { roomId, userId, selectedCardId, descriptor } = request;
+    if (rooms[roomId] && rooms[roomId].submitStoryCard(userId, selectedCardId, descriptor)) {
+      console.log(`Story card ${selectedCardId} submitted by ${userId}`);
+      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+    }
+  });
 
 
 });
