@@ -16,7 +16,7 @@ export default function RoomPage({ userId }) {
   const [socket, setSocket] = useState(null);
   const [roomState, setRoomState] = useState({
     adminId: "placeholder", 
-    players: [{playerId: userId}], 
+    players: [{playerId: ''}, {playerId: userId}], 
     gamePhase: "lobby", 
     submittedCards: {}, 
     playersToSubmit: [],

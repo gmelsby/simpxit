@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
-import { useHistory } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import RulesModal from '../components/RulesModal';
 
 
@@ -8,15 +8,13 @@ export default function HomePage( { userId }) {
   const [enteredRoomId, setEnteredRoomId] = useState('');
   const [roomIdSubmitted, setroomIdSubmitted] = useState(false);
   
-  const history = useHistory();
-  
   const roomCodeSubmit = e => {
     e.preventDefault();
     setroomIdSubmitted(true);
   };
   
   if (roomIdSubmitted) {
-    history.push(`/room/${enteredRoomId}`);
+    return <Redirect push to={`/room/${enteredRoomId}`} />;
   }
   
   const handleCreateRoom = async () => {
@@ -52,7 +50,6 @@ export default function HomePage( { userId }) {
           <h1>Welcome to Greg's Image Game!</h1>
           <p>To play, create a room or join an already existing room.</p>
           <Button onClick={handleCreateRoom}>Create Room</Button>
-    
 
           <p>Join Existing Room</p>
           <Form onSubmit={roomCodeSubmit}>
