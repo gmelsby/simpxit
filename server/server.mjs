@@ -129,10 +129,28 @@ io.on('connection', socket => {
       console.log(`Story card ${selectedCardId} submitted by ${userId}`);
       io.to(roomId).emit("receiveRoomState", rooms[roomId]);
     }
+    
+    else {
+      console.log("unable to submit story card")
+    }
+    
   });
 
+  socket.on("submitOtherCard", request => {
+    const { roomId, userId, selectedCardId} = request;
+    if (rooms[roomId] && rooms[roomId].submitOtherCard(userId, selectedCardId)) {
+      console.log(`Other card ${selectedCardId} submitted by ${userId}`);
+      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+    }
+    
+    else {
+      console.log("unable to submit other card");
+    }
+  });
 
 });
+
+
 
 app.post('/createroom', (req, res) => {
   console.log(`received create room request with UUID ${req.body.userId}`);

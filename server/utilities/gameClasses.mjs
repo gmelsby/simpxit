@@ -167,6 +167,25 @@ import { generateUuid } from './generateUtils.mjs';
     this.storyDescriptor = descriptor;
     this.advanceGamePhase();
   }
+   
+  // submits other players cards
+  submitOtherCard(uuid, cardId) {
+    if (this.gamePhase !== "otherPlayersPick") {
+      return false;
+    }
+    
+    if (Object.values(this.submittedCards).filter(id => id === uuid).length !== 0) {
+      return false;
+    }
+    
+    this.submittedCards[cardId] = uuid;
+
+    if (Object.keys(this.submittedCards).length === this.playerCount) {
+      this.advanceGamePhase();
+    }
+
+    return true;
+  }
 
 }
 

@@ -9,6 +9,7 @@ import LeaveRedirect from '../components/LeaveRedirect'
 import Lobby from './Lobby.js';
 import StoryTellerPick from './StoryTellerPick.js'
 import { io } from "socket.io-client";
+import OtherPlayersPick from './OtherPlayersPick';
 
 export default function RoomPage({ userId }) {
   
@@ -104,6 +105,9 @@ export default function RoomPage({ userId }) {
         isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions} socket={socket}/>}
 
       {roomState.gamePhase === "storyTellerPick" && <StoryTellerPick userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket} />}
+    
+      {roomState.gamePhase === "otherPlayersPick" && <OtherPlayersPick userId={userId} storyTeller={storyTeller} roomId={roomId}
+        storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards} />}
 
       <footer><p>UUID: {userId}</p></footer>
     </>
