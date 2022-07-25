@@ -114,19 +114,29 @@ io.on('connection', socket => {
   socket.on("startGame", request => {
     const { roomId, userId } = request;
     console.log(`player ${userId} attempting to start game in room ${roomId}`);
-    if (rooms[roomId] && rooms[roomId].startGame(userId)) {
-      console.log("game started");
-      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+    if (rooms[roomId]) {
+      rooms[roomId].startGame(userId) 
+        .then(bool => {
+          if (bool) {
+            console.log("game started");
+            io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+          }
+          else {
+            console.log("unable to start game");
+          }
+        });
     }
+    
     else {
       console.log("unable to start game");
     }
+    
   });
   
   socket.on("submitStoryCard", request => {
-    const { roomId, userId, selectedCardId, descriptor } = request;
-    if (rooms[roomId] && rooms[roomId].submitStoryCard(userId, selectedCardId, descriptor)) {
-      console.log(`Story card ${selectedCardId} submitted by ${userId}`);
+    const { roomId, userId, selectedCard, descriptor } = request;
+    if (rooms[roomId] && rooms[roomId].submitStoryCard(userId, selectedCard, descriptor)) {
+      console.log(`Story card ${selectedCard.cardId} submitted by ${userId}`);
       io.to(roomId).emit("receiveRoomState", rooms[roomId]);
     }
     
@@ -137,9 +147,9 @@ io.on('connection', socket => {
   });
 
   socket.on("submitOtherCard", request => {
-    const { roomId, userId, selectedCardId} = request;
-    if (rooms[roomId] && rooms[roomId].submitOtherCard(userId, selectedCardId)) {
-      console.log(`Other card ${selectedCardId} submitted by ${userId}`);
+    const { roomId, userId, selectedCard} = request;
+    if (rooms[roomId] && rooms[roomId].submitOtherCard(userId, selectedCard)) {
+      console.log(`Other card ${selectedCard.cardId} submitted by ${userId}`);
       io.to(roomId).emit("receiveRoomState", rooms[roomId]);
     }
     
@@ -147,6 +157,15 @@ io.on('connection', socket => {
       console.log("unable to submit other card");
     }
   });
+  
+  socket.on("guess", request => {
+    console.log('received guess')
+    const {roomId, userId, selectedCard} = request;
+    if (rooms[roomId] && rooms[roomId].makeGuess(userId, selectedCard.cardId)) {
+      console.log(`Made guess`)
+    }
+    io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+  })
 
 });
 

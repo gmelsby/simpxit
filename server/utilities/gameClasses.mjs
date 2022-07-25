@@ -1,4 +1,5 @@
 import { generateUuid } from './generateUtils.mjs';
+import axios from 'axios';
 
  export class Room {
   constructor(adminId) {
@@ -8,6 +9,7 @@ import { generateUuid } from './generateUtils.mjs';
     this.storyDescriptor = undefined;
     this.kickedPlayers = [];
     this.submittedCards = {};
+    this.guesses = {};
     this.handSize = 6;
     this.maxPlayers = 6;
     this.targetScore = 25;
@@ -27,6 +29,11 @@ import { generateUuid } from './generateUtils.mjs';
   // returns the count of players
   get playerCount() {
     return this.players.length;
+  }
+   
+  // returns the object of the storyteller
+  get storyTeller() {
+    return this.players[this.playerTurn];
   }
   
   // returns true if the current player count is less than the max player count
@@ -78,6 +85,11 @@ import { generateUuid } from './generateUtils.mjs';
   // returns true if the uuid is the storyteller, otherwise false 
   isStoryteller(uuid) {
     return (this.playerCount > this.playerTurn && uuid === this.players[this.playerTurn].playerId);
+  }
+   
+  // returns player given the player's id
+  getPlayer(uuid) {
+    return this.players.filter(player => player.playerId === uuid)[0];
   }
    
   // removes player with kickId if adminId is admin
@@ -138,10 +150,12 @@ import { generateUuid } from './generateUtils.mjs';
   }
    
   // starts the game if gamePhas is lobby, 3 or more players are in, and requesting player is admin
-  startGame(uuid) {
+  async startGame(uuid) {
     if (this.gamePhase === "lobby" && this.playerCount >= 3 && this.isAdmin(uuid)) {
       // draws cards
-      this.players.forEach(player => player.populateHand(this.handSize));
+      for (const player of this.players) {
+        await player.populateHand(this.handSize);
+      }
 
       this.advanceGamePhase();
 
@@ -152,7 +166,7 @@ import { generateUuid } from './generateUtils.mjs';
   }
    
   // submits the story card and descriptor hint
-  submitStoryCard(uuid, cardId, descriptor) {
+  submitStoryCard(uuid, card, descriptor) {
     if (this.gamePhase !== "storyTellerPick") { 
       return false;
     }
@@ -161,32 +175,92 @@ import { generateUuid } from './generateUtils.mjs';
       return false;
     }
     
-    this.players[this.playerTurn].playCard(cardId);
-    this.submittedCards[cardId] = uuid;
-    this.storyCard = cardId;
+    this.players[this.playerTurn].playCard(card.cardId);
+    this.submittedCards[uuid] = card;
+    this.storyCard = card.cardId;
     this.storyDescriptor = descriptor;
     this.advanceGamePhase();
   }
    
   // submits other players cards
-  submitOtherCard(uuid, cardId) {
+  submitOtherCard(uuid, card) {
     if (this.gamePhase !== "otherPlayersPick") {
       return false;
     }
     
-    if (Object.values(this.submittedCards).filter(id => id === uuid).length !== 0) {
+    const player = this.players.filter(p => p.playerId === uuid)[0];
+    if (player === undefined) {
+      return false;
+    }
+
+    // player has already guessed!
+    if (Object.keys(this.submittedCards).includes(uuid)) {
       return false;
     }
     
-    this.submittedCards[cardId] = uuid;
+    this.submittedCards[uuid] = card;
+    
+    // remove card from player hand
+    player.playCard(card.cardId);
 
     if (Object.keys(this.submittedCards).length === this.playerCount) {
       this.advanceGamePhase();
+      console.log("advancing game phase")
     }
 
     return true;
   }
+   
+  makeGuess(uuid, cardId) {
+    if (this.gamePhase !== "otherPlayersGuess") {
+      console.log('wrong game phase')
+      return false;
+    }
+    
+    if (Object.keys(this.guesses).includes(uuid)) {
+      console.log('player has already submited a guess')
+      return false;
+    }
+    
+    this.guesses[uuid] = cardId;
+    
+    if (Object.keys(this.guesses).length === this.playerCount - 1) {
+      this.scoreRound();
+      this.advanceGamePhase();
+      console.log("advancing game phase")
+    }
 
+    return true;
+  }
+   
+  scoreRound() {
+    const correctGuessers = Object.keys(this.guesses).filter(playerId => this.guesses[playerId] === this.storyCard);
+    console.log(`${correctGuessers.length} correct guesses`);
+    // case where some guessers guessed storyteller's card and some guessed other card
+    if (correctGuessers.length > 0 && correctGuessers.length < this.playerCount - 1) {
+      console.log('Some players guessed correctly, some did not')
+      this.players[this.playerTurn].incrementScore(3);
+      for (const correctGuesser of correctGuessers) {
+        this.getPlayer(correctGuesser).incrementScore(3);
+      }
+    }
+    
+    // case where every guesser guessed storytellers card or no guesser guessed storyteller card
+    else {
+      console.log('Everyone but the storyteller gets 2 points')
+      for (const nonStoryTeller of this.players.filter(p => Object.is(p, this.storyTeller))) {
+        nonStoryTeller.incrementScore(2);
+      }
+    }
+    
+    // increment the scores of players who fooled another player
+    console.log('Distributing points for fooling other players')
+    const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCard);
+    for (const fakeId of successfulFakes) {
+      const fakerId = Object.keys(this.submittedCards).filter(playerId => this.submittedCards[playerId].cardId === fakeId)[0];
+      this.getPlayer(fakerId).incrementScore(1);
+    }
+  }
 }
 
 
@@ -194,23 +268,58 @@ export class Player {
   constructor(playerId, playerName) {
     this.playerId = playerId;
     this.playerName = playerName;
+    this.score = 0;
     this.hand = [];
   }
   
-  populateHand(size) {
+  async populateHand(size) {
     while (this.hand.length < size) {
-      this.hand.push(new Card());
+      const freshCard = await newCard();
+      this.hand.push(freshCard);
     }
   }
   
   playCard(cardId) {
     this.hand = this.hand.filter(card => card.cardId !== cardId);
   }
+  
+  incrementScore(points) {
+    this.score += points;
+  }
+
 }
 
-export class Card {
-  constructor() {
-    this.cardId = generateUuid();
-    this.locator = "https://frinkiac.com/img/S14E16/900441.jpg";
-  }
+const cardCache = {}
+
+const newCard = async () => {
+    const cardId = generateUuid();
+    // gets info for card
+    const info = await getCardInfo()
+    console.log(`cardInfo: ${JSON.stringify(info)}`);
+    cardCache[cardId] = info.data;
+    const locator = cardCache[cardId].Image;
+    return { cardId, locator };
 }
+
+const getCardInfo = async () => {
+  return axios.get("http://localhost:8080")
+    .then(response => {
+      // check if request successful
+      if (response.status == 200) {
+        // processes data and sends processed data if request successful
+        console.log(`received response: ${response.data}`);
+        return response.data;
+      }
+      // throws descriptive error if not successful
+      else {
+        console.log("received unexpected response");
+        throw new Error(`Received response code ${response.status} from microservice`);
+      }
+    })
+    // handles error
+    .catch(err => {
+      console.error(err);
+      return err;
+    });
+}
+

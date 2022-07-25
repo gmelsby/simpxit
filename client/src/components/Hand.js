@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ListGroup } from 'react-bootstrap';
+import { Image, ListGroup } from 'react-bootstrap';
 
 export default function Hand( { hand, selectedCard, setSelectedCard } ) {
   
@@ -11,8 +11,8 @@ export default function Hand( { hand, selectedCard, setSelectedCard } ) {
     <ListGroup>
       {hand.map(card =>
       <li key={card.cardId}>
-        <img src={card.locator}></img>
-        <Button onClick={() => handleSelectCard(card)}>Select</Button>
+        <Image src={card.locator} onClick={() => handleSelectCard(card)} />
+        <p>{`card.locator = ${card.locator}`}</p>
       </li>)}
     </ListGroup>
 

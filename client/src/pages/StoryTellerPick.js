@@ -1,17 +1,27 @@
 import { React, useState } from 'react';
-import { Button, Container, Form, Modal } from 'react-bootstrap';
+import { Button, Container, Form, Modal, Spinner } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
 
 export default function StoryTellerPick({ 
                                         userId,
                                         storyTeller,
                                         roomId,
-                                        socket
+                                        socket,
+                                        handSize
                                         }) {
 
   const [selectedCard, setSelectedCard] = useState(false);
   const [descriptor, setDescriptor] = useState("");
   
+  if (storyTeller.hand.length < handSize) {
+    return (
+      <>
+        <Spinner animation="border" variant="primary" />
+        <p>Generating cards...</p>
+      </>
+    )
+  }
+
   if (userId === storyTeller.playerId) {
     
     const handleCloseSelect = () => {
@@ -19,8 +29,9 @@ export default function StoryTellerPick({
     };
     
     const handleSubmit = () => {
-      const selectedCardId = selectedCard.cardId;
-      socket.emit('submitStoryCard', {roomId, userId, selectedCardId, descriptor} )
+      if (selectedCard) {
+        socket.emit('submitStoryCard', {roomId, userId, selectedCard, descriptor} );
+      }
     }
 
     return (

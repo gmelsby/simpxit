@@ -8,8 +8,9 @@ import KickRedirect from '../components/KickRedirect';
 import LeaveRedirect from '../components/LeaveRedirect'
 import Lobby from './Lobby.js';
 import StoryTellerPick from './StoryTellerPick.js'
-import { io } from "socket.io-client";
 import OtherPlayersPick from './OtherPlayersPick';
+import OtherPlayersGuess from './OtherPlayersGuess';
+import { io } from "socket.io-client";
 
 export default function RoomPage({ userId }) {
   
@@ -104,10 +105,16 @@ export default function RoomPage({ userId }) {
       {roomState.gamePhase === "lobby" && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
         isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions} socket={socket}/>}
 
-      {roomState.gamePhase === "storyTellerPick" && <StoryTellerPick userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket} />}
+      {roomState.gamePhase === "storyTellerPick" && <StoryTellerPick userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
+        handSize={roomState.handSize} />}
     
       {roomState.gamePhase === "otherPlayersPick" && <OtherPlayersPick userId={userId} storyTeller={storyTeller} roomId={roomId}
         storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards} />}
+
+      {roomState.gamePhase === "otherPlayersGuess" && <OtherPlayersGuess userId={userId} storyTeller={storyTeller} roomId={roomId}
+        storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards}
+        guesses={roomState.guesses} />}
+
 
       <footer><p>UUID: {userId}</p></footer>
     </>

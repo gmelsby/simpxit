@@ -2,21 +2,22 @@ import { React, useState } from 'react';
 import { Button, Container, Modal } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
 
-export default function OtherPlayersPick({ 
+export default function OtherPlayersGuess({ 
                                         userId,
                                         storyTeller,
                                         roomId,
                                         storyDescriptor,
                                         socket,
                                         players,
-                                        submittedCards
+                                        submittedCards,
+                                        submittedGuesses
                                         }) {
 
   const [selectedCard, setSelectedCard] = useState(false);
   
   if (userId !== storyTeller.playerId) {
     
-    const user = players.filter(p => p.playerId === userId)[0];
+    const otherCards = Object.keys(submittedCards).filter(id => id !== userId).map(id => submittedCards[id]);
     
     const handleCloseSelect = () => {
       setSelectedCard(false);
@@ -24,7 +25,7 @@ export default function OtherPlayersPick({
     
     const handleSubmit = () => {
       if (selectedCard) {
-        socket.emit('submitOtherCard', {roomId, userId, selectedCard} );
+        socket.emit('guess', {roomId, userId, selectedCard} );
       }
     }
 
@@ -49,8 +50,8 @@ export default function OtherPlayersPick({
 
         <Container>
           <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
-          <h5>Pick a card from your hand to fool the other players!</h5>
-          <Hand hand={user.hand} selectedCard={selectedCard} setSelectedCard={setSelectedCard} />
+          <h5>Guess which card is the storyteller's!</h5>
+          <Hand hand={otherCards} selectedCard={selectedCard} setSelectedCard={setSelectedCard} />
         </Container>
       </>
     );
@@ -58,7 +59,8 @@ export default function OtherPlayersPick({
   
   return (
     <>
-      <p>Wait for the other players to pick their cards...</p>
+      <p>Here are all the cards that were submitted</p>
+      <Hand hand={Object.values(submittedCards)} />
     </>
   );
 }
