@@ -10,6 +10,7 @@ import Lobby from './Lobby.js';
 import StoryTellerPick from './StoryTellerPick.js'
 import OtherPlayersPick from './OtherPlayersPick';
 import OtherPlayersGuess from './OtherPlayersGuess';
+import Scoring from './Scoring';
 import { io } from "socket.io-client";
 
 export default function RoomPage({ userId }) {
@@ -114,6 +115,9 @@ export default function RoomPage({ userId }) {
       {roomState.gamePhase === "otherPlayersGuess" && <OtherPlayersGuess userId={userId} storyTeller={storyTeller} roomId={roomId}
         storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards}
         guesses={roomState.guesses} />}
+    
+      {roomState.gamePhase === "scoring" && <Scoring userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
+        players={roomState.players} submittedCards={roomState.submittedCards} guesses={roomState.guesses} />} 
 
 
       <footer><p>UUID: {userId}</p></footer>

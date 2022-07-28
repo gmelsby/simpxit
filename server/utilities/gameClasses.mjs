@@ -180,6 +180,7 @@ import axios from 'axios';
     this.storyCard = card.cardId;
     this.storyDescriptor = descriptor;
     this.advanceGamePhase();
+    return true;
   }
    
   // submits other players cards
@@ -260,6 +261,11 @@ import axios from 'axios';
       const fakerId = Object.keys(this.submittedCards).filter(playerId => this.submittedCards[playerId].cardId === fakeId)[0];
       this.getPlayer(fakerId).incrementScore(1);
     }
+    
+    console.log("scores")
+    for (const player of this.players) {
+      console.log(`${player.playerName}: ${player.score}`)
+    }
   }
 }
 
@@ -269,6 +275,7 @@ export class Player {
     this.playerId = playerId;
     this.playerName = playerName;
     this.score = 0;
+    this.scoredThisRound = 0
     this.hand = [];
   }
   
@@ -285,6 +292,7 @@ export class Player {
   
   incrementScore(points) {
     this.score += points;
+    this.scoredThisRound += points;
   }
 
 }

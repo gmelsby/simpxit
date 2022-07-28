@@ -28,7 +28,8 @@ export default function StoryTellerPick({
       setSelectedCard(false);
     };
     
-    const handleSubmit = () => {
+    const handleSubmit = e => {
+      e.preventDefault()
       if (selectedCard) {
         socket.emit('submitStoryCard', {roomId, userId, selectedCard, descriptor} );
       }

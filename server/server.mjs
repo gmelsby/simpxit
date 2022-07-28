@@ -74,16 +74,21 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on("leaveRoom", request => {
+  socket.on("leaveRoom", (request, callback) => {
     const { roomId, userId } = request;
     console.log(`player ${userId} attempting to leave room ${roomId}`);
-    if (rooms[roomId] && rooms[roomId].removePlayer(userId)) {
+    if (rooms[roomId] === undefined) {
+      console.log("returning room does not exist")
+      return callback("room does not exist")
+    }
+    if (rooms[roomId].removePlayer(userId)) {
       console.log("player removed successfully");
       io.to(roomId).emit("receiveRoomState", rooms[roomId]);
     }
     else {
       console.log("unable to remove player");
     }
+    callback()
   });
   
   socket.on("changeName", request => {
@@ -159,13 +164,21 @@ io.on('connection', socket => {
   });
   
   socket.on("guess", request => {
-    console.log('received guess')
+    console.log('received guess');
     const {roomId, userId, selectedCard} = request;
     if (rooms[roomId] && rooms[roomId].makeGuess(userId, selectedCard.cardId)) {
-      console.log(`Made guess`)
+      console.log(`${userId} made guess`)
+      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
     }
-    io.to(roomId).emit("receiveRoomState", rooms[roomId]);
-  })
+  });
+  
+  socket.on("endScoring", request => {
+    console.log('received end scoring request');
+    const {roomId, userId} = request;
+    if (rooms[roomId] && rooms[roomId].endScoring()) {
+      console.log(`${userId} `)
+    }
+  });
 
 });
 
