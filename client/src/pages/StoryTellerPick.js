@@ -1,5 +1,5 @@
-import { React, useState } from 'react';
-import { Button, Container, Form, Modal, Spinner } from 'react-bootstrap';
+import { React, useState, useEffect, useRef } from 'react';
+import { Button, Container, Form, Image, Modal, Spinner } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
 
 export default function StoryTellerPick({ 
@@ -13,6 +13,14 @@ export default function StoryTellerPick({
   const [selectedCard, setSelectedCard] = useState(false);
   const [descriptor, setDescriptor] = useState("");
   
+  const descriptionForm = useRef(null);
+
+  useEffect(() => {
+    if (selectedCard) {
+      descriptionForm.current.focus();
+    }
+  }, [selectedCard]);
+     
   if (storyTeller.hand.length < handSize) {
     return (
       <>
@@ -26,6 +34,7 @@ export default function StoryTellerPick({
     
     const handleCloseSelect = () => {
       setSelectedCard(false);
+      setDescriptor("");
     };
     
     const handleSubmit = e => {
@@ -35,6 +44,7 @@ export default function StoryTellerPick({
       }
     }
 
+
     return (
       <>
         <Modal show={selectedCard} onHide={handleCloseSelect}>
@@ -42,7 +52,7 @@ export default function StoryTellerPick({
             <Modal.Title>You selected this image:</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <img src={selectedCard.locator} />
+            <Image src={selectedCard.locator} fluid />
           </Modal.Body>
           <Modal.Footer>
             <Form onSubmit={handleSubmit}>
@@ -50,7 +60,8 @@ export default function StoryTellerPick({
                 <Form.Control className="w-auto" type="text" required name="descriptor"
                 maxLength="20" placeholder="Describe the image" pattern=".\S+.*"
                 value={descriptor}
-                onChange={e => setDescriptor(e.target.value.trimStart())} />
+                onChange={e => setDescriptor(e.target.value.trimStart())}
+                ref={descriptionForm} />
               <Button type="submit">Submit</Button>
               </Form.Group>
             </Form>

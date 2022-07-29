@@ -1,5 +1,5 @@
 import { generateUuid, generateRoomCode } from './utilities/generateUtils.mjs';
-import { Room } from './utilities/gameClasses.mjs';
+import { Room, retrieveCardInfo } from './utilities/gameClasses.mjs';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -78,8 +78,7 @@ io.on('connection', socket => {
     const { roomId, userId } = request;
     console.log(`player ${userId} attempting to leave room ${roomId}`);
     if (rooms[roomId] === undefined) {
-      console.log("returning room does not exist")
-      return callback("room does not exist")
+      console.log("left room does not exist")
     }
     if (rooms[roomId].removePlayer(userId)) {
       console.log("player removed successfully");
@@ -88,7 +87,6 @@ io.on('connection', socket => {
     else {
       console.log("unable to remove player");
     }
-    callback()
   });
   
   socket.on("changeName", request => {
@@ -176,13 +174,28 @@ io.on('connection', socket => {
     console.log('received end scoring request');
     const {roomId, userId} = request;
     if (rooms[roomId] && rooms[roomId].endScoring()) {
-      console.log(`${userId} `)
+      rooms[roomId].endScoring(userId) 
+        .then(bool => {
+          if (bool) {
+            console.log("request accepted");
+            io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+          }
+          else {
+            console.log("unable to end scoring");
+          }
+        })
     }
   });
 
 });
 
 
+
+app.get('/cardinfo/:cardId', (req, res) => {
+  const { cardId } = req.params;
+  console.log(`received request for card info for card ${cardId}`);
+  res.send(retrieveCardInfo(cardId));
+})
 
 app.post('/createroom', (req, res) => {
   console.log(`received create room request with UUID ${req.body.userId}`);

@@ -15,7 +15,6 @@ export default function Lobby({ players,
                               }) {
 
   function handleStartGame() {
-    console.log("trying to start game")
     socket.emit('startGame', { roomId, userId } );
   }
   

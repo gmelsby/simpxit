@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { Container, Image, Modal } from 'react-bootstrap';
+import { Container, Image, Button, Modal } from 'react-bootstrap';
 
 export default function Scoring({ 
                                  userId,
@@ -20,9 +20,16 @@ export default function Scoring({
         <>
           <h3>{otherPlayer.playerName} submitted</h3>
           <Image src={submittedCards[otherPlayer.playerId].locator} />
-          <h4>They scored {otherPlayer.scoredThisRound} points.</h4>
+          <h4>They scored {otherPlayer.scoredThisRound} points this round.</h4>
+          <h4>They now have {otherPlayer.score} total points.</h4>
         </>
       )
+    }
+  
+    const OtherPlayersCards = ({otherPlayers}) => {
+      return otherPlayers.map(p => (
+        <OtherPlayerCardLine otherPlayer={p} key={p.playerId} />
+      ));
     }
   
 
@@ -31,12 +38,11 @@ export default function Scoring({
         <Container>
           <h3>The storyteller {storyTeller.playerName} submitted</h3>
           <Image src={submittedCards[storyTeller.playerId].locator}></Image>
-          <h4>They scored {storyTeller.scoredThisRound} points.</h4>
-          {players.filter(p => p.playerId !== storyTeller.playerId).map(p => {
-            <OtherPlayerCardLine otherPlayer={p} />
-          }
-          )}
+          <h4>They scored {storyTeller.scoredThisRound} points this round.</h4>
+          <h4>They now have {storyTeller.score} total points.</h4>
+          <OtherPlayersCards otherPlayers={players.filter(p => p.playerId !== storyTeller.playerId)} />
         </Container>
+        <Button onClick={handleReady}>Ready for Next Round</Button>
       </>
     );
   }

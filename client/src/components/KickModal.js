@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
-export default function KickModal({ kickUserId, setKickUserId, kickPlayer }) {
+export default function KickModal({ kickUserId, setKickUserId, kickPlayer, players }) {
   // Citation:
   // Modified from https://react-bootstrap.github.io/components/modal/
   // Date: 07/09/2022
@@ -12,6 +12,8 @@ export default function KickModal({ kickUserId, setKickUserId, kickPlayer }) {
   const handleKickButton = () => {
     kickPlayer();
   };
+  
+  const playerName = kickUserId === ''? '' : players.filter(p => p.playerId === kickUserId)[0].playerName;
 
   return (
     <>
@@ -20,7 +22,7 @@ export default function KickModal({ kickUserId, setKickUserId, kickPlayer }) {
           <Modal.Title>Kick Player</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h5>Are you sure you want to kick player?</h5>
+          <h5>Are you sure you want to kick {playerName}?</h5>
             <p>
               Player will not be able to rejoin the room from the same tab.
             </p>

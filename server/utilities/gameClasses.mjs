@@ -14,6 +14,7 @@ import axios from 'axios';
     this.maxPlayers = 6;
     this.targetScore = 25;
     this.playerTurn = 0;
+    this.readyForNextRound = [];
     this.addPlayer(adminId);
   }
 
@@ -48,7 +49,7 @@ import axios from 'axios';
   
   // returns true if a player with the currently passed-in id is already in the room
   isCurrentPlayer(uuid) {
-    if (this.players.filter(player => player.playerId === uuid).length) {
+    if (this.players.map(p => p.playerId).includes(uuid)){
       return true;
     }
     
@@ -66,6 +67,9 @@ import axios from 'axios';
   
   // removes the player with the passed-in id
   removePlayer(uuid) {
+    if (!(this.isCurrentPlayer(uuid))) {
+      return false;
+    }
     const initialPlayerCount = this.playerCount;
     this.players = this.players.filter(player => player.playerId !== uuid);
     if (this.playerCount < initialPlayerCount) {
@@ -79,21 +83,38 @@ import axios from 'axios';
    
   // returns true if the uuid is the admin, otherwise false
   isAdmin(uuid) {
+    if (!(this.isCurrentPlayer(uuid))) {
+      return false;
+    }
+
     return (this.playerCount && uuid === this.players[0].playerId);
   }
 
   // returns true if the uuid is the storyteller, otherwise false 
   isStoryteller(uuid) {
+    if (!(this.isCurrentPlayer(uuid))) {
+      return false;
+    }
+
     return (this.playerCount > this.playerTurn && uuid === this.players[this.playerTurn].playerId);
   }
    
   // returns player given the player's id
   getPlayer(uuid) {
+    // if player does not exist return undefined
+    if (!(this.isCurrentPlayer(uuid))) {
+      return undefined;
+    }
     return this.players.filter(player => player.playerId === uuid)[0];
   }
    
   // removes player with kickId if adminId is admin
   kickPlayer(adminId, kickId) {
+    // check that both players are current players
+    if (!(this.isCurrentPlayer(adminId)) || !(this.isCurrentPlayer(kickId))) {
+      return false;
+    }
+    // check that player attempting to kick is admin
     if (this.isAdmin(adminId)) {
       this.kickedPlayers.push(kickId);
       return this.removePlayer(kickId);
@@ -109,7 +130,7 @@ import axios from 'axios';
   // returns true if name change is successful, false otherwise
   changeName(uuid, newName) {
     // check that target player is a player
-    if (!(this.players.map(player => player.playerId).includes(uuid))) {
+    if (!(this.isCurrentPlayer(uuid))) {
       return false;
     }
     
@@ -126,13 +147,8 @@ import axios from 'axios';
   }
   // return true if options change is successful, false otherwise
   changeOptions(uuid, newOptions) {
-    // checks that room is populated
-    if (!(this.playerCount)) {
-      return false;
-    }
-
     // check that requesting player is admin
-    if (this.players[0].playerId !== uuid) {
+    if (!(this.isAdmin(uuid))) {
       return false;
     }
     
@@ -149,7 +165,7 @@ import axios from 'axios';
     this.gamePhase = Room.gamePhaseDict[this.gamePhase];
   }
    
-  // starts the game if gamePhas is lobby, 3 or more players are in, and requesting player is admin
+  // starts the game if gamePhase is lobby, 3 or more players are in, and requesting player is admin
   async startGame(uuid) {
     if (this.gamePhase === "lobby" && this.playerCount >= 3 && this.isAdmin(uuid)) {
       // draws cards
@@ -185,15 +201,17 @@ import axios from 'axios';
    
   // submits other players cards
   submitOtherCard(uuid, card) {
+    // check that uuid corresponds to current player
+    if (!this.isCurrentPlayer(uuid)) {
+      return false;
+    }
+    
+    const player = this.players.filter(p => p.playerId === uuid)[0]
+
     if (this.gamePhase !== "otherPlayersPick") {
       return false;
     }
     
-    const player = this.players.filter(p => p.playerId === uuid)[0];
-    if (player === undefined) {
-      return false;
-    }
-
     // player has already guessed!
     if (Object.keys(this.submittedCards).includes(uuid)) {
       return false;
@@ -213,6 +231,11 @@ import axios from 'axios';
   }
    
   makeGuess(uuid, cardId) {
+    // check uuid is current player
+    if (!this.isCurrentPlayer(uuid)) {
+      return false;
+    }
+
     if (this.gamePhase !== "otherPlayersGuess") {
       console.log('wrong game phase')
       return false;
@@ -249,7 +272,7 @@ import axios from 'axios';
     // case where every guesser guessed storytellers card or no guesser guessed storyteller card
     else {
       console.log('Everyone but the storyteller gets 2 points')
-      for (const nonStoryTeller of this.players.filter(p => Object.is(p, this.storyTeller))) {
+      for (const nonStoryTeller of this.players.filter(p => !Object.is(p, this.storyTeller))) {
         nonStoryTeller.incrementScore(2);
       }
     }
@@ -267,6 +290,57 @@ import axios from 'axios';
       console.log(`${player.playerName}: ${player.score}`)
     }
   }
+   
+  // ends the Scoring phase and starts a new Round if no victory
+  // if victory, returns players to Lobby
+  async endScoring(uuid) {
+    // check we are in scoring phase
+    if (this.gamePhase !== "scoring") {
+      return false;
+    }
+
+    // check player exists
+    if (!this.isCurrentPlayer(uuid)) {
+      return false;
+    }
+    
+    // check they are not already ready
+    if (this.readyForNextRound.includes(uuid)) {
+      return false
+    }
+    
+    this.readyForNextRound.push(uuid);
+
+    // if everyone is ready, advance to next round
+    if (this.readyForNextRound.length === this.playerCount) {
+      await this.startNextRound();
+    }
+
+    return true;
+  }
+  
+  // handles moving from the end of one round to the start of the next
+  async startNextRound() {
+    console.log("starting next round");
+    // move storyteller to next player
+    this.playerTurn += 1;
+    this.playerTurn %= this.playerCount;
+    
+    this.readyForNextRound = [];
+    this.submittedCards = {};
+    this.guesses = {};
+    
+    destroyCards(Object.values(this.submittedCards).map(c => c.cardId));
+    
+    for (const player of this.players) {
+      await player.populateHand(this.handSize);
+      player.resetRoundScore();
+    }
+    
+    this.gamePhase = "storyTellerPick";
+  }
+
+
 }
 
 
@@ -294,22 +368,40 @@ export class Player {
     this.score += points;
     this.scoredThisRound += points;
   }
+  
+  resetRoundScore() {
+    this.scoredThisRound = 0;
+  }
 
+}
+
+// function to remove played cards from cache
+const destroyCards = cardIds => {
+  for (const cardId of cardIds){
+    console.log(`deleting card ${cardId}`)
+    delete cardCache[cardId];
+    console.log(`removed cardId ${cardId}`);
+  }
 }
 
 const cardCache = {}
 
+// returns the info for a card with passed-in id 
+export function retrieveCardInfo(cardId) {
+  return cardCache[cardId];
+}
+
 const newCard = async () => {
     const cardId = generateUuid();
     // gets info for card
-    const info = await getCardInfo()
+    const info = await getNewCardInfo()
     console.log(`cardInfo: ${JSON.stringify(info)}`);
     cardCache[cardId] = info.data;
     const locator = cardCache[cardId].Image;
     return { cardId, locator };
 }
 
-const getCardInfo = async () => {
+const getNewCardInfo = async () => {
   return axios.get("http://localhost:8080")
     .then(response => {
       // check if request successful

@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { Button, Container, Modal } from 'react-bootstrap';
+import { Button, Container, Image, Modal } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
 
 export default function OtherPlayersGuess({ 
@@ -14,6 +14,7 @@ export default function OtherPlayersGuess({
                                         }) {
 
   const [selectedCard, setSelectedCard] = useState(false);
+  
   
   if (userId !== storyTeller.playerId) {
     
@@ -36,7 +37,7 @@ export default function OtherPlayersGuess({
             <Modal.Title>For the phrase {storyDescriptor}, you selected this image:</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <img src={selectedCard.locator} />
+            <Image src={selectedCard.locator} fluid />
           </Modal.Body>
           <Modal.Footer>
           <Button onClick={handleSubmit}>Submit</Button>

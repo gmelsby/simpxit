@@ -19,7 +19,7 @@ export default function RoomPage({ userId }) {
   const [socket, setSocket] = useState(null);
   const [roomState, setRoomState] = useState({
     adminId: "placeholder", 
-    players: [{playerId: '', playerName: ''}, {playerId: userId}], 
+    players: [{playerId: ' ', playerName: ''}, {playerId: userId}], 
     gamePhase: "lobby", 
     submittedCards: {}, 
     playersToSubmit: [],
@@ -101,7 +101,7 @@ export default function RoomPage({ userId }) {
     <>
       <RulesModal />
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
-      <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} />
+      <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
     
       {roomState.gamePhase === "lobby" && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
         isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions} socket={socket}/>}

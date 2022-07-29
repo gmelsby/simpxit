@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
 export default function NameModal({ currentName, changeName}) {
@@ -8,6 +8,14 @@ export default function NameModal({ currentName, changeName}) {
 
   const [showName, setShowName] = useState(false);
   const [newName, setNewName] = useState(currentName);
+  
+  const nameForm = useRef(null);
+  
+  useEffect(() => {
+    if(showName) {
+      nameForm.current.focus();
+    }
+  }, [showName])
 
   const handleCloseName = () => setShowName(false);
   const handleShowName = () => setShowName(true);
@@ -34,7 +42,8 @@ export default function NameModal({ currentName, changeName}) {
                 <Form.Control className="w-auto" type="text" required name="new-name"
                 maxLength="20" placeholder="New Name" pattern=".\S+.*"
                 value={newName}
-                onChange={e => setNewName(e.target.value.trimStart())} />
+                onChange={e => setNewName(e.target.value.trimStart())}
+                ref={nameForm} />
               <Button type="submit">Submit</Button>
               </Form.Group>
             </Form>
