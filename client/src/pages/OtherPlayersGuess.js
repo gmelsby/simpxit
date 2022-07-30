@@ -14,6 +14,7 @@ export default function OtherPlayersGuess({
                                         }) {
 
   const [selectedCard, setSelectedCard] = useState(false);
+  const [submittedCardInfo, setSubmittedCardInfo] = useState(false);
 
   const guessedCard = submittedGuesses[userId];
 
