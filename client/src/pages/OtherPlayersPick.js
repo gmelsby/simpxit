@@ -27,7 +27,7 @@ export default function OtherPlayersPick({
     if (submittedCard) {
       loadCardInfo()
     }
-  }, [submittedCard, loadCardInfo])
+  }, [submittedCard, loadCardInfo]);
   
   if (userId !== storyTeller.playerId) {
     
@@ -76,8 +76,8 @@ export default function OtherPlayersPick({
   if (submittedCardInfo) {
     return (
       <>
-        <h4>You submitted</h4>
-        <Image src={submittedCard.locator} fluid />
+          <h4>For "{storyDescriptor}", you submitted</h4>
+          <Image src={submittedCard.locator} fluid />
         <p>{JSON.stringify(submittedCardInfo)}</p>
       </>
     )

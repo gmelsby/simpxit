@@ -14,7 +14,21 @@ export default function OtherPlayersGuess({
                                         }) {
 
   const [selectedCard, setSelectedCard] = useState(false);
+
+  const guessedCard = submittedGuesses[userId];
+
+  const loadCardInfo = useCallback(async () => {
+    const response = await fetch(`/cardinfo/${submittedCard.cardId}`);
+    const data = await response.json();
+    setSubmittedCardInfo(data);
+  }, [guessedCard]);
   
+  useEffect(() => {
+    if (guessedCard) {
+      loadCardInfo()
+    }
+  }, [guessedCard, loadCardInfo]);
+ 
   
   if (userId !== storyTeller.playerId) {
     
@@ -28,6 +42,17 @@ export default function OtherPlayersGuess({
       if (selectedCard) {
         socket.emit('guess', {roomId, userId, selectedCard} );
       }
+    }
+    
+    if (guessedCard) {
+      return (
+        <>
+          <h4>For "{storyDescriptor}" you guessed</h4>
+          <Image src={guessedCard.locator} fluid />
+          <p>{JSON.stringify(submittedCardInfo)}</p>
+      </>
+
+      )
     }
 
     return (
