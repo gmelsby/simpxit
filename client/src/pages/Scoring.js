@@ -19,7 +19,7 @@ export default function Scoring({
       return(
         <>
           <h3>{otherPlayer.playerName} submitted</h3>
-          <Image src={submittedCards[otherPlayer.playerId].locator} />
+          <Image src={submittedCards[otherPlayer.playerId].locator} fluid />
           <h4>They scored {otherPlayer.scoredThisRound} points this round.</h4>
           <h4>They now have {otherPlayer.score} total points.</h4>
         </>
@@ -37,7 +37,7 @@ export default function Scoring({
       <>
         <Container>
           <h3>The storyteller {storyTeller.playerName} submitted</h3>
-          <Image src={submittedCards[storyTeller.playerId].locator}></Image>
+          <Image src={submittedCards[storyTeller.playerId].locator} fluid />
           <h4>They scored {storyTeller.scoredThisRound} points this round.</h4>
           <h4>They now have {storyTeller.score} total points.</h4>
           <OtherPlayersCards otherPlayers={players.filter(p => p.playerId !== storyTeller.playerId)} />

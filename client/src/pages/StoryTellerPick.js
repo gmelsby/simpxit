@@ -58,7 +58,7 @@ export default function StoryTellerPick({
             <Form onSubmit={handleSubmit}>
               <Form.Group>
                 <Form.Control className="w-auto" type="text" required name="descriptor"
-                maxLength="20" placeholder="Describe the image" pattern=".\S+.*"
+                maxLength="30" placeholder="Describe the image" pattern="[ A-Za-z0-9-]+"
                 value={descriptor}
                 onChange={e => setDescriptor(e.target.value.trimStart())}
                 ref={descriptionForm} />
@@ -84,7 +84,7 @@ export default function StoryTellerPick({
 
   return (
     <>
-      <p>Wait for the Storyteller to pick a card...</p>
+      <p>{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</p>
     </>
   );
 }

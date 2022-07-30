@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, ListGroup, ListGroupItem } from 'react-bootstrap';
 
-export default function Hand( { hand, selectedCard, setSelectedCard } ) {
+export default function Hand( { hand, setSelectedCard } ) {
   
   const handleSelectCard = card => {
     setSelectedCard(card);

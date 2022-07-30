@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useCallback, useEffect } from 'react';
 import { Button, Container, Image, Modal } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
 
@@ -14,21 +14,25 @@ export default function OtherPlayersGuess({
                                         }) {
 
   const [selectedCard, setSelectedCard] = useState(false);
-  const [submittedCardInfo, setSubmittedCardInfo] = useState(false);
+  const [guessedCardInfo, setGuessedCardInfo] = useState(false);
 
-  const guessedCard = submittedGuesses[userId];
+  const guessedCardId = submittedGuesses[userId];
+  console.log(JSON.stringify(submittedGuesses));
+  
+  
+  const waitingOn = players.filter(p => !(Object.keys(submittedGuesses).includes(p.playerId)) && !Object.is(p, storyTeller));
 
   const loadCardInfo = useCallback(async () => {
-    const response = await fetch(`/cardinfo/${submittedCard.cardId}`);
+    const response = await fetch(`/cardinfo/${guessedCardId}`);
     const data = await response.json();
-    setSubmittedCardInfo(data);
-  }, [guessedCard]);
+    setGuessedCardInfo(data);
+  }, [guessedCardId]);
   
   useEffect(() => {
-    if (guessedCard) {
+    if (guessedCardId) {
       loadCardInfo()
     }
-  }, [guessedCard, loadCardInfo]);
+  }, [guessedCardId, loadCardInfo]);
  
   
   if (userId !== storyTeller.playerId) {
@@ -45,12 +49,15 @@ export default function OtherPlayersGuess({
       }
     }
     
-    if (guessedCard) {
+    if (guessedCardId) {
+      
+
       return (
         <>
           <h4>For "{storyDescriptor}" you guessed</h4>
-          <Image src={guessedCard.locator} fluid />
-          <p>{JSON.stringify(submittedCardInfo)}</p>
+          <Image src={guessedCardInfo.Image} fluid />
+          <p>{JSON.stringify(guessedCardInfo)}</p>
+          <p>Waiting on {waitingOn.map(p => p.playerName)}</p>
       </>
 
       )
@@ -88,6 +95,7 @@ export default function OtherPlayersGuess({
     <>
       <p>Here are all the cards that were submitted</p>
       <Hand hand={Object.values(submittedCards)} />
+      <p>Waiting on {waitingOn.map(p => p.playerName)}</p>
     </>
   );
 }
