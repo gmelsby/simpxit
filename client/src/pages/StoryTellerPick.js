@@ -16,10 +16,10 @@ export default function StoryTellerPick({
      
   if (storyTeller.hand.length < handSize) {
     return (
-      <>
-        <Spinner animation="border" variant="primary" />
-        <p>Generating cards...</p>
-      </>
+      <Container className="text-center">
+          <Spinner className="mx-auto" animation="border" variant="primary" />
+          <h5>Generating cards...</h5>
+      </Container>
     )
   }
 

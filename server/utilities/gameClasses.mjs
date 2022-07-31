@@ -298,7 +298,7 @@ import axios from 'axios';
    
   // ends the Scoring phase and starts a new Round if no victory
   // if victory, returns players to Lobby
-  async endScoring(uuid) {
+  endScoring(uuid) {
     // check we are in scoring phase
     if (this.gamePhase !== "scoring") {
       return false;
