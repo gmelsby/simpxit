@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Image, Col, Row } from 'react-bootstrap';
 
 export default function Hand( { hand, setSelectedCard } ) {
   
@@ -8,12 +8,11 @@ export default function Hand( { hand, setSelectedCard } ) {
   };
 
   return(
-    <ListGroup>
+    <Row xs={1} sm={2} md={Math.min(3, hand.length)} className="g-2">
       {hand.map(card =>
-      <ListGroupItem key={card.cardId}>
+      <Col key={card.cardId} >
         <Image src={card.locator} fluid onClick={() => handleSelectCard(card)} />
-      </ListGroupItem>)}
-    </ListGroup>
-
+      </Col>)}
+    </Row>
   );
 }

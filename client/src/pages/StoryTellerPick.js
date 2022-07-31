@@ -1,6 +1,7 @@
-import { React, useState, useEffect, useRef } from 'react';
-import { Button, Container, Form, Image, Modal, Spinner } from 'react-bootstrap';
+import { React, useState } from 'react';
+import { Container, Spinner } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
+import StoryModal from '../components/StoryModal.js';
 
 export default function StoryTellerPick({ 
                                         userId,
@@ -12,14 +13,6 @@ export default function StoryTellerPick({
 
   const [selectedCard, setSelectedCard] = useState(false);
   const [descriptor, setDescriptor] = useState("");
-  
-  const descriptionForm = useRef(null);
-
-  useEffect(() => {
-    if (selectedCard) {
-      descriptionForm.current.focus();
-    }
-  }, [selectedCard]);
      
   if (storyTeller.hand.length < handSize) {
     return (
@@ -31,12 +24,6 @@ export default function StoryTellerPick({
   }
 
   if (userId === storyTeller.playerId) {
-    
-    const handleCloseSelect = () => {
-      setSelectedCard(false);
-      setDescriptor("");
-    };
-    
     const handleSubmit = e => {
       e.preventDefault()
       if (selectedCard) {
@@ -47,36 +34,11 @@ export default function StoryTellerPick({
 
     return (
       <>
-        <Modal show={selectedCard} onHide={handleCloseSelect}>
-          <Modal.Header closeButton>
-            <Modal.Title>You selected this image:</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Image src={selectedCard.locator} fluid />
-          </Modal.Body>
-          <Modal.Footer>
-            <Form onSubmit={handleSubmit}>
-              <Form.Group>
-                <Form.Control className="w-auto" type="text" required name="descriptor"
-                maxLength="30" placeholder="Describe the image" pattern="[ A-Za-z0-9-]+"
-                value={descriptor}
-                onChange={e => setDescriptor(e.target.value.trimStart())}
-                ref={descriptionForm} />
-              <Button type="submit">Submit</Button>
-              </Form.Group>
-            </Form>
-
-            <div className="col text-center">
-              <Button variant="secondary" onClick={handleCloseSelect}>
-                Close
-              </Button>
-            </div>
-          </Modal.Footer>
-        </Modal>
-
+        <StoryModal selectedCard={selectedCard} setSelectedCard={setSelectedCard} descriptor={descriptor} 
+          setDescriptor={setDescriptor} handleSubmit={handleSubmit} />
         <Container>
           <h3>You are the storyteller! Pick an image and come up with a description.</h3>
-          <Hand hand={storyTeller.hand} selectedCard={selectedCard} setSelectedCard={setSelectedCard} />
+          <Hand hand={storyTeller.hand} setSelectedCard={setSelectedCard} />
         </Container>
       </>
     );

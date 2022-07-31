@@ -1,5 +1,5 @@
 import { React, useState, useCallback, useEffect } from 'react';
-import { Button, Container, Image, Modal } from 'react-bootstrap';
+import { Button, Container, Image, Modal, Stack } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
 
 export default function OtherPlayersPick({ 
@@ -48,18 +48,20 @@ export default function OtherPlayersPick({
         <>
           <Modal show={selectedCard} onHide={handleCloseSelect}>
             <Modal.Header closeButton>
-              <Modal.Title>For the phrase {storyDescriptor}, do you want to submit?</Modal.Title>
+              <Modal.Title>Do you want to submit this card for the phrase "{storyDescriptor}"?</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Image src={selectedCard.locator} fluid />
             </Modal.Body>
             <Modal.Footer>
-            <Button onClick={handleSubmit}>Submit</Button>
-              <div className="col text-center">
-                <Button variant="secondary" onClick={handleCloseSelect}>
+              <Stack direction="horizontal" gap={3}> 
+              <Button onClick={handleSubmit}>
+                Submit
+              </Button>
+              <Button variant="secondary" onClick={handleCloseSelect}>
                   Close
-                </Button>
-              </div>
+              </Button>
+              </Stack>
             </Modal.Footer>
           </Modal>
 

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css'; 
 import {BrowserRouter, Route, Switch } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RoomPage from './pages/RoomPage';

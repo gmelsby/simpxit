@@ -1,6 +1,7 @@
 import { React, useState, useCallback, useEffect } from 'react';
-import { Button, Container, Image, Modal } from 'react-bootstrap';
+import { Container, Image } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
+import OtherPlayerModal from '../components/OtherPlayerModal.js';
 
 export default function OtherPlayersGuess({ 
                                         userId,
@@ -27,6 +28,7 @@ export default function OtherPlayersGuess({
     const data = await response.json();
     setGuessedCardInfo(data);
   }, [guessedCardId]);
+
   
   useEffect(() => {
     if (guessedCardId) {
@@ -38,10 +40,6 @@ export default function OtherPlayersGuess({
   if (userId !== storyTeller.playerId) {
     
     const otherCards = Object.keys(submittedCards).filter(id => id !== userId).map(id => submittedCards[id]);
-    
-    const handleCloseSelect = () => {
-      setSelectedCard(false);
-    };
     
     const handleSubmit = () => {
       if (selectedCard) {
@@ -59,29 +57,14 @@ export default function OtherPlayersGuess({
           <p>{JSON.stringify(guessedCardInfo)}</p>
           <p>Waiting on {waitingOn.map(p => p.playerName)}</p>
       </>
-
-      )
+      );
     }
 
     return (
       <>
-        <Modal show={selectedCard} onHide={handleCloseSelect}>
-          <Modal.Header closeButton>
-            <Modal.Title>For the phrase {storyDescriptor}, you selected this image:</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Image src={selectedCard.locator} fluid />
-          </Modal.Body>
-          <Modal.Footer>
-          <Button onClick={handleSubmit}>Submit</Button>
-            <div className="col text-center">
-              <Button variant="secondary" onClick={handleCloseSelect}>
-                Close
-              </Button>
-            </div>
-          </Modal.Footer>
-        </Modal>
-
+        <OtherPlayerModal use="guess" selectedCard={selectedCard} 
+          setSelectedCard={setSelectedCard} storyDescriptor={storyDescriptor}
+          handleSubmit={handleSubmit} />
         <Container>
           <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
           <h5>Guess which card is the storyteller's!</h5>
