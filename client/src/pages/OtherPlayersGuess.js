@@ -18,10 +18,27 @@ export default function OtherPlayersGuess({
   const [guessedCardInfo, setGuessedCardInfo] = useState(false);
 
   const guessedCardId = submittedGuesses[userId];
-  console.log(JSON.stringify(submittedGuesses));
   
   
   const waitingOn = players.filter(p => !(Object.keys(submittedGuesses).includes(p.playerId)) && !Object.is(p, storyTeller));
+
+  const [otherCards, setOtherCards] = useState([]);
+
+  // function for shuffling cards 
+  const shuffle = useCallback(() => {
+    const shuffled = Object.keys(submittedCards).filter(id => id !== userId).map(id => submittedCards[id]).slice(0);
+    // citation: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    setOtherCards(shuffled);
+  }, [submittedCards, userId]);
+
+  // shuffles cards on load
+  useEffect(() => {
+    shuffle();
+  }, [shuffle]);
 
   const loadCardInfo = useCallback(async () => {
     const response = await fetch(`/cardinfo/${guessedCardId}`);
@@ -32,14 +49,13 @@ export default function OtherPlayersGuess({
   
   useEffect(() => {
     if (guessedCardId) {
-      loadCardInfo()
+      loadCardInfo();
     }
   }, [guessedCardId, loadCardInfo]);
  
   
   if (userId !== storyTeller.playerId) {
     
-    const otherCards = Object.keys(submittedCards).filter(id => id !== userId).map(id => submittedCards[id]);
     
     const handleSubmit = () => {
       if (selectedCard) {

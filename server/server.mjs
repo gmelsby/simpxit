@@ -117,11 +117,13 @@ io.on('connection', socket => {
   socket.on("startGame", request => {
     const { roomId, userId } = request;
     console.log(`player ${userId} attempting to start game in room ${roomId}`);
-    if (rooms[roomId]) {
-      rooms[roomId].startGame(userId) 
+    if (rooms[roomId] && rooms[roomId].startGame(userId)) {
+      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
+      console.log("game started. populating hands...")
+      rooms[roomId].populateHands() 
         .then(bool => {
           if (bool) {
-            console.log("game started");
+            console.log("hands populated");
             io.to(roomId).emit("receiveRoomState", rooms[roomId]);
           }
           else {
@@ -173,8 +175,8 @@ io.on('connection', socket => {
   socket.on("endScoring", request => {
     console.log('received end scoring request');
     const {roomId, userId} = request;
-    if (rooms[roomId] && rooms[roomId].endScoring()) {
-      rooms[roomId].endScoring(userId) 
+    if (rooms[roomId] && rooms[roomId].endScoring(userId)) {
+      rooms[roomId].populateHands()
         .then(bool => {
           if (bool) {
             console.log("request accepted");

@@ -28,7 +28,8 @@ export default function RoomPage({ userId }) {
     maxPlayers: 6, 
     targetScore: 25, 
     playerTurn: 0,
-    guesses: {}
+    guesses: {},
+    readyForNextRound:  []
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [kickUserId, setKickUserId] = useState('');
@@ -118,7 +119,8 @@ export default function RoomPage({ userId }) {
         submittedGuesses={roomState.guesses} />}
     
       {roomState.gamePhase === "scoring" && <Scoring userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
-        players={roomState.players} submittedCards={roomState.submittedCards} submittedGuesses={roomState.guesses} />} 
+        players={roomState.players} submittedCards={roomState.submittedCards} submittedGuesses={roomState.guesses} 
+        readyPlayers={roomState.readyForNextRound} />} 
 
 
       <footer><p>UUID: {userId}</p></footer>

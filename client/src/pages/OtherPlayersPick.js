@@ -1,6 +1,7 @@
 import { React, useState, useCallback, useEffect } from 'react';
-import { Button, Container, Image, Modal, Stack } from 'react-bootstrap';
+import { Container, Image } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
+import OtherPlayerModal from '../components/OtherPlayerModal.js';
 
 export default function OtherPlayersPick({ 
                                         userId,
@@ -33,10 +34,6 @@ export default function OtherPlayersPick({
     
     const user = players.filter(p => p.playerId === userId)[0];
     
-    const handleCloseSelect = () => {
-      setSelectedCard(false);
-    };
-    
     const handleSubmit = () => {
       if (selectedCard) {
         socket.emit('submitOtherCard', {roomId, userId, selectedCard} );
@@ -46,24 +43,8 @@ export default function OtherPlayersPick({
     if (submittedCard === undefined) {
       return (
         <>
-          <Modal show={selectedCard} onHide={handleCloseSelect}>
-            <Modal.Header closeButton>
-              <Modal.Title>Do you want to submit this card for the phrase "{storyDescriptor}"?</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Image src={selectedCard.locator} fluid />
-            </Modal.Body>
-            <Modal.Footer>
-              <Stack direction="horizontal" gap={3}> 
-              <Button onClick={handleSubmit}>
-                Submit
-              </Button>
-              <Button variant="secondary" onClick={handleCloseSelect}>
-                  Close
-              </Button>
-              </Stack>
-            </Modal.Footer>
-          </Modal>
+          <OtherPlayerModal use="deceive" selectedCard={selectedCard} setSelectedCard={setSelectedCard}
+            storyDescriptor={storyDescriptor} handleSubmit={handleSubmit} />
 
           <Container>
             <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>

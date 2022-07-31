@@ -168,11 +168,7 @@ import axios from 'axios';
   // starts the game if gamePhase is lobby, 3 or more players are in, and requesting player is admin
   async startGame(uuid) {
     if (this.gamePhase === "lobby" && this.playerCount >= 3 && this.isAdmin(uuid)) {
-      // draws cards
-      for (const player of this.players) {
-        await player.populateHand(this.handSize);
-      }
-
+    
       this.advanceGamePhase();
 
       return true;
@@ -180,6 +176,15 @@ import axios from 'axios';
     
     return false;
   }
+
+  // draws cards
+  async populateHands() {
+    for (const player of this.players) {
+      await player.populateHand(this.handSize);
+    }
+    return true
+  }
+
    
   // submits the story card and descriptor hint
   submitStoryCard(uuid, card, descriptor) {
@@ -313,14 +318,14 @@ import axios from 'axios';
 
     // if everyone is ready, advance to next round
     if (this.readyForNextRound.length === this.playerCount) {
-      await this.startNextRound();
+      this.startNextRound();
     }
 
     return true;
   }
   
   // handles moving from the end of one round to the start of the next
-  async startNextRound() {
+  startNextRound() {
     console.log("starting next round");
     // move storyteller to next player
     this.playerTurn += 1;
@@ -333,7 +338,6 @@ import axios from 'axios';
     destroyCards(Object.values(this.submittedCards).map(c => c.cardId));
     
     for (const player of this.players) {
-      await player.populateHand(this.handSize);
       player.resetRoundScore();
     }
     

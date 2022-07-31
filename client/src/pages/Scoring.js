@@ -1,5 +1,5 @@
-import { React, useState } from 'react';
-import { Container, Image, Button, Modal } from 'react-bootstrap';
+import { React } from 'react';
+import { Container, Image, Button } from 'react-bootstrap';
 
 export default function Scoring({ 
                                  userId,
@@ -7,13 +7,19 @@ export default function Scoring({
                                  roomId,
                                  socket,
                                  players,
-                                 submittedCards
+                                 submittedCards,
+                                 readyPlayers
                                  }) {
 
     const handleReady = e => {
       e.preventDefault()
-        socket.emit('endScoring', {roomId, userId} );
+      if (!(isReady)) {
+        socket.emit('endScoring', {roomId, userId});
       }
+    }
+
+    const isReady = readyPlayers.includes(userId);
+    const waitingOn = players.filter(p => !(readyPlayers.includes(p.playerId)));
   
     const OtherPlayerCardLine = ({otherPlayer}) => {
       return(
@@ -42,7 +48,8 @@ export default function Scoring({
           <h4>They now have {storyTeller.score} total points.</h4>
           <OtherPlayersCards otherPlayers={players.filter(p => p.playerId !== storyTeller.playerId)} />
         </Container>
-        <Button onClick={handleReady}>Ready for Next Round</Button>
+        {!(isReady) && <Button onClick={handleReady}>Ready for Next Round</Button>}
+        {isReady && <p>Waiting on {waitingOn.map(p => p.playerName)}</p>}
       </>
     );
   }
