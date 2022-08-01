@@ -24,11 +24,11 @@ export default function LeaveModal() {
           <h5>Are you sure you want to leave the room?</h5>
         </Modal.Body>
         <Modal.Footer>
-          <Button>
-            Leave
-          </Button>
           <Button variant="secondary" onClick={handleCloseLeave}>
             Stay
+          </Button>
+          <Button>
+            Leave
           </Button>
         </Modal.Footer>
       </Modal>

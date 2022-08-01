@@ -49,9 +49,7 @@ export default function NameModal({ currentName, changeName}) {
             </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseName}>
-            Close
-          </Button>
+
         </Modal.Footer>
       </Modal>
     </>

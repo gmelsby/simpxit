@@ -29,10 +29,10 @@ export default function OtherPlayerModal({
       </Modal.Body>
       <Modal.Footer>
         <Stack direction="horizontal" gap={3}>
-          <Button onClick={handleSubmit}>Submit</Button>
           <Button variant="secondary" onClick={handleCloseSelect}>
             Close
           </Button>
+          <Button onClick={handleSubmit}>Submit</Button>
         </Stack>
       </Modal.Footer>
     </Modal>
