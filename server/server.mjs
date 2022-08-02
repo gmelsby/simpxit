@@ -186,6 +186,7 @@ io.on('connection', socket => {
             console.log("unable to end scoring");
           }
         })
+      io.to(roomId).emit("receiveRoomState", rooms[roomId]);
     }
   });
 

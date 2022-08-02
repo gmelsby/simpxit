@@ -27,12 +27,11 @@ import axios from 'axios';
                         "otherPlayersGuess": "scoring",
                         "scoring": "storyTellerPick"
                          };
-  // returns the count of players
   get playerCount() {
     return this.players.length;
   }
    
-  // returns the object of the storyteller
+  // returns Player object of storyteller
   get storyTeller() {
     return this.players[this.playerTurn];
   }
@@ -75,10 +74,7 @@ import axios from 'axios';
     if (this.playerCount < initialPlayerCount) {
       return true;
     }
-    
-    else {
-      return false;
-    }
+    return false;
   }
    
   // returns true if the uuid is the admin, otherwise false
@@ -99,7 +95,7 @@ import axios from 'axios';
     return (this.playerCount > this.playerTurn && uuid === this.players[this.playerTurn].playerId);
   }
    
-  // returns player given the player's id
+  // returns Player object given the player's id
   getPlayer(uuid) {
     // if player does not exist return undefined
     if (!(this.isCurrentPlayer(uuid))) {
@@ -122,7 +118,6 @@ import axios from 'axios';
     return false;
   }
   
-  // returns true if the player is in the kickedPlayers array, false otherwise
   isKicked(uuid) {
     return this.kickedPlayers.includes(uuid);
   }
@@ -130,14 +125,7 @@ import axios from 'axios';
   // returns true if name change is successful, false otherwise
   changeName(uuid, newName) {
     // check that target player is a player
-    if (!(this.isCurrentPlayer(uuid))) {
-      return false;
-    }
-    
-    console.log('uuid okay');
-    
-    // check that name is not already in use
-    if(this.players.map(player => player.playerName).includes(newName)) {
+    if (!(this.isCurrentPlayer(uuid)) || this.isNameInUse()) {
       return false;
     }
     
@@ -145,15 +133,20 @@ import axios from 'axios';
     this.players.filter(player => player.playerId === uuid)[0].playerName = newName;
     return true;
   }
+
+  // returns true if name is in use, false otherwise
+  isNameInUse(newName) {
+    if(this.players.map(player => player.playerName).includes(newName)) {
+      return true;
+    }
+
+    return false;
+  }
+
   // return true if options change is successful, false otherwise
   changeOptions(uuid, newOptions) {
     // check that requesting player is admin
-    if (!(this.isAdmin(uuid))) {
-      return false;
-    }
-    
-    // check that target value is within range
-    if (newOptions < 5 || newOptions > 100) {
+    if (!(this.isAdmin(uuid)) || newOptions < 5 || newOptions > 100) {
       return false;
     }
     
@@ -166,11 +159,9 @@ import axios from 'axios';
   }
    
   // starts the game if gamePhase is lobby, 3 or more players are in, and requesting player is admin
-  async startGame(uuid) {
+  startGame(uuid) {
     if (this.gamePhase === "lobby" && this.playerCount >= 3 && this.isAdmin(uuid)) {
-    
       this.advanceGamePhase();
-
       return true;
     }
     
@@ -188,14 +179,9 @@ import axios from 'axios';
    
   // submits the story card and descriptor hint
   submitStoryCard(uuid, card, descriptor) {
-    if (this.gamePhase !== "storyTellerPick") { 
+    if (this.gamePhase !== "storyTellerPick" || !this.isStoryteller(uuid)) { 
       return false;
     }
-    
-    if (!this.isStoryteller(uuid)) {
-      return false;
-    }
-    
     this.players[this.playerTurn].playCard(card.cardId);
     this.submittedCards[uuid] = card;
     this.storyCard = card.cardId;
@@ -206,90 +192,92 @@ import axios from 'axios';
    
   // submits other players cards
   submitOtherCard(uuid, card) {
-    // check that uuid corresponds to current player
-    if (!this.isCurrentPlayer(uuid)) {
+    if (!(this.isOtherCardSubmittable(uuid))) {
       return false;
     }
-    
-    const player = this.players.filter(p => p.playerId === uuid)[0]
+    this.submittedCards[uuid] = card;
+    // remove card from player hand
+    this.players.filter(p => p.playerId === uuid)[0].playCard(card.cardId);
+    if (Object.keys(this.submittedCards).length === this.playerCount) {
+      this.advanceGamePhase();
+    }
+    return true;
+  }
 
-    if (this.gamePhase !== "otherPlayersPick") {
+  // checks whether a card submission from uuid is able to proceed, returns true if so, false if not
+  isOtherCardSubmittable(uuid) {
+    if (!this.isCurrentPlayer(uuid) || this.gamePhase !== "otherPlayersPick") {
       return false;
     }
-    
-    // player has already guessed!
+    // player has already submitted a card!
     if (Object.keys(this.submittedCards).includes(uuid)) {
       return false;
     }
-    
-    this.submittedCards[uuid] = card;
-    
-    // remove card from player hand
-    player.playCard(card.cardId);
-
-    if (Object.keys(this.submittedCards).length === this.playerCount) {
-      this.advanceGamePhase();
-      console.log("advancing game phase")
-    }
-
     return true;
   }
    
   makeGuess(uuid, cardId) {
-    // check uuid is current player
-    if (!this.isCurrentPlayer(uuid)) {
+    if (!(this.canMakeGuess(uuid))) {
       return false;
     }
-
-    if (this.gamePhase !== "otherPlayersGuess") {
-      console.log('wrong game phase')
-      return false;
-    }
-    
-    if (Object.keys(this.guesses).includes(uuid)) {
-      console.log('player has already submited a guess')
-      return false;
-    }
-    
     this.guesses[uuid] = cardId;
-    
     if (Object.keys(this.guesses).length === this.playerCount - 1) {
       this.scoreRound();
       this.advanceGamePhase();
       console.log("advancing game phase")
     }
-
     return true;
   }
    
-  scoreRound() {
-    const correctGuessers = Object.keys(this.guesses).filter(playerId => this.guesses[playerId] === this.storyCard);
-    console.log(`${correctGuessers.length} correct guesses`);
-    // case where some guessers guessed storyteller's card and some guessed other card
-    if (correctGuessers.length > 0 && correctGuessers.length < this.playerCount - 1) {
+  // returns true if player can make a guess, false othewise
+  canMakeGuess(uuid) {
+    if (!this.isCurrentPlayer(uuid) || this.gamePhase !== "otherPlayersGuess") {
+      return false;
+    }
+    // player has already guessed!
+    if (Object.keys(this.guesses).includes(uuid)) {
+      return false;
+    }
+    return true;
+  }
+
+  // assigns points for case where some players guessed the correct card and some did not
+  handleSomeCorrectSomeIncorrect(correctGuessers) {
       console.log('Some players guessed correctly, some did not')
       this.players[this.playerTurn].incrementScore(3);
       for (const correctGuesser of correctGuessers) {
         this.getPlayer(correctGuesser).incrementScore(3);
       }
+  }
+
+  // assigns points for case where all or no players guessed the correct card
+  handleAllOrNoneCorrect() {
+    console.log('Everyone but the storyteller gets 2 points')
+    for (const nonStoryTeller of this.players.filter(p => !Object.is(p, this.storyTeller))) {
+      nonStoryTeller.incrementScore(2);
     }
-    
-    // case where every guesser guessed storytellers card or no guesser guessed storyteller card
-    else {
-      console.log('Everyone but the storyteller gets 2 points')
-      for (const nonStoryTeller of this.players.filter(p => !Object.is(p, this.storyTeller))) {
-        nonStoryTeller.incrementScore(2);
-      }
-    }
-    
-    // increment the scores of players who fooled another player
+  }
+
+  // assigns points to players who fooled other players.
+  handleFoolingPoints() {
     console.log('Distributing points for fooling other players')
     const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCard);
     for (const fakeId of successfulFakes) {
       const fakerId = Object.keys(this.submittedCards).filter(playerId => this.submittedCards[playerId].cardId === fakeId)[0];
       this.getPlayer(fakerId).incrementScore(1);
     }
-    
+  }
+
+  scoreRound() {
+    const correctGuessers = Object.keys(this.guesses).filter(playerId => this.guesses[playerId] === this.storyCard);
+    if (correctGuessers.length > 0 && correctGuessers.length < this.playerCount - 1) {
+      this.handleSomeCorrectSomeIncorrect(correctGuessers);
+    }
+    else {
+      this.handleAllOrNoneCorrect();
+    }
+
+    this.handleFoolingPoints()
     console.log("scores")
     for (const player of this.players) {
       console.log(`${player.playerName}: ${player.score}`)
@@ -299,52 +287,51 @@ import axios from 'axios';
   // ends the Scoring phase and starts a new Round if no victory
   // if victory, returns players to Lobby
   endScoring(uuid) {
-    // check we are in scoring phase
-    if (this.gamePhase !== "scoring") {
+    if (!(this.isAbleToEndScoring(uuid))) {
       return false;
     }
-
-    // check player exists
-    if (!this.isCurrentPlayer(uuid)) {
-      return false;
-    }
-    
-    // check they are not already ready
-    if (this.readyForNextRound.includes(uuid)) {
-      return false
-    }
-    
     this.readyForNextRound.push(uuid);
-
     // if everyone is ready, advance to next round
     if (this.readyForNextRound.length === this.playerCount) {
       this.startNextRound();
     }
-
     return true;
   }
+
+  // returns true if uuid is able to end the scoring phase, false if not
+  isAbleToEndScoring(uuid) {
+    if (this.gamePhase !== "scoring") {
+      return false;
+    }
+    if (!this.isCurrentPlayer(uuid)) {
+      return false;
+    }
+    if (this.readyForNextRound.includes(uuid)) {
+      return false;
+    }
+    return true;
+  }
+
+
   
   // handles moving from the end of one round to the start of the next
   startNextRound() {
     console.log("starting next round");
-    // move storyteller to next player
-    this.playerTurn += 1;
-    this.playerTurn %= this.playerCount;
-    
-    this.readyForNextRound = [];
-    this.submittedCards = {};
-    this.guesses = {};
-    
     destroyCards(Object.values(this.submittedCards).map(c => c.cardId));
-    
+    this.resetRoundValues();
     for (const player of this.players) {
       player.resetRoundScore();
     }
-    
     this.gamePhase = "storyTellerPick";
   }
 
-
+  resetRoundValues() {
+    this.playerTurn += 1;
+    this.playerTurn %= this.playerCount;
+    this.readyForNextRound = [];
+    this.submittedCards = {};
+    this.guesses = {};
+  }
 }
 
 
