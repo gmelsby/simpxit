@@ -1,5 +1,5 @@
 export default function WaitingOn({waitingOn}) {
   return (
-      <p>Waiting on {waitingOn.map(p => p.playerName).join(", ")}</p>
+      <h5>Waiting on {waitingOn.map(p => p.playerName).join(", ")}</h5>
   );
 }

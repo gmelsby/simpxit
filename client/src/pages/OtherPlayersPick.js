@@ -56,7 +56,7 @@ export default function OtherPlayersPick({
       <OtherPlayerModal use="deceive" selectedCard={selectedCard} setSelectedCard={setSelectedCard}
         storyDescriptor={storyDescriptor} handleSubmit={handleSubmit} />
 
-      <Container>
+      <Container className="text-center">
         <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
         <h5>Pick a card from your hand to fool the other players!</h5>
         <Hand hand={user.hand} selectedCard={selectedCard} setSelectedCard={setSelectedCard} />

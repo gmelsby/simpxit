@@ -1,27 +1,51 @@
 import React from 'react';
-import { Button, ListGroup } from 'react-bootstrap';
+import { Button, Col, Row, Container } from 'react-bootstrap';
 
-export default function PlayerList({ players, setKickUserId, userId, isAdmin }) {
+export default function PlayerList({ players, setKickUserId, userId, isAdmin, scoreboard }) {
+  const playerList = scoreboard ? players.sort((p1, p2) => p2.score - p1.score ) : players;
   return (
-  <ListGroup>
-    {players.map((player) => <PlayerEntry player={player} 
+  <Container>
+    {playerList.map((player) => <PlayerEntry player={player} 
       setKickUserId={setKickUserId} 
       userId={userId} 
       isAdmin={isAdmin} 
+      scoreboard={scoreboard}
       key={player.playerId} />)}
-  </ListGroup>
+  </Container>
   );
 }
 
-function PlayerEntry({ player, setKickUserId, userId, isAdmin }) {
+function PlayerEntry({ player, setKickUserId, userId, isAdmin, scoreboard }) {
   const handleKickThisPlayer = () => {
     setKickUserId(player.playerId);
   };
+  
+  if (scoreboard) {
+    return (
+      <Row>
+        <Col xs={3}></Col>
+        <Col xs="auto">
+          {player.playerId === userId && <p><b>{player.playerName}</b></p>}
+          {player.playerId !== userId && <p>{player.playerName}</p>}
+        </Col>
+        <Col xs={3}>
+          <p>{player.score}</p>
+        </Col>
+      </Row>
+    )
+  }
+
   return (
-  <ListGroup.Item>
-    {player.playerName}
-    {isAdmin && player.playerId !== userId && 
-    <Button variant="danger" onClick={handleKickThisPlayer}>Kick</Button>}
-  </ListGroup.Item>
+    <Row className="justify-content-center">
+      <Col xs={3}></Col>
+      <Col xs="auto">
+        {player.playerId === userId && <p><b>{player.playerName}</b></p>}
+        {player.playerId !== userId && <p>{player.playerName}</p>}
+      </Col>
+      <Col xs={3}>
+      {isAdmin && player.playerId !== userId && 
+        <Button variant="danger" onClick={handleKickThisPlayer}>Kick</Button>}
+      </Col>
+    </Row>
   );
 }

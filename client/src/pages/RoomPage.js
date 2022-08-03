@@ -6,6 +6,7 @@ import KickModal from '../components/KickModal';
 import NameModal from '../components/NameModal'
 import KickRedirect from '../components/KickRedirect';
 import LeaveRedirect from '../components/LeaveRedirect'
+import Scoreboard from '../components/Scoreboard';
 import Lobby from './Lobby.js';
 import StoryTellerPick from './StoryTellerPick.js'
 import OtherPlayersPick from './OtherPlayersPick';
@@ -108,6 +109,7 @@ export default function RoomPage({ userId }) {
       <RulesModal />
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
+      {roomState.gamePhase !== "lobby" && <Scoreboard players={roomState.players} userId={userId} />}
     
         {roomState.gamePhase === "lobby" && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
           isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions} socket={socket}/>}

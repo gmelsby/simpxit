@@ -35,7 +35,7 @@ export default function StoryModal({
         <Modal.Footer>
             <Col xs={8}>
               <Form.Control type="text" required name="descriptor"
-              maxLength="45" placeholder="Describe the image" pattern="[ A-Za-z0-9-]+"
+              maxLength="45" placeholder="Describe the image" pattern="[ A-Za-z0-9,!.'-]+"
               value={descriptor}
               onChange={e => setDescriptor(e.target.value.trimStart())}
               ref={descriptionForm} />

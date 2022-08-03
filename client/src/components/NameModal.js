@@ -40,7 +40,7 @@ export default function NameModal({ currentName, changeName}) {
             <Form onSubmit={changeNameToNew}>
               <Form.Group>
                 <Form.Control className="w-auto" type="text" required name="new-name"
-                maxLength="20" placeholder="New Name" pattern="[ A-Za-z0-9-]+"
+                maxLength="20" placeholder="New Name" pattern="[ A-Za-z0-9-.,!]+"
                 value={newName}
                 onChange={e => setNewName(e.target.value.trimStart())}
                 ref={nameForm} />
