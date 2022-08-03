@@ -22,7 +22,6 @@ const io = new Server(server, {
 const rooms = {};
 
 io.on('connection', socket => {
-
   console.log('connection made');
 
   socket.on('joinRoom', (request, callback) => {
@@ -194,12 +193,14 @@ io.on('connection', socket => {
 
 
 
+// allows users to get the card info for a card
 app.get('/cardinfo/:cardId', (req, res) => {
   const { cardId } = req.params;
   console.log(`received request for card info for card ${cardId}`);
   res.send(retrieveCardInfo(cardId));
 })
 
+// allows users to create a new room
 app.post('/createroom', (req, res) => {
   console.log(`received create room request with UUID ${req.body.userId}`);
   const uuid  = req.body.userId;
@@ -207,7 +208,7 @@ app.post('/createroom', (req, res) => {
     res.status(403).send({error: "User does not have UUID. Refresh page and try again."});
   }
   let newRoomCode = 'ABCD'
-  // maybe need a way to return no room available if takes longer than X seconds
+
   while (1) {
     newRoomCode = generateRoomCode();
     if (!(newRoomCode in rooms)) {
@@ -221,6 +222,7 @@ app.post('/createroom', (req, res) => {
   res.status(201).send({ newRoomCode });
 });
 
+// allows users to request a new uuid
 app.get('/uuid', (req, res) => {
   const uuid = generateUuid();
   console.log(`new UUID: ${uuid}`);

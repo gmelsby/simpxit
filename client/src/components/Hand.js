@@ -1,17 +1,19 @@
 import React from 'react';
 import { Image, Col, Row } from 'react-bootstrap';
 
-export default function Hand( { hand, setSelectedCard } ) {
+export default function Hand( { hand, setSelectedCard, gallery } ) {
   
   const handleSelectCard = card => {
     setSelectedCard(card);
   };
 
+  const selectable = gallery ? "" : "selectable";
+
   return(
-    <Row xs={2} md={Math.min(3, hand.length)} className="g-2">
+    <Row xs={1} sm={2} md={Math.min(3, hand.length)} className="g-2">
       {hand.map(card =>
       <Col key={card.cardId} >
-        <Image src={card.locator} fluid onClick={() => handleSelectCard(card)} />
+        <Image src={card.locator} className={selectable} fluid onClick={() => handleSelectCard(card)} />
       </Col>)}
     </Row>
   );

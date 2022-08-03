@@ -1,5 +1,6 @@
 import { React, useState, useCallback, useEffect } from 'react';
-import { Container, Image } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
+import CardInfoWaiting from '../components/CardInfoWaiting.js';
 import Hand from '../components/Hand.js';
 import OtherPlayerModal from '../components/OtherPlayerModal.js';
 
@@ -29,46 +30,37 @@ export default function OtherPlayersPick({
       loadCardInfo()
     }
   }, [submittedCard, loadCardInfo]);
-  
-  if (userId !== storyTeller.playerId) {
-    
-    const user = players.filter(p => p.playerId === userId)[0];
-    
-    const handleSubmit = () => {
-      if (selectedCard) {
-        socket.emit('submitOtherCard', {roomId, userId, selectedCard} );
-      }
-    }
-    
-    if (submittedCard === undefined) {
-      return (
-        <>
-          <OtherPlayerModal use="deceive" selectedCard={selectedCard} setSelectedCard={setSelectedCard}
-            storyDescriptor={storyDescriptor} handleSubmit={handleSubmit} />
 
-          <Container>
-            <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
-            <h5>Pick a card from your hand to fool the other players!</h5>
-            <Hand hand={user.hand} selectedCard={selectedCard} setSelectedCard={setSelectedCard} />
-          </Container>
-        </>
-      );
-    }
-  }
-  
-  if (submittedCardInfo) {
+
+  // executes if storyteller or player who has submitted a fake card
+  if (submittedCard) {
+    const waitingOn = players.filter(p => !(Object.keys(submittedCards).includes(p.playerId)));
     return (
-      <>
-          <h4>For "{storyDescriptor}", you submitted</h4>
-          <Image src={submittedCard.locator} fluid />
-        <p>{JSON.stringify(submittedCardInfo)}</p>
-      </>
+        <CardInfoWaiting use={storyTeller.playerId === userId ? "storyTeller" : "deceive"} card={submittedCard} 
+          storyDescriptor={storyDescriptor} waitingOn={waitingOn} cardInfo={submittedCardInfo} />
     )
   }
+ 
 
+  
+  const user = players.filter(p => p.playerId === userId)[0];
+  
+  const handleSubmit = () => {
+    if (selectedCard) {
+      socket.emit('submitOtherCard', {roomId, userId, selectedCard} );
+    }
+  }
+  
   return (
     <>
-      <p>Wait for the other players to pick their cards...</p>
+      <OtherPlayerModal use="deceive" selectedCard={selectedCard} setSelectedCard={setSelectedCard}
+        storyDescriptor={storyDescriptor} handleSubmit={handleSubmit} />
+
+      <Container>
+        <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
+        <h5>Pick a card from your hand to fool the other players!</h5>
+        <Hand hand={user.hand} selectedCard={selectedCard} setSelectedCard={setSelectedCard} />
+      </Container>
     </>
   );
 }

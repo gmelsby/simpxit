@@ -384,7 +384,6 @@ export function retrieveCardInfo(cardId) {
 
 const newCard = async () => {
     const cardId = generateUuid();
-    // gets info for card
     const info = await getNewCardInfo()
     console.log(`cardInfo: ${JSON.stringify(info)}`);
     cardCache[cardId] = info.data;
@@ -395,19 +394,15 @@ const newCard = async () => {
 const getNewCardInfo = async () => {
   return axios.get("http://localhost:8080")
     .then(response => {
-      // check if request successful
       if (response.status == 200) {
-        // processes data and sends processed data if request successful
         console.log(`received response: ${response.data}`);
         return response.data;
       }
-      // throws descriptive error if not successful
       else {
         console.log("received unexpected response");
         throw new Error(`Received response code ${response.status} from microservice`);
       }
     })
-    // handles error
     .catch(err => {
       console.error(err);
       return err;

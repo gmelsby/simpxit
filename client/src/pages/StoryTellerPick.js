@@ -36,7 +36,7 @@ export default function StoryTellerPick({
       <>
         <StoryModal selectedCard={selectedCard} setSelectedCard={setSelectedCard} descriptor={descriptor} 
           setDescriptor={setDescriptor} handleSubmit={handleSubmit} />
-        <Container>
+        <Container className="text-center">
           <h3>You are the storyteller! Pick an image and come up with a description.</h3>
           <Hand hand={storyTeller.hand} setSelectedCard={setSelectedCard} />
         </Container>
@@ -45,8 +45,6 @@ export default function StoryTellerPick({
   }
 
   return (
-    <>
-      <p>{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</p>
-    </>
+      <h5>{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h5>
   );
 }

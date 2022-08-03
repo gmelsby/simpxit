@@ -1,7 +1,9 @@
 import { React, useState, useCallback, useEffect } from 'react';
-import { Container, Image } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
 import OtherPlayerModal from '../components/OtherPlayerModal.js';
+import CardInfoWaiting from '../components/CardInfoWaiting.js';
+import WaitingOn from '../components/WaitingOn';
 
 export default function OtherPlayersGuess({ 
                                         userId,
@@ -52,11 +54,10 @@ export default function OtherPlayersGuess({
       loadCardInfo();
     }
   }, [guessedCardId, loadCardInfo]);
+
  
   
   if (userId !== storyTeller.playerId) {
-    
-    
     const handleSubmit = () => {
       if (selectedCard) {
         socket.emit('guess', {roomId, userId, selectedCard} );
@@ -64,15 +65,11 @@ export default function OtherPlayersGuess({
     }
     
     if (guessedCardId) {
-      
+      const guessedCard = Object.values(submittedCards).filter(c => c.cardId === guessedCardId)[0];
 
       return (
-        <>
-          <h4>For "{storyDescriptor}" you guessed</h4>
-          <Image src={guessedCardInfo.Image} fluid />
-          <p>{JSON.stringify(guessedCardInfo)}</p>
-          <p>Waiting on {waitingOn.map(p => p.playerName)}</p>
-      </>
+        <CardInfoWaiting use="guess" card={guessedCard} storyDescriptor={storyDescriptor} waitingOn={waitingOn}
+          cardInfo={guessedCardInfo} />
       );
     }
 
@@ -81,7 +78,7 @@ export default function OtherPlayersGuess({
         <OtherPlayerModal use="guess" selectedCard={selectedCard} 
           setSelectedCard={setSelectedCard} storyDescriptor={storyDescriptor}
           handleSubmit={handleSubmit} />
-        <Container>
+        <Container className="text-center">
           <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
           <h5>Guess which card is the storyteller's!</h5>
           <Hand hand={otherCards} selectedCard={selectedCard} setSelectedCard={setSelectedCard} />
@@ -91,10 +88,10 @@ export default function OtherPlayersGuess({
   }
   
   return (
-    <>
-      <p>Here are all the cards that were submitted</p>
-      <Hand hand={Object.values(submittedCards)} />
-      <p>Waiting on {waitingOn.map(p => p.playerName)}</p>
-    </>
+    <Container className="text-center">
+      <h3>Here are all the cards that were submitted:</h3>
+      <Hand hand={Object.values(submittedCards)} gallery />
+      <WaitingOn waitingOn={waitingOn} />
+    </Container>
   );
 }

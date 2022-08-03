@@ -1,5 +1,6 @@
 import { v4 } from 'uuid';
 
+// returns a 4-letter room code
 function generateRoomCode() {
   let code = ''
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
