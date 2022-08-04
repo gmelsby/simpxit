@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { v4 } from "uuid";
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import {BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -12,11 +13,8 @@ function App() {
 
   const [userId, setUserId] = useSessionStorage('image-app', '');
 
-  const getUuid = async () => {
-    const response = await fetch('/uuid');
-    const data = await response.json();
-    
-    setUserId(data.uuid);
+  const getUuid = () => {
+    setUserId(v4());
   };
 
    useEffect(() => {

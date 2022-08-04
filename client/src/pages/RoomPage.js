@@ -34,6 +34,7 @@ export default function RoomPage({ userId }) {
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [kickUserId, setKickUserId] = useState('');
+  const [leaveAttempt, setLeaveAttempt] = useState(false);
   
  
   useEffect(() => {
@@ -75,7 +76,7 @@ export default function RoomPage({ userId }) {
     return (<KickRedirect />);
   }
   
-  if (!(roomState.players.map(player => player.playerId).includes(userId))) {
+  if (!(roomState.players.map(player => player.playerId).includes(userId)) && leaveAttempt) {
     return (<LeaveRedirect />);
   }
 
@@ -92,6 +93,7 @@ export default function RoomPage({ userId }) {
   const storyTeller = roomState.players[roomState.playerTurn];
 
   const handleLeave = () => {
+    setLeaveAttempt(true);
     socket.emit('leaveRoom', { roomId, userId });
   }
   
