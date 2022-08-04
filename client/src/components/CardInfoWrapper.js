@@ -12,10 +12,10 @@ export default function CardInfoWrapper({card}) {
     }, [card]);
     
   useEffect(() => {
-    if (card) {
+    if (card && !cardInfo) {
       loadCardInfo()
     }
-  }, [card, loadCardInfo]);
+  }, [card, cardInfo, loadCardInfo]);
 
   return (<CardInfoText cardInfo={cardInfo} />);
 }

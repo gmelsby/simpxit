@@ -1,6 +1,6 @@
 import { Row, Col } from "react-bootstrap";
-import ScoringCard from './ScoringCard'
-import React from 'react'
+import ScoringCard from './ScoringCard';
+import React from 'react';
 
 export default function ScoringCardHand({storyTeller,
                                          players,
@@ -16,7 +16,7 @@ export default function ScoringCardHand({storyTeller,
   const nonStoryTellers = players.filter(p => p.playerId !== storyTeller.playerId);
 
   return (
-    <Row xs={1} md={Math.min(3, Object.values(submittedCards).length)} className="g-2 flex-grow-1">
+    <Row xs={1} md={Math.min(3, Object.values(submittedCards).length)} className="g-2 mx-5 my-3">
       <Col>
         <ScoringCard player={storyTeller} card={submittedCards[storyTeller.playerId]} 
           guessedPlayers={playersWhoGuessed(submittedCards[storyTeller.playerId].cardId)}

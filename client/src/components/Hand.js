@@ -10,7 +10,7 @@ export default function Hand( { hand, setSelectedCard, gallery } ) {
   const selectable = gallery ? "" : "selectable";
 
   return(
-    <Row xs={1} sm={2} md={Math.min(3, hand.length)} className="g-2">
+    <Row xs={1} sm={2} md={Math.min(3, hand.length)} className="g-2 my-3 mx-5">
       {hand.map(card =>
       <Col key={card.cardId} >
         <Image src={card.locator} className={selectable} fluid onClick={() => handleSelectCard(card)} />
