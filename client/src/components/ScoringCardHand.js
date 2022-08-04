@@ -23,11 +23,11 @@ export default function ScoringCardHand({storyTeller,
 
   return (
     <>
-      <Row xs={1} md={Math.min(3, Object.values(submittedCards).length)} className="g-2 mx-5 my-3 d-none d-sm-flex">
+      <Row xs={1} md={Math.min(3, Object.values(submittedCards).length)} className="g-2 mx-5 my-3 d-none d-md-flex justify-content-center">
         {ScoringCards}
       </Row>
 
-      <Carousel className="d-xs-flex d-sm-none" interval={null} variant="dark">
+      <Carousel className="d-xs-flex d-md-none" interval={null} variant="dark">
       {ScoringCards.map(card => 
         <Carousel.Item key={card.cardId}> 
           <Row className="mx-5">
