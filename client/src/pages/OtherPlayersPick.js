@@ -1,4 +1,4 @@
-import { React, useState, useCallback, useEffect } from 'react';
+import { React, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import CardInfoWaiting from '../components/CardInfoWaiting.js';
 import Hand from '../components/Hand.js';
@@ -15,29 +15,14 @@ export default function OtherPlayersPick({
                                         }) {
 
   const [selectedCard, setSelectedCard] = useState(false);
-  const [submittedCardInfo, setSubmittedCardInfo] = useState(false);
-  
   const submittedCard = submittedCards[userId];
-
-  const loadCardInfo = useCallback(async () => {
-    const response = await fetch(`/cardinfo/${submittedCard.cardId}`);
-    const data = await response.json();
-    setSubmittedCardInfo(data);
-  }, [submittedCard]);
-  
-  useEffect(() => {
-    if (submittedCard) {
-      loadCardInfo()
-    }
-  }, [submittedCard, loadCardInfo]);
-
 
   // executes if storyteller or player who has submitted a fake card
   if (submittedCard) {
     const waitingOn = players.filter(p => !(Object.keys(submittedCards).includes(p.playerId)));
     return (
         <CardInfoWaiting use={storyTeller.playerId === userId ? "storyTeller" : "deceive"} card={submittedCard} 
-          storyDescriptor={storyDescriptor} waitingOn={waitingOn} cardInfo={submittedCardInfo} />
+          storyDescriptor={storyDescriptor} waitingOn={waitingOn} />
     )
   }
  

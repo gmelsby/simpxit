@@ -17,8 +17,6 @@ export default function OtherPlayersGuess({
                                         }) {
 
   const [selectedCard, setSelectedCard] = useState(false);
-  const [guessedCardInfo, setGuessedCardInfo] = useState(false);
-
   const guessedCardId = submittedGuesses[userId];
   
   
@@ -42,20 +40,6 @@ export default function OtherPlayersGuess({
     shuffle();
   }, [shuffle]);
 
-  const loadCardInfo = useCallback(async () => {
-    const response = await fetch(`/cardinfo/${guessedCardId}`);
-    const data = await response.json();
-    setGuessedCardInfo(data);
-  }, [guessedCardId]);
-
-  
-  useEffect(() => {
-    if (guessedCardId) {
-      loadCardInfo();
-    }
-  }, [guessedCardId, loadCardInfo]);
-
- 
   
   if (userId !== storyTeller.playerId) {
     const handleSubmit = () => {
@@ -68,8 +52,8 @@ export default function OtherPlayersGuess({
       const guessedCard = Object.values(submittedCards).filter(c => c.cardId === guessedCardId)[0];
 
       return (
-        <CardInfoWaiting className="my-4" use="guess" card={guessedCard} storyDescriptor={storyDescriptor} waitingOn={waitingOn}
-          cardInfo={guessedCardInfo} />
+        <CardInfoWaiting className="my-4" use="guess" card={guessedCard} storyDescriptor={storyDescriptor} 
+          waitingOn={waitingOn} />
       );
     }
 
