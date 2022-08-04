@@ -23,12 +23,11 @@ function PlayerEntry({ player, setKickUserId, userId, isAdmin, scoreboard }) {
   if (scoreboard) {
     return (
       <Row>
-        <Col xs={3}></Col>
         <Col xs="auto">
           {player.playerId === userId && <p><b>{player.playerName}</b></p>}
           {player.playerId !== userId && <p>{player.playerName}</p>}
         </Col>
-        <Col xs={3}>
+        <Col xs={1}>
           <p>{player.score}</p>
         </Col>
       </Row>

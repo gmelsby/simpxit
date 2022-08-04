@@ -68,7 +68,7 @@ export default function OtherPlayersGuess({
       const guessedCard = Object.values(submittedCards).filter(c => c.cardId === guessedCardId)[0];
 
       return (
-        <CardInfoWaiting use="guess" card={guessedCard} storyDescriptor={storyDescriptor} waitingOn={waitingOn}
+        <CardInfoWaiting className="my-4" use="guess" card={guessedCard} storyDescriptor={storyDescriptor} waitingOn={waitingOn}
           cardInfo={guessedCardInfo} />
       );
     }
@@ -89,9 +89,12 @@ export default function OtherPlayersGuess({
   
   return (
     <Container className="text-center">
-      <h3>Here are all the cards that were submitted:</h3>
+      <h3 className="my-4">Here are all the cards that were submitted:</h3>
+      <h5>Wait for other players to guess...</h5>
       <Hand hand={Object.values(submittedCards)} gallery />
-      <WaitingOn waitingOn={waitingOn} />
+      <Container className="my-4">
+        <WaitingOn waitingOn={waitingOn} />
+      </Container>
     </Container>
   );
 }

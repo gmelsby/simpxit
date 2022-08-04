@@ -10,9 +10,8 @@ const PREFIX = "image-game-";
 
 
 export default function useSessionStorage(key, initialValue) {
-  // State to store our value
-  // Pass initial state function to useState so logic is only executed once
   
+  // key to store our value, prefix to limit collision with other apps
   key = PREFIX + key
   const [storedValue, setStoredValue] = useState(() => {
     if (typeof window === "undefined") {
@@ -31,21 +30,18 @@ export default function useSessionStorage(key, initialValue) {
     }
   });
 
-  // Return a wrapped version of useState's setter function that ...
-  // ... persists the new value to localStorage.
+  // returns a wrapped version of useState's setter function that persists state
   const setValue = (value) => {
     try {
       // Allow value to be a function so we have same API as useState
       const valueToStore =
         value instanceof Function ? value(storedValue) : value;
-      // Save state
       setStoredValue(valueToStore);
       // Save to local storage
       if (typeof window !== "undefined") {
         window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
       }
     } catch (error) {
-      // A more advanced implementation would handle the error case
       console.log(error);
     }
   };

@@ -45,6 +45,8 @@ export default function StoryTellerPick({
   }
 
   return (
-      <h5>{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h5>
+    <Container className="text-center">
+      <h3>{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h3>
+    </Container>
   );
 }

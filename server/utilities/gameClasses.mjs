@@ -311,11 +311,17 @@ import axios from 'axios';
     }
     return true;
   }
-
-
   
+  isGameWon() {
+    return this.players.filter(p => p.score >= this.targetScore).length >= 1;
+  }
+
   // handles moving from the end of one round to the start of the next
   startNextRound() {
+    if (this.isGameWon()) {
+      this.resetToLobby();
+      return;
+    }
     console.log("starting next round");
     destroyCards(Object.values(this.submittedCards).map(c => c.cardId));
     this.resetRoundValues();
@@ -332,6 +338,18 @@ import axios from 'axios';
     this.submittedCards = {};
     this.guesses = {};
   }
+
+  resetToLobby() {
+    this.gamePhase = "lobby";
+    this.storyCard = undefined;
+    this.storyDescriptor = undefined;
+    destroyCards(Object.values(this.submittedCards).map(c => c.cardId));
+    this.submittedCards = {};
+    this.guesses = {};
+    this.playerTurn = 0;
+    this.readyForNextRound = [];
+  }
+
 }
 
 
@@ -362,6 +380,13 @@ export class Player {
   
   resetRoundScore() {
     this.scoredThisRound = 0;
+  }
+
+  resetAll() {
+    this.score = 0;
+    this.scoredThisRound = 0;
+    destroyCards(this.hand);
+    this.hand = [];
   }
 
 }

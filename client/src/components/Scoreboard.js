@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import PlayerList from './PlayerList';
 
-export default function Scoreboard({ players, userId }) {
+export default function Scoreboard({ players, userId, targetScore }) {
 
   const [showScoreboard, setShowScoreboard] = useState(false);
 
@@ -17,9 +17,10 @@ export default function Scoreboard({ players, userId }) {
 
     <Modal show={showScoreboard} onHide={handleCloseScoreboard}>
       <Modal.Header closeButton>
-        <Modal.Title>Scoreboard</Modal.Title>
+        <Modal.Title>Scoreboard </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="text-center">
+        <h6>Target Score = {targetScore}</h6>
         <PlayerList players={players} userId={userId} scoreboard />
       </Modal.Body>
       <Modal.Footer>

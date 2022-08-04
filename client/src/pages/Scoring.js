@@ -1,5 +1,7 @@
 import { React } from 'react';
-import { Container, Image, Button } from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
+import ScoringCardHand from '../components/ScoringCardHand';
+import WaitingOn from '../components/WaitingOn';
 
 export default function Scoring({ 
                                  userId,
@@ -7,8 +9,11 @@ export default function Scoring({
                                  roomId,
                                  socket,
                                  players,
+                                 storyCard,
                                  submittedCards,
-                                 readyPlayers
+                                 guesses,
+                                 readyPlayers,
+                                 targetScore
                                  }) {
 
     const handleReady = e => {
@@ -18,38 +23,37 @@ export default function Scoring({
       }
     }
 
+    const winner = players.filter(p => p.score >= targetScore).sort((p1, p2) => p2.score - p1.score)[0];
+    console.log(winner)
+
     const isReady = readyPlayers.includes(userId);
     const waitingOn = players.filter(p => !(readyPlayers.includes(p.playerId)));
-  
-    const OtherPlayerCardLine = ({otherPlayer}) => {
-      return(
-        <>
-          <h3>{otherPlayer.playerName} submitted</h3>
-          <Image src={submittedCards[otherPlayer.playerId].locator} fluid />
-          <h4>They scored {otherPlayer.scoredThisRound} points this round.</h4>
-          <h4>They now have {otherPlayer.score} total points.</h4>
-        </>
-      )
+
+    const correct_guesses = Object.values(guesses).filter(c => c === storyCard).length;
+
+    let topMessage = `Some players but not everyone guessed the storyteller's card.`
+    if (correct_guesses === 0) {
+      topMessage = `Nobody guessed the storyteller's card.`
     }
-  
-    const OtherPlayersCards = ({otherPlayers}) => {
-      return otherPlayers.map(p => (
-        <OtherPlayerCardLine otherPlayer={p} key={p.playerId} />
-      ));
+
+    else if (correct_guesses === Object.values(guesses).length) {
+      topMessage = `Everyone guessed the storyteller's card.`
     }
-  
+
 
     return (
       <>
-        <Container>
-          <h3>The storyteller {storyTeller.playerName} submitted</h3>
-          <Image src={submittedCards[storyTeller.playerId].locator} fluid />
-          <h4>They scored {storyTeller.scoredThisRound} points this round.</h4>
-          <h4>They now have {storyTeller.score} total points.</h4>
-          <OtherPlayersCards otherPlayers={players.filter(p => p.playerId !== storyTeller.playerId)} />
+        <Container className="text-center">
+            { winner && <h1>{winner.playerName} wins!</h1>}
+            <h3 className="my-4">{topMessage}</h3>
+          <ScoringCardHand storyTeller={storyTeller} players={players} 
+            submittedCards={submittedCards} guesses={guesses} />
         </Container>
-        {!(isReady) && <Button onClick={handleReady}>Ready for Next Round</Button>}
-        {isReady && <p>Waiting on {waitingOn.map(p => p.playerName)}</p>}
+        <Container className="my-4 text-center">
+          {!(winner) && !(isReady) && <Button onClick={handleReady}>Ready for Next Round</Button>}
+          {winner && !(isReady) && <Button onClick={handleReady}>Return to Room Lobby</Button>}
+          {isReady && <WaitingOn waitingOn={waitingOn} />}
+        </Container>
       </>
     );
   }

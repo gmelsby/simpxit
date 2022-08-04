@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Alert, Spinner } from 'react-bootstrap';
+import { Alert, Spinner, Container } from 'react-bootstrap';
 import RulesModal  from '../components/RulesModal';
 import KickModal from '../components/KickModal';
 import NameModal from '../components/NameModal'
@@ -52,9 +52,9 @@ export default function RoomPage({ userId }) {
         setErrorMessage(error)
       }
     });
-    
+    // close socket on teardown
     return () => newSocket.close();
-    
+
   }, [userId, roomId, setSocket])
   
   useEffect(() => {
@@ -80,7 +80,12 @@ export default function RoomPage({ userId }) {
   }
 
   if (roomState.adminId === "placeholder") {
-    return (<Spinner />);
+    return (
+      <Container className="text-center my-5">
+        <Spinner animation="border" variant="primary" />
+        <h5>Attempting to connect to room...</h5>
+      </Container>
+    );
   }
 
   const isAdmin = roomState.players[0].playerId === userId ? true : false;
@@ -109,7 +114,7 @@ export default function RoomPage({ userId }) {
       <RulesModal />
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
-      {roomState.gamePhase !== "lobby" && <Scoreboard players={roomState.players} userId={userId} />}
+      {roomState.gamePhase !== "lobby" && <Scoreboard players={roomState.players} userId={userId} targetScore={roomState.targetScore} />}
     
         {roomState.gamePhase === "lobby" && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
           isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions} socket={socket}/>}
@@ -126,7 +131,7 @@ export default function RoomPage({ userId }) {
       
         {roomState.gamePhase === "scoring" && <Scoring userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
           players={roomState.players} submittedCards={roomState.submittedCards} submittedGuesses={roomState.guesses} 
-          readyPlayers={roomState.readyForNextRound} />} 
+          readyPlayers={roomState.readyForNextRound} storyCard={roomState.storyCard} guesses={roomState.guesses} targetScore={roomState.targetScore} />} 
     </>
   );
 }
