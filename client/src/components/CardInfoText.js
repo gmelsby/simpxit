@@ -1,6 +1,6 @@
 import { Spinner } from "react-bootstrap";
 
-export default function CardInfoDisplay({ cardInfo }) {
+export default function CardInfoText({ cardInfo }) {
   // case where we cannot load or are waiting on loading card info
   if (!(cardInfo)) {
     return (

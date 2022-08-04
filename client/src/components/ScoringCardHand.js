@@ -16,7 +16,7 @@ export default function ScoringCardHand({storyTeller,
   const nonStoryTellers = players.filter(p => p.playerId !== storyTeller.playerId);
 
   return (
-    <Row xs={2} md={Math.min(3, Object.values(submittedCards).length)} className="g-2">
+    <Row xs={1} md={Math.min(3, Object.values(submittedCards).length)} className="g-2">
       <Col>
         <ScoringCard player={storyTeller} card={submittedCards[storyTeller.playerId]} 
           guessedPlayers={playersWhoGuessed(submittedCards[storyTeller.playerId].cardId)}
