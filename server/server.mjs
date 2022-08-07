@@ -1,4 +1,4 @@
-import { generateUuid, generateRoomCode } from './utilities/generateUtils.mjs';
+import { generateRoomCode } from './utilities/generateUtils.mjs';
 import { Room, retrieveCardInfo } from './utilities/gameClasses.mjs';
 import express from 'express';
 import { createServer } from 'http';
@@ -14,8 +14,17 @@ app.use(cors());
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*"
-  }
+    origin: "*",
+  
+  handlePreflightRequest: (req, res) => {
+    res.writeHead(200, {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,POST",
+      "Access-control-Allow-Headers": "my-custom-headers",
+      "Access-Control-Allow-Credentials": true
+    });
+    res.end();
+  }}
 });
 
 // will probably be changed to a database at some point
@@ -222,12 +231,6 @@ app.post('/createroom', (req, res) => {
   res.status(201).send({ newRoomCode });
 });
 
-// allows users to request a new uuid
-app.get('/uuid', (req, res) => {
-  const uuid = generateUuid();
-  console.log(`new UUID: ${uuid}`);
-  res.send({ uuid });
-});
 
 server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}...`);

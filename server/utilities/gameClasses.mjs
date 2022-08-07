@@ -262,30 +262,26 @@ import axios from 'axios';
   handleFoolingPoints() {
     console.log('Distributing points for fooling other players')
     const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCard);
+    const fakerIds = Object.keys(this.submittedCards);
     for (const fakeId of successfulFakes) {
-      const fakerId = Object.keys(this.submittedCards).filter(playerId => this.submittedCards[playerId].cardId === fakeId)[0];
+      const fakerId = fakerIds.filter(playerId => this.submittedCards[playerId].cardId === fakeId)[0];
       this.getPlayer(fakerId).incrementScore(1);
     }
   }
 
   scoreRound() {
-    const correctGuessers = Object.keys(this.guesses).filter(playerId => this.guesses[playerId] === this.storyCard);
+    const guessers = Object.keys(this.guesses);
+    const correctGuessers = guessers.filter(playerId => this.guesses[playerId] === this.storyCard);
     if (correctGuessers.length > 0 && correctGuessers.length < this.playerCount - 1) {
       this.handleSomeCorrectSomeIncorrect(correctGuessers);
     }
     else {
       this.handleAllOrNoneCorrect();
     }
-
     this.handleFoolingPoints()
-    console.log("scores")
-    for (const player of this.players) {
-      console.log(`${player.playerName}: ${player.score}`)
-    }
   }
    
   // ends the Scoring phase and starts a new Round if no victory
-  // if victory, returns players to Lobby
   endScoring(uuid) {
     if (!(this.isAbleToEndScoring(uuid))) {
       return false;
