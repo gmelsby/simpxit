@@ -23,26 +23,28 @@ export default function RulesModal() {
           <Modal.Title>Game Rules</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h5>Starting the game</h5>
+          <h5>Gameplay</h5>
             <p>
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
+              Each round, one player will be designated the storyteller. 
+              
+              That player chooses a card
+              and picks a word to go along with it. 
+              
+              The storyteller wants to pick a clue word obscure
+              enough so that not everyone picks the right card but obvious enough so that at least one
+              player guesses the right card.
+
+              Then every other player gets to pick a card from their own hand that they think could fool
+              other players into picking their card instead of the storyteller's.
+
+              Once all non-storyteller players have submitted a card, they all get to guess which submitted
+              card is the storyteller's.
             </p>
           <h5>Scoring</h5> 
-            <p>
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-              Rules Rules Rules Rules Rules. Rules rules rules.
-            </p>
+              <p>If everybody guesses the storyteller's card, the storyteller gets 0 points and all other players get 2 points.</p>
+              <p>If nobody guesses the storyteller's card, the storyteller gets 0 points and all other players get 2 points.</p>
+              <p>If at least one person but not everybody guesses the storyteller's card, the storyteller and players who guesssed correctly get 3 points.</p>
+              <p>If a non-story teller fools another player into guessing their card, they get 1 additional point per player fooled.</p>
         </Modal.Body>
         <Modal.Footer>
           <div className="col text-center">

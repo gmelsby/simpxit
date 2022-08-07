@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { v4 } from "uuid";
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
@@ -13,16 +13,15 @@ function App() {
 
   const [userId, setUserId] = useSessionStorage('image-app', '');
 
-  const getUuid = () => {
+  const generateUuid = useCallback(() => {
     setUserId(v4());
-  };
+  }, [setUserId]);
 
    useEffect(() => {
     if (userId === '') {
-       getUuid();
+       generateUuid();
     }
-  // eslint-disable-next-line
-  }, []);
+  }, [userId, generateUuid]);
 
   return (
     <>

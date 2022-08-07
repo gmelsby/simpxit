@@ -9,8 +9,8 @@ export default function NameModal({ currentName, changeName}) {
   const [showName, setShowName] = useState(false);
   const [newName, setNewName] = useState(currentName);
   
+  // enables automatic focus on form when modal pops up
   const nameForm = useRef(null);
-  
   useEffect(() => {
     if(showName) {
       nameForm.current.focus();

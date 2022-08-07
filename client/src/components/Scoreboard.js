@@ -20,7 +20,7 @@ export default function Scoreboard({ players, userId, targetScore }) {
         <Modal.Title>Scoreboard </Modal.Title>
       </Modal.Header>
       <Modal.Body className="text-center">
-        <h6>Target Score = {targetScore}</h6>
+        <h6>Target Score: {targetScore}</h6>
         <PlayerList players={players} userId={userId} scoreboard />
       </Modal.Body>
       <Modal.Footer>

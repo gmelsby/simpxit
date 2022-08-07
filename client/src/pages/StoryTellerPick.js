@@ -13,11 +13,11 @@ export default function StoryTellerPick({
 
   const [selectedCard, setSelectedCard] = useState(false);
   const [descriptor, setDescriptor] = useState("");
-     
+
   if (storyTeller.hand.length < handSize) {
     return (
       <Container className="text-center">
-          <Spinner className="mx-auto" animation="border" variant="primary" />
+          <Spinner className="mx-auto mt-5" animation="border" variant="primary" />
           <h5>Generating cards...</h5>
       </Container>
     )
@@ -46,7 +46,7 @@ export default function StoryTellerPick({
 
   return (
     <Container className="text-center">
-      <h3>{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h3>
+      <h3 className="mt-2">{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h3>
     </Container>
   );
 }

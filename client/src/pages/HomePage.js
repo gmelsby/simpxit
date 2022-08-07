@@ -17,6 +17,7 @@ export default function HomePage( { userId }) {
     return <Redirect push to={`/room/${enteredRoomId}`} />;
   }
   
+  // to make a new room before automatically being sent there
   const handleCreateRoom = async () => {
     const adminId = { userId };
     const response = await fetch('/createroom', {
@@ -48,10 +49,10 @@ export default function HomePage( { userId }) {
       <RulesModal />
           <Container align="center">
           <h1>Welcome to Greg's Image Game!</h1>
-          <p>To play, create a room or join an already existing room.</p>
+          <h5>To play, create a room or join an already existing room.</h5>
           <Button onClick={handleCreateRoom}>Create Room</Button>
 
-          <p>Join Existing Room</p>
+          <h5 className="mt-5">Join Existing Room</h5>
           <Form onSubmit={roomCodeSubmit}>
             <Form.Group>
               <Form.Label htmlFor="input-room-code">Room Code:</Form.Label>
@@ -63,7 +64,6 @@ export default function HomePage( { userId }) {
             </Form.Group>
           </Form>
       </Container>
-      <footer><p>UUID: {userId}</p></footer>
     </>
   );
 }

@@ -11,6 +11,7 @@ export default function CardInfoText({ cardInfo }) {
     );
   }
 
+  // each line of subtitles gets its own line
   const SubtitleDisplay = ({ subtitles }) => {
     return (
       <>

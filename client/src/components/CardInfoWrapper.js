@@ -11,6 +11,7 @@ export default function CardInfoWrapper({card}) {
       setCardInfo(data);
     }, [card]);
     
+  // only try to get card info if we don't already have it
   useEffect(() => {
     if (card && !cardInfo) {
       loadCardInfo()

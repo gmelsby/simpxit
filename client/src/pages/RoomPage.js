@@ -4,7 +4,6 @@ import { Alert, Spinner, Container } from 'react-bootstrap';
 import RulesModal  from '../components/RulesModal';
 import KickModal from '../components/KickModal';
 import NameModal from '../components/NameModal'
-import KickRedirect from '../components/KickRedirect';
 import LeaveRedirect from '../components/LeaveRedirect'
 import Scoreboard from '../components/Scoreboard';
 import Lobby from './Lobby.js';
@@ -72,14 +71,16 @@ export default function RoomPage({ userId }) {
     return(
       <Alert variant="warning">Error: {errorMessage}</Alert>);
   }
+  
   if (roomState.kickedPlayers.includes(userId)) {
-    return (<KickRedirect />);
+    return (<LeaveRedirect kick />);
   }
   
   if (!(roomState.players.map(player => player.playerId).includes(userId)) && leaveAttempt) {
     return (<LeaveRedirect />);
   }
 
+  // loading screen
   if (roomState.adminId === "placeholder") {
     return (
       <Container className="text-center my-5">

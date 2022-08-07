@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Col, Row, Container } from 'react-bootstrap';
 
 export default function PlayerList({ players, setKickUserId, userId, isAdmin, scoreboard }) {
+  // descending sort
   const playerList = scoreboard ? players.sort((p1, p2) => p2.score - p1.score ) : players;
   return (
   <Container>

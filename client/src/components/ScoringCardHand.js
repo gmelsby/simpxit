@@ -13,6 +13,7 @@ export default function ScoringCardHand({storyTeller,
     return players.filter(p => guesses[p.playerId] === cardId);
   }                                          
 
+  // makes sure storyteller is first in array
   const sortedPlayers = players.sort((p1, p2) => p1.playerId === storyTeller.playerId ? -1 : 1)
   const ScoringCards = sortedPlayers.map(p =>
           <ScoringCard key={p.playerId} player={p} card={submittedCards[p.playerId]}
