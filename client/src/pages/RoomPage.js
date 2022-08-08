@@ -44,7 +44,7 @@ export default function RoomPage({ userId }) {
     // Citation
     // Socket logic adapted from https://developer.okta.com/blog/2021/07/14/socket-io-react-tutorial
     // Date: 07/09/2022
-    const newSocket = io('127.0.0.1:3000');
+    const newSocket = io('https://greg-image-server.azurewebsites.net/');
     setSocket(newSocket);
 
     newSocket.emit('joinRoom', { roomId, userId }, error => {
