@@ -1,4 +1,5 @@
 import { generateUuid } from './generateUtils.mjs';
+import filterFrinkiac from './filterFrinkiac.mjs';
 import axios from 'axios';
 
  export class Room {
@@ -407,21 +408,23 @@ const newCard = async () => {
     const cardId = generateUuid();
     const info = await getNewCardInfo()
     console.log(`cardInfo: ${JSON.stringify(info)}`);
-    cardCache[cardId] = info.data;
-    const locator = cardCache[cardId].Image;
+    cardCache[cardId] = info;
+    const locator = cardCache[cardId].Locator;
     return { cardId, locator };
 }
 
 const getNewCardInfo = async () => {
-  return axios.get("http://localhost:8080")
+  return axios.get("https://frinkiac.com/api/random")
     .then(response => {
       if (response.status == 200) {
-        console.log(`received response: ${response.data}`);
-        return response.data;
+        console.log(response.data);
+        const filtered_data = filterFrinkiac(response.data);
+        console.log(`filtered: ${filtered_data}`);
+        return filtered_data;
       }
       else {
         console.log("received unexpected response");
-        throw new Error(`Received response code ${response.status} from microservice`);
+        throw new Error(`Received response code ${response.status} from frinkiac api`);
       }
     })
     .catch(err => {
