@@ -114,6 +114,7 @@ export default function RoomPage({ userId }) {
 
   return (
     <>
+      <p>{JSON.stringify(roomState)}</p>
       <RulesModal />
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />

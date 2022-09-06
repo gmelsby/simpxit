@@ -48,7 +48,7 @@ export default function HomePage( { userId }) {
     <>
       <RulesModal />
           <Container align="center">
-          <h1>Welcome to Greg's Image Game!</h1>
+          <h1>Simpsxit: A Simpsons Image Game!</h1>
           <h5>To play, create a room or join an already existing room.</h5>
           <Button onClick={handleCreateRoom}>Create Room</Button>
 
