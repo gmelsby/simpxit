@@ -23,11 +23,11 @@ export default function CardInfoText({ cardInfo }) {
 
   return (
     <>
-      <p><b>Episode:</b> {cardInfo.Episode}: {cardInfo.Title}</p>
+      <p><b>Episode:</b> {cardInfo.episode}: {cardInfo.title}</p>
       <p><b>Subtitles:</b></p>
-      <SubtitleDisplay subtitles={cardInfo.Subtitles} />
-      <p><b>Writer:</b> {cardInfo.Writer}</p>
-      <p><b>Director:</b> {cardInfo.Director}</p>
+      <SubtitleDisplay subtitles={cardInfo.subtitles} />
+      <p><b>Writer:</b> {cardInfo.writer}</p>
+      <p><b>Director:</b> {cardInfo.director}</p>
     </>
   );
 }

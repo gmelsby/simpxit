@@ -21,7 +21,7 @@ export default function RoomPage({ userId }) {
     adminId: "placeholder", 
     players: [{playerId: ' ', playerName: ''}, {playerId: userId}], 
     gamePhase: "lobby", 
-    submittedCards: {}, 
+    submittedCards: [], 
     playersToSubmit: [],
     kickedPlayers: [],
     handSize: 6, 
@@ -114,7 +114,6 @@ export default function RoomPage({ userId }) {
 
   return (
     <>
-      <p>{JSON.stringify(roomState)}</p>
       <RulesModal />
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />

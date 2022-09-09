@@ -15,18 +15,26 @@ export default function OtherPlayersPick({
                                         }) {
 
   const [selectedCard, setSelectedCard] = useState(false);
-  const submittedCard = submittedCards[userId];
+  const playerSubmittedCards = submittedCards.filter(c => c.submitter === userId);
+  const waitingOn = players.filter(p => !(Object.keys(submittedCards).includes(p.playerId)));
 
-  // executes if storyteller or player who has submitted a fake card
-  if (submittedCard) {
-    const waitingOn = players.filter(p => !(Object.keys(submittedCards).includes(p.playerId)));
+  // executes if storyteller 
+  if (storyTeller.playerId === userId) {
     return (
-        <CardInfoWaiting use={storyTeller.playerId === userId ? "storyTeller" : "deceive"} card={submittedCard} 
+        <CardInfoWaiting use="storyTeller" cards={playerSubmittedCards} 
           storyDescriptor={storyDescriptor} waitingOn={waitingOn} />
     )
   }
- 
 
+  const expectedCards = players.length === 3 ? 2 : 1;
+  // or player who has submitted a fake card
+  if (playerSubmittedCards.length === expectedCards) {
+     return (
+        <CardInfoWaiting use="deceive" cards={playerSubmittedCards} 
+          storyDescriptor={storyDescriptor} waitingOn={waitingOn} />
+    )
+
+  }
   
   const user = players.filter(p => p.playerId === userId)[0];
   

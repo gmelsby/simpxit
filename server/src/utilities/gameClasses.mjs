@@ -9,7 +9,7 @@ import axios from 'axios';
     this.storyCard = undefined;
     this.storyDescriptor = undefined;
     this.kickedPlayers = [];
-    this.submittedCards = {};
+    this.submittedCards = [];
     this.guesses = {};
     this.handSize = 6;
     this.maxPlayers = 6;
@@ -184,7 +184,9 @@ import axios from 'axios';
       return false;
     }
     this.players[this.playerTurn].playCard(card.cardId);
-    this.submittedCards[uuid] = card;
+    // adds playerId to the submitted object
+    card.submitter = uuid;
+    this.submittedCards.push(card);
     this.storyCard = card.cardId;
     this.storyDescriptor = descriptor;
     this.advanceGamePhase();
@@ -193,27 +195,49 @@ import axios from 'axios';
    
   // submits other players cards
   submitOtherCard(uuid, card) {
-    if (!(this.isOtherCardSubmittable(uuid))) {
+    if (!(this.isOtherCardSubmittable(uuid, card.cardId))) {
       return false;
     }
-    this.submittedCards[uuid] = card;
+    // adds playerId to the submitted object
+    card.submitter = uuid;
+    this.submittedCards.push(card);
     // remove card from player hand
     this.players.filter(p => p.playerId === uuid)[0].playCard(card.cardId);
-    if (Object.keys(this.submittedCards).length === this.playerCount) {
+    if (this.submittedCards.length === this.expectedSubmitCount) {
       this.advanceGamePhase();
     }
     return true;
   }
 
+  // returns number of cards expected to be submitted during a round
+  get expectedSubmitCount() {
+    if (this.playerCount === 3) {
+      return 5;
+    }
+    return this.playerCount;
+  }
+
   // checks whether a card submission from uuid is able to proceed, returns true if so, false if not
-  isOtherCardSubmittable(uuid) {
+  isOtherCardSubmittable(uuid, cardId) {
     if (!this.isCurrentPlayer(uuid) || this.gamePhase !== "otherPlayersPick") {
       return false;
     }
-    // player has already submitted a card!
-    if (Object.keys(this.submittedCards).includes(uuid)) {
+
+    // check that card is in player's hand
+    if (!this.players.filter(p => p.playerId === uuid)[0].isCardInHand(cardId)) {
       return false;
     }
+
+    // player has already submitted a card!
+    if (this.playerCount > 3 && this.submittedCards.map(c => c.submitter).includes(uuid)) {
+      return false;
+    }
+
+    // three player case: players are allowed to submit 2 cards
+    if (this.playerCount === 3 && this.submittedCards.filter(c => c.submitter === uuid).length > 2) {
+      return false;
+    }
+
     return true;
   }
    
@@ -320,7 +344,7 @@ import axios from 'axios';
       return;
     }
     console.log("starting next round");
-    destroyCards(Object.values(this.submittedCards).map(c => c.cardId));
+    destroyCards(this.submittedCards.map(c => c.cardId));
     this.resetRoundValues();
     for (const player of this.players) {
       player.resetRoundScore();
@@ -332,7 +356,7 @@ import axios from 'axios';
     this.playerTurn += 1;
     this.playerTurn %= this.playerCount;
     this.readyForNextRound = [];
-    this.submittedCards = {};
+    this.submittedCards = [];
     this.guesses = {};
   }
 
@@ -340,7 +364,7 @@ import axios from 'axios';
     this.gamePhase = "lobby";
     this.storyCard = undefined;
     this.storyDescriptor = undefined;
-    destroyCards(Object.values(this.submittedCards).map(c => c.cardId));
+    destroyCards(this.submittedCards.map(c => c.cardId));
     this.submittedCards = {};
     this.guesses = {};
     this.playerTurn = 0;
@@ -369,7 +393,11 @@ export class Player {
   playCard(cardId) {
     this.hand = this.hand.filter(card => card.cardId !== cardId);
   }
-  
+
+  isCardInHand(cardId) {
+    return this.hand.map(c => c.cardId).includes(cardId);
+  }
+
   incrementScore(points) {
     this.score += points;
     this.scoredThisRound += points;
@@ -409,7 +437,7 @@ const newCard = async () => {
     const info = await getNewCardInfo()
     console.log(`cardInfo: ${JSON.stringify(info)}`);
     cardCache[cardId] = info;
-    const locator = cardCache[cardId].Locator;
+    const locator = cardCache[cardId].locator;
     return { cardId, locator };
 }
 
