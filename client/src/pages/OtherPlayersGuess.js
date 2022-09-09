@@ -26,7 +26,8 @@ export default function OtherPlayersGuess({
 
   // function for shuffling cards 
   const shuffle = useCallback(() => {
-    const shuffled = Object.keys(submittedCards).filter(id => id !== userId).map(id => submittedCards[id]).slice(0);
+    // copies filtered 
+    const shuffled = submittedCards.filter(c => c.submitter !== userId);
     // citation: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -52,7 +53,7 @@ export default function OtherPlayersGuess({
       const guessedCard = Object.values(submittedCards).filter(c => c.cardId === guessedCardId)[0];
 
       return (
-        <CardInfoWaiting className="my-4" use="guess" card={guessedCard} storyDescriptor={storyDescriptor} 
+        <CardInfoWaiting className="my-4" use="guess" cards={[guessedCard]} storyDescriptor={storyDescriptor} 
           waitingOn={waitingOn} />
       );
     }

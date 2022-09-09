@@ -12,6 +12,11 @@ export default function OtherPlayerModal({
     setSelectedCard(false);
   };
 
+  const submitAndClose = () => {
+    handleSubmit();
+    setSelectedCard(false);
+  }
+
   return (
     <Modal show={selectedCard} onHide={handleCloseSelect}>
       <Modal.Header closeButton>
@@ -32,7 +37,7 @@ export default function OtherPlayerModal({
           <Button variant="secondary" onClick={handleCloseSelect}>
             Close
           </Button>
-          <Button onClick={handleSubmit}>Submit</Button>
+          <Button onClick={submitAndClose}>Submit</Button>
         </Stack>
       </Modal.Footer>
     </Modal>
