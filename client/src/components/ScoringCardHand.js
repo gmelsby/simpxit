@@ -15,7 +15,6 @@ export default function ScoringCardHand({storyTeller,
 
   return (
     <>
-      {JSON.stringify(submittedCards.map(c => c.cardId))}
       <Row xs={1} md={Math.min(3, Object.values(submittedCards).length)} className="g-2 mx-5 my-3 d-none d-md-flex justify-content-center">
           {submittedCards.map(c => 
            <ScoringCard key={c.cardId} player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
