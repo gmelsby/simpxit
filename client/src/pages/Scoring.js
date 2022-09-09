@@ -28,15 +28,15 @@ export default function Scoring({
     const isReady = readyPlayers.includes(userId);
     const waitingOn = players.filter(p => !(readyPlayers.includes(p.playerId)));
 
-    const correct_guesses = Object.values(guesses).filter(c => c === storyCard).length;
+    const correctGuesses = Object.values(guesses).filter(c => c === storyCard);
 
-    let topMessage = `Some players but not everyone guessed the storyteller's card.`
-    if (correct_guesses === 0) {
-      topMessage = `Nobody guessed the storyteller's card.`
+    let topMessage = `Nobody guessed the storyteller's card.`;
+    if (correctGuesses.length < 0 && correctGuesses.length < Object.values(guesses).length) {
+      topMessage = `${waitingOn.map(p => p.playerName).join(", ")} guessed the storyteller's card.`;
     }
 
-    else if (correct_guesses === Object.values(guesses).length) {
-      topMessage = `Everyone guessed the storyteller's card.`
+    else if (correctGuesses === Object.values(guesses).length) {
+      topMessage = `Everyone guessed the storyteller's card.`;
     }
 
 

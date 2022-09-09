@@ -13,26 +13,24 @@ export default function ScoringCardHand({storyTeller,
     return players.filter(p => guesses[p.playerId] === cardId);
   }                                          
 
-  // makes sure storyteller is first in array
-  const sortedPlayers = players.sort((p1, p2) => p1.playerId === storyTeller.playerId ? -1 : 1)
-  const ScoringCards = sortedPlayers.map(p =>
-          <ScoringCard key={p.playerId} player={p} card={submittedCards[p.playerId]}
-            guessedPlayers={playersWhoGuessed(submittedCards[p.playerId].cardId)} 
-            isStoryTeller={p.playerId === storyTeller.playerId} />
-        );
-  
-
   return (
     <>
+      {JSON.stringify(submittedCards.map(c => c.cardId))}
       <Row xs={1} md={Math.min(3, Object.values(submittedCards).length)} className="g-2 mx-5 my-3 d-none d-md-flex justify-content-center">
-        {ScoringCards}
+          {submittedCards.map(c => 
+           <ScoringCard key={c.cardId} player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
+            guessedPlayers={playersWhoGuessed(c.cardId)} 
+            isStoryTeller={c.submitter === storyTeller.playerId} />
+          )}
       </Row>
 
       <Carousel className="d-xs-flex d-md-none" interval={null} variant="dark">
-      {ScoringCards.map(card => 
-        <Carousel.Item key={card.cardId}> 
+      {submittedCards.map(c => 
+        <Carousel.Item key={c.cardId}> 
           <Row className="mx-5">
-            {card}
+            <ScoringCard player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
+            guessedPlayers={playersWhoGuessed(c.cardId)} 
+            isStoryTeller={c.submitter === storyTeller.playerId} />
           </Row>
         </Carousel.Item>
       )}

@@ -268,7 +268,7 @@ import axios from 'axios';
 
   // assigns points for case where some players guessed the correct card and some did not
   handleSomeCorrectSomeIncorrect(correctGuessers) {
-      console.log('Some players guessed correctly, some did not')
+      console.log('Some players guessed correctly, some did not');
       this.players[this.playerTurn].incrementScore(3);
       for (const correctGuesser of correctGuessers) {
         this.getPlayer(correctGuesser).incrementScore(3);
@@ -277,7 +277,7 @@ import axios from 'axios';
 
   // assigns points for case where all or no players guessed the correct card
   handleAllOrNoneCorrect() {
-    console.log('Everyone but the storyteller gets 2 points')
+    console.log('Everyone but the storyteller gets 2 points');
     for (const nonStoryTeller of this.players.filter(p => !Object.is(p, this.storyTeller))) {
       nonStoryTeller.incrementScore(2);
     }
@@ -285,11 +285,10 @@ import axios from 'axios';
 
   // assigns points to players who fooled other players.
   handleFoolingPoints() {
-    console.log('Distributing points for fooling other players')
+    console.log('Distributing points for fooling other players');
     const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCard);
-    const fakerIds = Object.keys(this.submittedCards);
     for (const fakeId of successfulFakes) {
-      const fakerId = fakerIds.filter(playerId => this.submittedCards[playerId].cardId === fakeId)[0];
+      const fakerId = this.submittedCards.filter(c => c.cardId === fakeId)[0].submitter;
       this.getPlayer(fakerId).incrementScore(1);
     }
   }
