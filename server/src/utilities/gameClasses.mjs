@@ -364,10 +364,13 @@ import axios from 'axios';
     this.storyCard = undefined;
     this.storyDescriptor = undefined;
     destroyCards(this.submittedCards.map(c => c.cardId));
-    this.submittedCards = {};
+    this.submittedCards = [];
     this.guesses = {};
     this.playerTurn = 0;
     this.readyForNextRound = [];
+    for (const p of this.players) {
+      p.resetAll();
+    }
   }
 
 }
@@ -406,6 +409,7 @@ export class Player {
     this.scoredThisRound = 0;
   }
 
+  // clears all game-specific values for a player
   resetAll() {
     this.score = 0;
     this.scoredThisRound = 0;
