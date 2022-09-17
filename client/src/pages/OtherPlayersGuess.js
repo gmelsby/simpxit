@@ -1,4 +1,4 @@
-import { React, useState, useCallback, useEffect } from 'react';
+import { React, useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
 import OtherPlayerModal from '../components/OtherPlayerModal.js';
@@ -24,9 +24,8 @@ export default function OtherPlayersGuess({
 
   const [otherCards, setOtherCards] = useState([]);
 
-  // function for shuffling cards 
-  const shuffle = useCallback(() => {
-    // copies filtered 
+  // shuffles cards on load
+  useEffect(() => {
     const shuffled = submittedCards.filter(c => c.submitter !== userId);
     // citation: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -34,12 +33,11 @@ export default function OtherPlayersGuess({
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     setOtherCards(shuffled);
-  }, [submittedCards, userId]);
-
-  // shuffles cards on load
-  useEffect(() => {
-    shuffle();
-  }, [shuffle]);
+  // change dependency array when socket updates just the values that changed
+  // currently each update updates every object, even when the same values
+  // this causes rerenders when specifying submittedCards as a dependency
+  // eslint-disable-next-line
+  }, []);
 
   
   if (userId !== storyTeller.playerId) {
