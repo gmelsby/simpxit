@@ -6,7 +6,7 @@ export default function CardInfoWrapper({card}) {
   const [cardInfo, setCardInfo] = useState(false);
 
   const loadCardInfo = useCallback(async () => {
-      const response = await fetch(`/cardinfo/${card.cardId}`);
+      const response = await fetch(`https://gregimagegameserver.azurewebsites.net/cardinfo/${card.cardId}`);
       const data = await response.json();
       setCardInfo(data);
     }, [card]);
