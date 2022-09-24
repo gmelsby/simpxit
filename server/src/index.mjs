@@ -31,7 +31,7 @@ const io = new Server(server, {
 const rooms = {};
 
 io.on('connection', socket => {
-  console.log('connection made');
+  console.log(`connection made: ${socket.id}`);
 
   socket.on('joinRoom', (request, callback) => {
     const { roomId, userId } = request;

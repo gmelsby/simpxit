@@ -13,10 +13,13 @@ import OtherPlayersGuess from './OtherPlayersGuess';
 import Scoring from './Scoring';
 import { io } from "socket.io-client";
 
+const socket = io(process.env.REACT_APP_FETCH_ENDPOINT);
+
 export default function RoomPage({ userId }) {
   
   const { roomId } = useParams();
-  const [socket, setSocket] = useState(null);
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [socketId, setSocketId] = useState(socket.id);
   const [roomState, setRoomState] = useState({
     adminId: "placeholder", 
     players: [{playerId: ' ', playerName: ''}, {playerId: userId}], 
@@ -40,32 +43,49 @@ export default function RoomPage({ userId }) {
     if (!userId) {
       return;
     }
-    
-    // Citation
-    // Socket logic adapted from https://developer.okta.com/blog/2021/07/14/socket-io-react-tutorial
-    // Date: 07/09/2022
-    const newSocket = io(process.env.REACT_APP_FETCH_ENDPOINT);
-    setSocket(newSocket);
 
-    newSocket.emit('joinRoom', { roomId, userId }, error => {
-      if(error) {
-        setErrorMessage(error)
-      }
+    socket.on('connect', () => {
+      setIsConnected(true);
+      setSocketId(socket.id);
     });
-    // close socket on teardown
-    return () => newSocket.close();
 
-  }, [userId, roomId, setSocket])
-  
-  useEffect(() => {
-    if (!socket) {
-      return;
-    }
+    socket.on('disconnect', () => {
+      setIsConnected(false);
+    });
 
     socket.on("receiveRoomState", data => {
       setRoomState(data);
     })
-  }, [socket]);
+   
+    socket.emit('joinRoom', { roomId, userId }, error => {
+      if(error) {
+        setErrorMessage(error)
+      }
+    });
+
+    return () => {
+      setSocketId(undefined);
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('receiveRoomState');
+      socket.close();
+    }
+
+  }, [userId, roomId])
+
+  // queries for up-to-date room info
+  useEffect(() => {
+    if(!userId || !isConnected) {
+      return;
+    }
+
+    socket.emit('joinRoom', { roomId, userId }, error => {
+      if(error) {
+        setErrorMessage(error)
+      }
+    });
+
+  }, [isConnected, roomId, userId]);
   
   if (errorMessage) {
     return(
@@ -114,6 +134,8 @@ export default function RoomPage({ userId }) {
 
   return (
     <>
+      <p>Connected: {`${isConnected}`}</p>
+      <p>SocketId: {`${socketId}`}</p>
       <RulesModal />
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
