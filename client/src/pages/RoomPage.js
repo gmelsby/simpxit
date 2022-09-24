@@ -61,9 +61,6 @@ export default function RoomPage({ userId }) {
     setSocket(newSocket);
 
     return () => {
-      newSocket.off('connect');
-      newSocket.off('disconnect');
-      newSocket.off('receiveRoomState');
       newSocket.close();
     }
 

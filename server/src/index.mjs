@@ -13,6 +13,8 @@ app.use(express.json());
 app.use(cors());
 const server = createServer(app);
 const io = new Server(server, {
+  pingTimeout:5000,
+  pingInterval:6000,
   cors: {
     origin: "*",
   
