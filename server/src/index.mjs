@@ -50,6 +50,9 @@ io.on('connection', socket => {
     if (rooms[roomId].isCurrentPlayer(userId)) {
       console.log(`${userId} is current player`);
       socket.join(roomId);
+      io.to(socket.id).emit("receiveRoomState", rooms[roomId]);
+      console.log(`sending room data to socketid ${socket.id}`);
+      return;
     }
     
     else {
