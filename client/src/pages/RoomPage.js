@@ -43,7 +43,7 @@ export default function RoomPage({ userId }) {
       return;
     }
 
-    const newSocket = io(process.env.REACT_APP_FETCH_ENDPOINT);
+    const newSocket = io('https://gregimagegameserver.azurewebsites.net');
 
 
     newSocket.on('connect', () => {
