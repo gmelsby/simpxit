@@ -28,7 +28,8 @@ jobs:
 
       - name: remove extraneous files
         run: |
-          find ./client -mindepth 1 ! -regex '^./client/build\(/.*\)?' - delete
+          cd client
+          rm -vrf !("build")
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
