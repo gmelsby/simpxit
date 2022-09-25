@@ -20,7 +20,7 @@ export default function HomePage( { userId }) {
   // to make a new room before automatically being sent there
   const handleCreateRoom = async () => {
     const adminId = { userId };
-    const response = await fetch(`https://gregimagegameserver.azurewebsites.net/createroom`, {
+    const response = await fetch(`/createroom`, {
       method: 'POST',
       body: JSON.stringify(adminId),
       headers: {

@@ -4,6 +4,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from "cors";
+import path from 'node:path';
 
 
 const PORT = process.env.PORT || 3000;
@@ -11,6 +12,8 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
 app.use(cors());
+// allows static content from react app build
+app.use(express.static(path.resolve(path.dirname(''), './client/build')));
 const server = createServer(app);
 const io = new Server(server, {
   pingTimeout:5000,
@@ -234,6 +237,11 @@ app.post('/createroom', (req, res) => {
   
   rooms[newRoomCode] = new Room(uuid);
   res.status(201).send({ newRoomCode });
+});
+
+// serves react app for all other routes
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(path.dirname(''), './client/build', 'index.html'))
 });
 
 
