@@ -127,8 +127,7 @@ export default function RoomPage({ userId }) {
 
   return (
     <>
-      <p>Connected: {`${isConnected}`}</p>
-      <p>SocketId: {`${socket?.id}`}</p>
+      {!isConnected && <p>Disconnected: attempting to reconnect`</p>}
       <RulesModal />
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
