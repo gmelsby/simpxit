@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "devstart": "nodemon src/index.mjs"
+    "start": "node server/index.mjs",
+    "devstart": "nodemon server/index.mjs",
+    "build": "cd client && npm i && npm run build"
   },
   "keywords": [],
   "author": "",
@@ -22,5 +24,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.19"
+  },
+  "nodemonConfig": {
+    "ignore": ["client/*"]
   }
 }
