@@ -249,7 +249,7 @@ import axios from 'axios';
     if (Object.keys(this.guesses).length === this.playerCount - 1) {
       this.scoreRound();
       this.advanceGamePhase();
-      console.log("advancing game phase")
+      // console.log("advancing game phase")
     }
     return true;
   }
@@ -268,7 +268,7 @@ import axios from 'axios';
 
   // assigns points for case where some players guessed the correct card and some did not
   handleSomeCorrectSomeIncorrect(correctGuessers) {
-      console.log('Some players guessed correctly, some did not');
+      // console.log('Some players guessed correctly, some did not');
       this.players[this.playerTurn].incrementScore(3);
       for (const correctGuesser of correctGuessers) {
         this.getPlayer(correctGuesser).incrementScore(3);
@@ -277,7 +277,7 @@ import axios from 'axios';
 
   // assigns points for case where all or no players guessed the correct card
   handleAllOrNoneCorrect() {
-    console.log('Everyone but the storyteller gets 2 points');
+    // console.log('Everyone but the storyteller gets 2 points');
     for (const nonStoryTeller of this.players.filter(p => !Object.is(p, this.storyTeller))) {
       nonStoryTeller.incrementScore(2);
     }
@@ -285,7 +285,7 @@ import axios from 'axios';
 
   // assigns points to players who fooled other players.
   handleFoolingPoints() {
-    console.log('Distributing points for fooling other players');
+    // console.log('Distributing points for fooling other players');
     const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCard);
     for (const fakeId of successfulFakes) {
       const fakerId = this.submittedCards.filter(c => c.cardId === fakeId)[0].submitter;
@@ -342,7 +342,7 @@ import axios from 'axios';
       this.resetToLobby();
       return;
     }
-    console.log("starting next round");
+    // console.log("starting next round");
     destroyCards(this.submittedCards.map(c => c.cardId));
     this.resetRoundValues();
     for (const player of this.players) {
@@ -422,9 +422,9 @@ export class Player {
 // function to remove played cards from cache
 const destroyCards = cardIds => {
   for (const cardId of cardIds){
-    console.log(`deleting card ${cardId}`)
+    // console.log(`deleting card ${cardId}`)
     delete cardCache[cardId];
-    console.log(`removed cardId ${cardId}`);
+    // console.log(`removed cardId ${cardId}`);
   }
 }
 
@@ -438,7 +438,7 @@ export function retrieveCardInfo(cardId) {
 const newCard = async () => {
     const cardId = generateUuid();
     const info = await getNewCardInfo()
-    console.log(`cardInfo: ${JSON.stringify(info)}`);
+    // console.log(`cardInfo: ${JSON.stringify(info)}`);
     cardCache[cardId] = info;
     const locator = cardCache[cardId].locator;
     return { cardId, locator };
@@ -448,13 +448,13 @@ const getNewCardInfo = async () => {
   return axios.get("https://frinkiac.com/api/random")
     .then(response => {
       if (response.status == 200) {
-        console.log(response.data);
+        // console.log(response.data);
         const filtered_data = filterFrinkiac(response.data);
-        console.log(`filtered: ${filtered_data}`);
+        // console.log(`filtered: ${filtered_data}`);
         return filtered_data;
       }
       else {
-        console.log("received unexpected response");
+        // console.log("received unexpected response");
         throw new Error(`Received response code ${response.status} from frinkiac api`);
       }
     })
