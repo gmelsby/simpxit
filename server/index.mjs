@@ -156,7 +156,7 @@ io.on('connection', socket => {
   
   socket.on("submitStoryCard", request => {
     const { roomId, userId, selectedCard, descriptor } = request;
-    if (rooms[roomId] && rooms[roomId].submitStoryCard(userId, selectedCard, descriptor)) {
+    if (rooms[roomId] && rooms[roomId].submitStoryCard(userId, selectedCard, descriptor.trim())) {
       //console.log(`Story card ${selectedCard.cardId} submitted by ${userId}`);
       io.to(roomId).emit("receiveRoomState", rooms[roomId]);
     }
