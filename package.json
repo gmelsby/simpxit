@@ -17,6 +17,7 @@
     "@types/node": "^18.7.13",
     "axios": "^0.27.2",
     "express": "^4.18.1",
+    "helmet": "^6.0.0",
     "mongoose": "^6.5.3",
     "socket.io": "^4.5.1",
     "typescript": "^4.8.2",
@@ -26,6 +27,8 @@
     "nodemon": "^2.0.19"
   },
   "nodemonConfig": {
-    "ignore": ["client/*"]
+    "ignore": [
+      "client/*"
+    ]
   }
 }

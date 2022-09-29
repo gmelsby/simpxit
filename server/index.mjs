@@ -1,6 +1,7 @@
 import { generateRoomCode } from './utilities/generateUtils.mjs';
 import { Room, retrieveCardInfo } from './utilities/gameClasses.mjs';
 import express from 'express';
+import helmet from 'helmet';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from "cors";
@@ -12,27 +13,19 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(helmet());
+
 // allows static content from react app build
 app.use(express.static(path.resolve(path.dirname(''), './client/build')));
+
 const server = createServer(app);
 const io = new Server(server, {
   pingTimeout:5000,
   pingInterval:6000,
-  cors: {
-    origin: "*",
-  
-  handlePreflightRequest: (req, res) => {
-    res.writeHead(200, {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET,POST",
-      "Access-control-Allow-Headers": "my-custom-headers",
-      "Access-Control-Allow-Credentials": true
-    });
-    res.end();
-  }}
-});
+  }
+);
 
-// will probably be changed to a database at some point
+// will probably be changed to a database/redis? at some point
 const rooms = {};
 
 io.on('connection', socket => {
