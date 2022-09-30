@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import RulesModal from '../components/RulesModal';
-import ButtonWrapper from '../components/ButtonWrapper';
+import ButtonTimer from '../components/ButtonTimer';
 
 
 export default function HomePage( { userId }) {
@@ -51,7 +51,7 @@ export default function HomePage( { userId }) {
           <Container align="center">
           <h1>Simpsxit: A Simpsons Image Game!</h1>
           <h5>To play, create a room or join an already existing room.</h5>
-          <ButtonWrapper onClick={handleCreateRoom}>Create Room</ButtonWrapper>
+          <ButtonTimer onClick={handleCreateRoom}>Create Room</ButtonTimer>
 
           <h5 className="mt-5">Join Existing Room</h5>
           <Form onSubmit={roomCodeSubmit}>
@@ -61,7 +61,7 @@ export default function HomePage( { userId }) {
                 required size="4" maxLength="4" placeholder="XYZW" pattern="[A-Z]{4}"
                 value={enteredRoomId}
                 onChange={e => setEnteredRoomId(e.target.value.toUpperCase())} />
-              <Button type="submit">Join!</Button>
+              <Button type="submit" disabled={enteredRoomId.length !== 4}>Join!</Button>
             </Form.Group>
           </Form>
       </Container>

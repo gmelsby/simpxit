@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import CardInfoWaiting from '../components/CardInfoWaiting.js';
 import Hand from '../components/Hand.js';
@@ -15,6 +15,13 @@ export default function OtherPlayersPick({
                                         }) {
 
   const [selectedCard, setSelectedCard] = useState(false);
+  const user = players.find(p => p.playerId === userId);
+
+  // resets selected card if a card has been submitted
+  useEffect(() => {
+    setSelectedCard(false);
+  }, [user.hand.length]);
+  
   const playerSubmittedCards = submittedCards.filter(c => c.submitter === userId);
   const expectedCards = players.length === 3 ? 2 : 1;
   const waitingOn = players.filter(p => p.playerId !== storyTeller.playerId && submittedCards.filter(c => c.submitter === p.playerId).length < expectedCards);
@@ -36,7 +43,6 @@ export default function OtherPlayersPick({
 
   }
   
-  const user = players.filter(p => p.playerId === userId)[0];
   
   const handleSubmit = () => {
     if (selectedCard) {
@@ -52,7 +58,7 @@ export default function OtherPlayersPick({
       <Container className="text-center">
         <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
         <h5>Pick a card from your hand to fool the other players!</h5>
-        <Hand hand={user.hand} selectedCard={selectedCard} setSelectedCard={setSelectedCard} />
+        <Hand hand={user.hand} setSelectedCard={setSelectedCard} />
       </Container>
     </>
   );

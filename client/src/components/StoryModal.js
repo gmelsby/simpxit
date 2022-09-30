@@ -1,5 +1,6 @@
 import { React, useEffect, useRef } from 'react';
-import { Button, Form, Image, Modal, Col} from 'react-bootstrap';
+import { Form, Image, Modal, Col} from 'react-bootstrap';
+import ButtonTimer from './ButtonTimer';
 
 export default function StoryModal({
                                     selectedCard,
@@ -41,7 +42,7 @@ export default function StoryModal({
               ref={descriptionForm} />
             </Col>
             <Col>
-              <Button type="submit">Submit</Button>
+              <ButtonTimer type="submit" disabled={descriptor.length < 1}>Submit</ButtonTimer>
             </Col>
         </Modal.Footer>
       </Form>

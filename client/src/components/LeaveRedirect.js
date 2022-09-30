@@ -6,6 +6,7 @@ export default function LeaveRedirect({ kick }) {
   
   const [leave, setLeave] = useState(false);
 
+  // timer for displaying before redirect
   useEffect(() => {
     setTimeout(() => {
       setLeave(true);

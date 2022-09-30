@@ -1,4 +1,5 @@
 import { Button, Stack, Image, Modal } from 'react-bootstrap';
+import ButtonTimer from '../components/ButtonTimer';
 
 export default function OtherPlayerModal({
                                     use,
@@ -12,9 +13,8 @@ export default function OtherPlayerModal({
     setSelectedCard(false);
   };
 
-  const submitAndClose = () => {
+  const submitCard = () => {
     handleSubmit();
-    setSelectedCard(false);
   }
 
   return (
@@ -37,7 +37,7 @@ export default function OtherPlayerModal({
           <Button variant="secondary" onClick={handleCloseSelect}>
             Close
           </Button>
-          <Button onClick={submitAndClose}>Submit</Button>
+          <ButtonTimer onClick={submitCard}>Submit</ButtonTimer>
         </Stack>
       </Modal.Footer>
     </Modal>

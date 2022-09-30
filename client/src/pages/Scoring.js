@@ -1,5 +1,6 @@
 import React from 'react';
-import { Container, Button } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
+import ButtonTimer from '../components/ButtonTimer';
 import ScoringCardHand from '../components/ScoringCardHand';
 import WaitingOn from '../components/WaitingOn';
 
@@ -48,8 +49,8 @@ export default function Scoring({
             <ScoringCardHand storyTeller={storyTeller} players={players} submittedCards={submittedCards} guesses={guesses} />
         </Container>
         <Container className="my-4 text-center">
-          {!(winner) && !(isReady) && <Button onClick={handleReady}>Ready for Next Round</Button>}
-          {winner && !(isReady) && <Button onClick={handleReady}>Return to Room Lobby</Button>}
+          {!(winner) && !(isReady) && <ButtonTimer onClick={handleReady}>Ready for Next Round</ButtonTimer>}
+          {winner && !(isReady) && <ButtonTimer onClick={handleReady}>Return to Room Lobby</ButtonTimer>}
           {isReady && <WaitingOn waitingOn={waitingOn} />}
         </Container>
       </>

@@ -1,10 +1,22 @@
 import { Button, Spinner } from 'react-bootstrap';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-export default function ButtonWrapper(props) {
+/*
+/ Wrapp
+/
+*/
+export default function ButtonTimer(props) {
+  // copy props and store children seperately
   const buttonProps = {...props};
   const children = buttonProps.children;
   delete buttonProps.children;
+
+
+  // handles clearing timeout when component unmounted
+  const timeoutRef = useRef(null);
+  useEffect(() => {
+    return () => clearTimeout(timeoutRef.current);
+  }, []);
 
   const [recentlyClicked, setRecentlyClicked] = useState(false);
 
@@ -15,10 +27,11 @@ export default function ButtonWrapper(props) {
       props.onClick();
     }
 
-    setTimeout(() => setRecentlyClicked(false), 6000);
+    // default is 6 seconds unless props.timer is defined
+    timeoutRef.current = setTimeout(() => setRecentlyClicked(false), props.timer || 6000);
   }
 
-  buttonProps.disabled = recentlyClicked;
+  buttonProps.disabled = props.disabled || recentlyClicked;
   
   if (recentlyClicked) {
     return (
