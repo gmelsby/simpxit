@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import RulesModal from '../components/RulesModal';
+import ButtonWrapper from '../components/ButtonWrapper';
 
 
 export default function HomePage( { userId }) {
@@ -50,7 +51,7 @@ export default function HomePage( { userId }) {
           <Container align="center">
           <h1>Simpsxit: A Simpsons Image Game!</h1>
           <h5>To play, create a room or join an already existing room.</h5>
-          <Button onClick={handleCreateRoom}>Create Room</Button>
+          <ButtonWrapper onClick={handleCreateRoom}>Create Room</ButtonWrapper>
 
           <h5 className="mt-5">Join Existing Room</h5>
           <Form onSubmit={roomCodeSubmit}>

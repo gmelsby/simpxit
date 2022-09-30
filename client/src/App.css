@@ -1,8 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto");
+@import url('https://fonts.googleapis.com/css?family=Tangerine');
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
 
-.body {
+body {
   padding:0;
   margin:0;
   height:100%;
+  font-family:"Roboto", sans-serif;
 }
 
 .selectable:hover {

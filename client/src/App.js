@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { v4 } from "uuid";
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
+import './App.css';
 import {BrowserRouter, Route, Switch } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RoomPage from './pages/RoomPage';
