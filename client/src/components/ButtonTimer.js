@@ -31,6 +31,7 @@ export default function ButtonTimer(props) {
     timeoutRef.current = setTimeout(() => setRecentlyClicked(false), props.timer || 6000);
   }
 
+  // keep button disabled if props indicate, otherwise disable when recently clicked
   buttonProps.disabled = props.disabled || recentlyClicked;
   
   if (recentlyClicked) {
