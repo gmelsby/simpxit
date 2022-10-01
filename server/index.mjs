@@ -2,6 +2,7 @@ import { generateRoomCode } from './utilities/generateUtils.mjs';
 import { Room, retrieveCardInfo } from './utilities/gameClasses.mjs';
 import roomCleaner from './utilities/roomCleaner.mjs';
 import express from 'express';
+import helmet from 'helmet';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from "cors";
@@ -12,6 +13,15 @@ const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(express.json());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "img-src": ["'self'", "https://frinkiac.com"]
+    }
+  },
+  crossOriginEmbedderPolicy: false
+}));
 app.use(cors());
 
 // allows static content from react app build
