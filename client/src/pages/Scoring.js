@@ -17,8 +17,7 @@ export default function Scoring({
                                  targetScore
                                  }) {
 
-    const handleReady = e => {
-      e.preventDefault()
+    const handleReady = () => {
       if (!(isReady)) {
         socket.emit('endScoring', {roomId, userId});
       }

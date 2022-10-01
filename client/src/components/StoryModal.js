@@ -33,7 +33,10 @@ export default function StoryModal({
       <Modal.Body>
         <Image src={selectedCard.locator} fluid />
       </Modal.Body>
-      <Form>
+      <Form onSubmit={e => {
+                e.preventDefault();
+                handleSubmit();
+              }}>
         <Modal.Footer>
             <Col xs={8}>
               <Form.Control type="text" required name="descriptor"
