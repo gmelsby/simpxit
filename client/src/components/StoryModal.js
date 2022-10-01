@@ -15,6 +15,7 @@ export default function StoryModal({
     setDescriptor("");
   };
 
+
   const descriptionForm = useRef(null);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function StoryModal({
       <Modal.Body>
         <Image src={selectedCard.locator} fluid />
       </Modal.Body>
-      <Form onSubmit={handleSubmit}>
+      <Form>
         <Modal.Footer>
             <Col xs={8}>
               <Form.Control type="text" required name="descriptor"
@@ -42,7 +43,7 @@ export default function StoryModal({
               ref={descriptionForm} />
             </Col>
             <Col>
-              <ButtonTimer type="submit" disabled={descriptor.length < 1}>Submit</ButtonTimer>
+              <ButtonTimer onClick={handleSubmit} disabled={descriptor.length < 1}>Submit</ButtonTimer>
             </Col>
         </Modal.Footer>
       </Form>

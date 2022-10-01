@@ -24,12 +24,11 @@ export default function StoryTellerPick({
   }
 
   if (userId === storyTeller.playerId) {
-    const handleSubmit = e => {
-      e.preventDefault()
+    const handleSubmit = () => {
       if (selectedCard) {
         socket.emit('submitStoryCard', {roomId, userId, selectedCard, descriptor} );
       }
-    }
+    };
 
 
     return (

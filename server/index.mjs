@@ -2,7 +2,6 @@ import { generateRoomCode } from './utilities/generateUtils.mjs';
 import { Room, retrieveCardInfo } from './utilities/gameClasses.mjs';
 import roomCleaner from './utilities/roomCleaner.mjs';
 import express from 'express';
-import helmet from 'helmet';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from "cors";
@@ -14,7 +13,6 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(helmet());
 
 // allows static content from react app build
 app.use(express.static(path.resolve(path.dirname(''), './client/build')));
@@ -153,7 +151,7 @@ io.on('connection', socket => {
   socket.on("submitStoryCard", request => {
     const { roomId, userId, selectedCard, descriptor } = request;
     if (rooms[roomId] && rooms[roomId].submitStoryCard(userId, selectedCard, descriptor.trim())) {
-      //console.log(`Story card ${selectedCard.cardId} submitted by ${userId}`);
+      console.log(`Story card ${selectedCard.cardId} submitted by ${userId}`);
       io.to(roomId).emit("receiveRoomState", rooms[roomId]);
     }
     
