@@ -10,6 +10,7 @@ processes = []
 
 [build.args]
 NODE_ENV = "production"
+NODE_OPTIONS = "--max-old-space-size=192"
 
 [env]
   PORT = "8080"
