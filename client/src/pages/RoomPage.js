@@ -27,11 +27,12 @@ export default function RoomPage({ userId }) {
     playersToSubmit: [],
     kickedPlayers: [],
     handSize: 6, 
-    maxPlayers: 6, 
+    maxPlayers: 8, 
     targetScore: 25, 
     playerTurn: 0,
     guesses: {},
-    readyForNextRound:  []
+    readyForNextRound:  [],
+    lastModified: 0
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [kickUserId, setKickUserId] = useState('');
@@ -74,7 +75,7 @@ export default function RoomPage({ userId }) {
 
     socket.emit('joinRoom', { roomId, userId }, error => {
       if(error) {
-        setErrorMessage(error)
+        setErrorMessage(error);
       }
     });
 
@@ -108,7 +109,11 @@ export default function RoomPage({ userId }) {
 
   const handleLeave = () => {
     setLeaveAttempt(true);
-    socket.emit('leaveRoom', { roomId, userId });
+    socket.emit('leaveRoom', { roomId, userId }, error => {
+      if(error) {
+        setErrorMessage(error);
+      }
+    });
   }
   
   const kickPlayer = () => {

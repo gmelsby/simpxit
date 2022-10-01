@@ -49,7 +49,7 @@ export default function HomePage( { userId }) {
     <>
       <RulesModal />
           <Container align="center">
-          <h1>Simpsxit: A Simpsons Image Game!</h1>
+          <h1>Simpsxit: A Simpsons Fan Game!</h1>
           <h5>To play, create a room or join an already existing room.</h5>
           <ButtonTimer onClick={handleCreateRoom}>Create Room</ButtonTimer>
 

@@ -12,10 +12,11 @@ import axios from 'axios';
     this.submittedCards = [];
     this.guesses = {};
     this.handSize = 6;
-    this.maxPlayers = 6;
+    this.maxPlayers = 8;
     this.targetScore = 25;
     this.playerTurn = 0;
     this.readyForNextRound = [];
+    this.lastModified = Date.now();
     this.addPlayer(adminId);
   }
 
@@ -63,6 +64,7 @@ import axios from 'axios';
       playerNumber++;
     }
     this.players.push(new Player(uuid, `Player ${playerNumber}`));
+    this.lastModified = Date.now();
   }
   
   // removes the player with the passed-in id
@@ -73,6 +75,7 @@ import axios from 'axios';
     const initialPlayerCount = this.playerCount;
     this.players = this.players.filter(player => player.playerId !== uuid);
     if (this.playerCount < initialPlayerCount) {
+      this.lastModified = Date.now();
       return true;
     }
     return false;
@@ -102,7 +105,7 @@ import axios from 'axios';
     if (!(this.isCurrentPlayer(uuid))) {
       return undefined;
     }
-    return this.players.filter(player => player.playerId === uuid)[0];
+    return this.players.find(player => player.playerId === uuid);
   }
    
   // removes player with kickId if adminId is admin
@@ -114,6 +117,7 @@ import axios from 'axios';
     // check that player attempting to kick is admin
     if (this.isAdmin(adminId)) {
       this.kickedPlayers.push(kickId);
+      this.lastModified = Date.now();
       return this.removePlayer(kickId);
     }
     return false;
@@ -131,7 +135,8 @@ import axios from 'axios';
     }
     
     // renames player
-    this.players.filter(player => player.playerId === uuid)[0].playerName = newName;
+    this.players.find(player => player.playerId === uuid).playerName = newName;
+    this.lastModified = Date.now();
     return true;
   }
 
@@ -152,6 +157,7 @@ import axios from 'axios';
     }
     
     this.targetScore = newOptions;
+    this.lastModified = Date.now();
     return true;
   }
 
@@ -163,6 +169,7 @@ import axios from 'axios';
   startGame(uuid) {
     if (this.gamePhase === "lobby" && this.playerCount >= 3 && this.isAdmin(uuid)) {
       this.advanceGamePhase();
+      this.lastModified = Date.now();
       return true;
     }
     
@@ -189,6 +196,7 @@ import axios from 'axios';
     this.submittedCards.push(card);
     this.storyCard = card.cardId;
     this.storyDescriptor = descriptor;
+    this.lastModified = Date.now();
     this.advanceGamePhase();
     return true;
   }
@@ -202,10 +210,11 @@ import axios from 'axios';
     card.submitter = uuid;
     this.submittedCards.push(card);
     // remove card from player hand
-    this.players.filter(p => p.playerId === uuid)[0].playCard(card.cardId);
+    this.players.find(p => p.playerId === uuid).playCard(card.cardId);
     if (this.submittedCards.length === this.expectedSubmitCount) {
       this.advanceGamePhase();
     }
+    this.lastModified = Date.now();
     return true;
   }
 
@@ -224,7 +233,7 @@ import axios from 'axios';
     }
 
     // check that card is in player's hand
-    if (!this.players.filter(p => p.playerId === uuid)[0].isCardInHand(cardId)) {
+    if (!this.players.find(p => p.playerId === uuid).isCardInHand(cardId)) {
       return false;
     }
 
@@ -238,6 +247,7 @@ import axios from 'axios';
       return false;
     }
 
+    this.lastModified = Date.now();
     return true;
   }
    
@@ -251,6 +261,7 @@ import axios from 'axios';
       this.advanceGamePhase();
       // console.log("advancing game phase")
     }
+    this.lastModified = Date.now();
     return true;
   }
    
@@ -263,6 +274,7 @@ import axios from 'axios';
     if (Object.keys(this.guesses).includes(uuid)) {
       return false;
     }
+    this.lastModified = Date.now();
     return true;
   }
 
@@ -288,7 +300,7 @@ import axios from 'axios';
     // console.log('Distributing points for fooling other players');
     const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCard);
     for (const fakeId of successfulFakes) {
-      const fakerId = this.submittedCards.filter(c => c.cardId === fakeId)[0].submitter;
+      const fakerId = this.submittedCards.find(c => c.cardId === fakeId).submitter;
       this.getPlayer(fakerId).incrementScore(1);
     }
   }
@@ -303,6 +315,7 @@ import axios from 'axios';
       this.handleAllOrNoneCorrect();
     }
     this.handleFoolingPoints()
+    this.lastModified = Date.now();
   }
    
   // ends the Scoring phase and starts a new Round if no victory
@@ -315,6 +328,7 @@ import axios from 'axios';
     if (this.readyForNextRound.length === this.playerCount) {
       this.startNextRound();
     }
+    this.lastModified = Date.now();
     return true;
   }
 
@@ -345,9 +359,6 @@ import axios from 'axios';
     // console.log("starting next round");
     destroyCards(this.submittedCards.map(c => c.cardId));
     this.resetRoundValues();
-    for (const player of this.players) {
-      player.resetRoundScore();
-    }
     this.gamePhase = "storyTellerPick";
   }
 
@@ -357,6 +368,9 @@ import axios from 'axios';
     this.readyForNextRound = [];
     this.submittedCards = [];
     this.guesses = {};
+    for (const player of this.players) {
+      player.resetRoundScore();
+    }
   }
 
   resetToLobby() {
@@ -370,6 +384,14 @@ import axios from 'axios';
     this.readyForNextRound = [];
     for (const p of this.players) {
       p.resetAll();
+    }
+  }
+
+  // removes all relevant cards from Cards cache
+  teardownCards() {
+    destroyCards(this.submittedCards.map(c => c.cardId));
+    for (const p of this.players) {
+      p.destroyHand();
     }
   }
 
@@ -409,12 +431,16 @@ export class Player {
     this.scoredThisRound = 0;
   }
 
+  destroyHand() {
+    destroyCards(this.hand);
+    this.hand = [];
+  }
+
   // clears all game-specific values for a player
   resetAll() {
     this.score = 0;
     this.scoredThisRound = 0;
-    destroyCards(this.hand);
-    this.hand = [];
+    this.destroyHand();
   }
 
 }

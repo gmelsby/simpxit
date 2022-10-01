@@ -1,5 +1,6 @@
 import { generateRoomCode } from './utilities/generateUtils.mjs';
 import { Room, retrieveCardInfo } from './utilities/gameClasses.mjs';
+import roomCleaner from './utilities/roomCleaner.mjs';
 import express from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';
@@ -27,6 +28,7 @@ const io = new Server(server, {
 
 // will probably be changed to a database/redis? at some point
 const rooms = {};
+roomCleaner(rooms, '*/30 * * * *', 30);
 
 io.on('connection', socket => {
   //console.log(`connection made: ${socket.id}`);
@@ -88,6 +90,7 @@ io.on('connection', socket => {
     //console.log(`player ${userId} attempting to leave room ${roomId}`);
     if (rooms[roomId] === undefined) {
       //console.log("left room does not exist")
+      return callback("Room does not exist");
     }
     if (rooms[roomId].removePlayer(userId)) {
       //console.log("player removed successfully");
