@@ -21,7 +21,7 @@ export default function HomePage( { userId }) {
   // to make a new room before automatically being sent there
   const handleCreateRoom = async () => {
     const adminId = { userId };
-    const response = await fetch(`/rooms`, {
+    const response = await fetch(`/room`, {
       method: 'POST',
       body: JSON.stringify(adminId),
       headers: {
