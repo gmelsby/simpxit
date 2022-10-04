@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Spinner } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
 import StoryModal from '../components/StoryModal.js';
@@ -10,6 +10,11 @@ export default function StoryTellerPick({
                                         socket,
                                         handSize
                                         }) {
+
+  // scroll to top of page automatically
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const [selectedCard, setSelectedCard] = useState(false);
   const [descriptor, setDescriptor] = useState("");

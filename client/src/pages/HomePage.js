@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import RulesModal from '../components/RulesModal';
@@ -6,6 +6,12 @@ import ButtonTimer from '../components/ButtonTimer';
 
 
 export default function HomePage( { userId }) {
+  
+  // scroll to top of page automatically
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [enteredRoomId, setEnteredRoomId] = useState('');
   const [roomIdSubmitted, setroomIdSubmitted] = useState(false);
   

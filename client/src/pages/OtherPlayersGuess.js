@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import Hand from '../components/Hand.js';
 import OtherPlayerModal from '../components/OtherPlayerModal.js';
@@ -15,6 +15,11 @@ export default function OtherPlayersGuess({
                                         submittedCards,
                                         submittedGuesses
                                         }) {
+
+  // scroll to top of page automatically
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const [selectedCard, setSelectedCard] = useState(false);
   const guessedCardId = submittedGuesses[userId];
