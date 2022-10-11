@@ -222,7 +222,7 @@ app.get('/cardinfo/:cardId', (req, res) => {
 })
 
 // allows users to create a new room
-app.post('/createroom', (req, res) => {
+app.post('/room', (req, res) => {
   //console.log(`received create room request with UUID ${req.body.userId}`);
   const uuid  = req.body.userId;
   if (!uuid) {

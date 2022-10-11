@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import RulesModal from '../components/RulesModal';
@@ -6,6 +6,12 @@ import ButtonTimer from '../components/ButtonTimer';
 
 
 export default function HomePage( { userId }) {
+  
+  // scroll to top of page automatically
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [enteredRoomId, setEnteredRoomId] = useState('');
   const [roomIdSubmitted, setroomIdSubmitted] = useState(false);
   
@@ -21,7 +27,7 @@ export default function HomePage( { userId }) {
   // to make a new room before automatically being sent there
   const handleCreateRoom = async () => {
     const adminId = { userId };
-    const response = await fetch(`/createroom`, {
+    const response = await fetch(`/room`, {
       method: 'POST',
       body: JSON.stringify(adminId),
       headers: {

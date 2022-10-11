@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Container } from 'react-bootstrap';
 import ButtonTimer from '../components/ButtonTimer';
 import ScoringCardHand from '../components/ScoringCardHand';
@@ -16,6 +16,11 @@ export default function Scoring({
                                  readyPlayers,
                                  targetScore
                                  }) {
+
+  // scroll to top of page automatically
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
     const handleReady = () => {
       if (!(isReady)) {

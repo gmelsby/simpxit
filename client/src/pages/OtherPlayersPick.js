@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import CardInfoWaiting from '../components/CardInfoWaiting.js';
 import Hand from '../components/Hand.js';
@@ -18,7 +18,9 @@ export default function OtherPlayersPick({
   const user = players.find(p => p.playerId === userId);
 
   // resets selected card if a card has been submitted
+  // scrolls to top on page load
   useEffect(() => {
+    window.scrollTo(0, 0);
     setSelectedCard(false);
   }, [user.hand.length]);
   

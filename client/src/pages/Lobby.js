@@ -1,6 +1,5 @@
-import { React } from 'react';
-import { Container } from 'react-bootstrap';
-import ButtonTimer from '../components/ButtonTimer';
+import React, { useEffect } from 'react';
+import { Button, Container } from 'react-bootstrap';
 import OptionsModal from '../components/OptionsModal';
 import PlayerList from '../components/PlayerList';
 
@@ -14,6 +13,11 @@ export default function Lobby({ players,
                                 changeOptions,
                                 socket
                               }) {
+
+  // scroll to top of page automatically
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   function handleStartGame() {
     socket.emit('startGame', { roomId, userId } );
@@ -29,8 +33,9 @@ export default function Lobby({ players,
         
         <PlayerList players={players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
         
-        <ButtonTimer onClick={handleLeave} variant="danger">Leave Room</ButtonTimer>
-        {isAdmin && <ButtonTimer onClick={handleStartGame} disabled={players.length <= 2}>Start Game</ButtonTimer>}
+        <Button onClick={handleLeave} variant="danger">Leave Room</Button>
+        {isAdmin && players.length > 2 && <Button onClick={handleStartGame}>Start Game</Button>}
+        {isAdmin && players.length <= 2 && <Button disabled>Start Game</Button>}
         {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
       </Container>
       <p>Target score: {currentOptions}</p>
