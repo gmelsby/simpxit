@@ -408,7 +408,7 @@ export class Player {
   }
   
   async populateHand(size) {
-    while (this.hand.length < size) {
+    for (let i = this.hand.length; i < size; i++) {
       const freshCard = await newCard();
       this.hand.push(freshCard);
     }

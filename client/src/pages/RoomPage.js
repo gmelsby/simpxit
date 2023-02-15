@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Alert, Spinner, Container } from 'react-bootstrap';
+import { Alert, Button, Spinner, Container } from 'react-bootstrap';
 import RulesModal  from '../components/RulesModal';
 import KickModal from '../components/KickModal';
 import NameModal from '../components/NameModal'
@@ -80,19 +80,36 @@ export default function RoomPage({ userId }) {
     });
 
   }, [socket, isConnected, roomId, userId]);
-  
+
+   // case where player clicked the leave button on an error screen
+  if (errorMessage && leaveAttempt) {
+    return(<LeaveRedirect immediate />);
+  }
+
   if (errorMessage) {
     return(
-      <Alert variant="warning">Error: {errorMessage}</Alert>);
+      <>
+        <Alert variant="warning">Error: {errorMessage}</Alert>
+        <Container className="text-center">
+          <Button onClick={() => {setLeaveAttempt(true)}}>Return to homepage</Button>
+        </Container>
+      </>
+    );
   }
+
+
   
+  // case where a user is kicked
   if (roomState.kickedPlayers.includes(userId)) {
     return (<LeaveRedirect kick />);
   }
   
+  // case where player has been removed form server due to leave attempt
   if (!(roomState.players.map(player => player.playerId).includes(userId)) && leaveAttempt) {
     return (<LeaveRedirect />);
+
   }
+
 
   // loading screen
   if (roomState.adminId === "placeholder") {
@@ -132,7 +149,9 @@ export default function RoomPage({ userId }) {
 
   return (
     <>
-      {!isConnected && <p>Disconnected: attempting to reconnect</p>}
+      {!isConnected && 
+        <Alert variant="danger">Connection with server interrupted. Attempting to reconnect...</Alert>
+      }
       <RulesModal />
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />

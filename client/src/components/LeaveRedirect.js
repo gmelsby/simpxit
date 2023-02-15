@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
 
-export default function LeaveRedirect({ kick }) {
+export default function LeaveRedirect({ kick, immediate }) {
   
-  const [leave, setLeave] = useState(false);
+  const [leave, setLeave] = useState(immediate);
 
   // timer for displaying before redirect
   useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setLeave(true);
     }, 2000);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   if(leave) {
