@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import OptionsModal from '../components/OptionsModal';
 import PlayerList from '../components/PlayerList';
-import { BsPencil } from 'react-icons/bs';
+import { BiPencil, BiUndo } from 'react-icons/bi';
 
 export default function Lobby({ players,
                                 roomId,
@@ -51,19 +51,39 @@ function NameForm({ players, roomId, userId, socket }) {
   const currentName = players.filter(player => player.playerId === userId)[0].playerName;
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(currentName);
-  const nameForm = useRef(null);
+  const nameFormRef = useRef(null);
+  const undoRef = useRef(null);
+
+  const handleNameChange = useCallback(e => {
+    e.preventDefault();
+    setIsEditingName(false);
+    if (newName === currentName) {
+      return;
+    }
+    socket.emit('changeName', { roomId, userId, newName });
+  }, [roomId, userId, newName, socket, currentName]);
+
+  // automatically selects text box
   useEffect(() => {
     if (isEditingName) {
-      nameForm.current.focus();
-      nameForm.current.select();
+      nameFormRef.current.focus();
+      nameFormRef.current.select();
     }
   }, [isEditingName]);
 
-   function handleNameChange(e) {
-    e.preventDefault();
-    socket.emit('changeName', { roomId, userId, newName });
-    setIsEditingName(false);
-  }
+  // check if click outside of text box, if so cancels update
+  useEffect(() => {
+    const clickHandler = e => {
+      if(document.activeElement !== nameFormRef && undoRef.current && !undoRef.current.contains(e.target)) {
+        handleNameChange(e);
+      }
+    }
+
+    document.addEventListener("mousedown", clickHandler);
+    return () => {
+      document.removeEventListener("mousedown", clickHandler);
+    };
+  }, [nameFormRef, undoRef, handleNameChange]);
 
   if (isEditingName) {
     return (
@@ -71,20 +91,19 @@ function NameForm({ players, roomId, userId, socket }) {
       <Form onSubmit={handleNameChange} align="center">
         <Row className='justify-content-center'>
           <Col xs="auto">
-            <h4>Your Name: </h4>
+            <h5>Your Name: </h5>
           </Col>
           <Col xs="auto">
             <Form.Control className="w-auto" type="text" required name="new-name"
             maxLength="20" placeholder="New Name"
             value={newName}
             onChange={e => setNewName(e.target.value.trimStart())}
-            ref={nameForm} />
+            ref={nameFormRef} />
           </Col>
-          <Col xs="auto">
-            <Button variant="danger" onClick={() => setIsEditingName(false)}>Cancel</Button>
-          </Col>
-          <Col xs="auto">
-            <Button type="submit">Submit</Button>
+          <Col xs="auto" ref={undoRef}>
+            <h5>
+              <BiUndo className="mx-2 selectable" onClick={() => {setIsEditingName(false)}}></BiUndo>
+            </h5>
           </Col>
         </Row>
       </Form>
@@ -96,7 +115,7 @@ function NameForm({ players, roomId, userId, socket }) {
     <>
       <h4>
         Your Name: {currentName}
-        <BsPencil className="mx-2 selectable" onClick={() => {setIsEditingName(true)}}></BsPencil>
+        <BiPencil className="mx-2 selectable" onClick={() => {setIsEditingName(true)}}></BiPencil>
       </h4>
     </>
   );

@@ -8,9 +8,11 @@ export default function LeaveRedirect({ kick, immediate }) {
 
   // timer for displaying before redirect
   useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setLeave(true);
     }, 2000);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   if(leave) {
