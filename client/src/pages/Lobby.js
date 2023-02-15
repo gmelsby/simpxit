@@ -74,7 +74,7 @@ function NameForm({ players, roomId, userId, socket }) {
   // check if click outside of text box, if so cancels update
   useEffect(() => {
     const clickHandler = e => {
-      if(document.activeElement !== nameFormRef && undoRef.current && !undoRef.current.contains(e.target)) {
+      if(nameFormRef.current && !nameFormRef.current.contains(e.target) && undoRef.current && !undoRef.current.contains(e.target)) {
         handleNameChange(e);
       }
     }
@@ -91,18 +91,18 @@ function NameForm({ players, roomId, userId, socket }) {
       <Form onSubmit={handleNameChange} align="center">
         <Row className='justify-content-center'>
           <Col xs="auto">
-            <h5>Your Name: </h5>
+            <h5 className='mx-0'>Your Name: </h5>
           </Col>
           <Col xs="auto">
-            <Form.Control className="w-auto" type="text" required name="new-name"
+            <Form.Control className="px-1 mx-0" type="text" required name="new-name"
             maxLength="20" placeholder="New Name"
             value={newName}
             onChange={e => setNewName(e.target.value.trimStart())}
             ref={nameFormRef} />
           </Col>
-          <Col xs="auto" ref={undoRef}>
+          <Col xs="auto" className="d-none d-md-flex" ref={undoRef}>
             <h5>
-              <BiUndo className="mx-2 selectable" onClick={() => {setIsEditingName(false)}}></BiUndo>
+              <BiUndo className="mx-1 selectable" onClick={() => {setIsEditingName(false)}}></BiUndo>
             </h5>
           </Col>
         </Row>
