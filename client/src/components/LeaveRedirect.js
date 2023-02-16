@@ -21,11 +21,11 @@ export default function LeaveRedirect({ kick, immediate }) {
 
   if (kick) {
     return(
-      <Alert variant="danger">You have been kicked from the room. Taking you back to the homepage in 3 seconds...</Alert>
+      <Alert variant="danger" className="my-0">You have been kicked from the room. Taking you back to the homepage in 3 seconds...</Alert>
     );
   }
   
   return(
-    <Alert variant="danger">You have left the room. Taking you back to the homepage...</Alert>
+    <Alert variant="danger" className="my-0">You have left the room. Taking you back to the homepage...</Alert>
   );
 }

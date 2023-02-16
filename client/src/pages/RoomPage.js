@@ -150,7 +150,7 @@ export default function RoomPage({ userId }) {
   return (
     <>
       {!isConnected && 
-        <Alert variant="danger">Connection with server interrupted. Attempting to reconnect...</Alert>
+        <Alert variant="danger" className="my-0">Connection with server interrupted. Attempting to reconnect...</Alert>
       }
       <RulesModal />
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
