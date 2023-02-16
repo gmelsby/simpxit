@@ -1,5 +1,5 @@
 import { generateRoomCode } from './utilities/generateUtils.mjs';
-import { Room, retrieveCardInfo } from './utilities/gameClasses.mjs';
+import { Room, retrieveCardInfo } from './gameClasses.mjs';
 import roomCleaner from './utilities/roomCleaner.mjs';
 import express from 'express';
 import helmet from 'helmet';

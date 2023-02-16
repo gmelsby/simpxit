@@ -1,5 +1,5 @@
-import { generateUuid } from './generateUtils.mjs';
-import filterFrinkiac from './filterFrinkiac.mjs';
+import { generateUuid } from './utilities/generateUtils.mjs';
+import filterFrinkiac from './utilities/filterFrinkiac.mjs';
 import axios from 'axios';
 
  export class Room {
@@ -130,7 +130,7 @@ import axios from 'axios';
   // returns true if name change is successful, false otherwise
   changeName(uuid, newName) {
     // check that target player is a player
-    if (!(this.isCurrentPlayer(uuid)) || this.isNameInUse()) {
+    if (!(this.isCurrentPlayer(uuid)) || this.isNameInUse(newName) || newName.length === 0) {
       return false;
     }
     
