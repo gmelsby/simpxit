@@ -42,7 +42,6 @@ export default function Lobby({ players,
         {isAdmin && players.length <= 2 && <Button disabled>Start Game</Button>}
         {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
       </Container>
-      <p>Target score: {currentOptions}</p>
     </>
   );
 }
