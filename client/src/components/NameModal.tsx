@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
-export default function NameModal({ currentName, changeName}) {
+export default function NameModal({ currentName, changeName }: {currentName: string, changeName: Function}) {
   // Citation:
   // Modified from https://react-bootstrap.github.io/components/modal/
   // Date: 07/09/2022
@@ -10,9 +10,9 @@ export default function NameModal({ currentName, changeName}) {
   const [newName, setNewName] = useState(currentName);
   
   // enables automatic focus on form when modal pops up
-  const nameForm = useRef(null);
+  const nameForm = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    if(showName) {
+    if(showName && nameForm.current) {
       nameForm.current.focus();
     }
   }, [showName])
@@ -20,7 +20,7 @@ export default function NameModal({ currentName, changeName}) {
   const handleCloseName = () => setShowName(false);
   const handleShowName = () => setShowName(true);
   
-  const changeNameToNew = e => {
+  const changeNameToNew = (e: React.SyntheticEvent) => {
     e.preventDefault();
     changeName(newName);
     handleCloseName();
@@ -40,7 +40,7 @@ export default function NameModal({ currentName, changeName}) {
             <Form onSubmit={changeNameToNew}>
               <Form.Group>
                 <Form.Control className="w-auto" type="text" required name="new-name"
-                maxLength="20" placeholder="New Name"
+                maxLength={20} placeholder="New Name"
                 value={newName}
                 onChange={e => setNewName(e.target.value.trimStart())}
                 ref={nameForm} />

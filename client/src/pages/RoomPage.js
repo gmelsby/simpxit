@@ -7,7 +7,7 @@ import NameModal from '../components/NameModal'
 import LeaveRedirect from '../components/LeaveRedirect'
 import Scoreboard from '../components/Scoreboard';
 import Lobby from './Lobby.js';
-import StoryTellerPick from './StoryTellerPick.js'
+import StoryTellerPick from './StoryTellerPick'
 import OtherPlayersPick from './OtherPlayersPick';
 import OtherPlayersGuess from './OtherPlayersGuess';
 import Scoring from './Scoring';

@@ -1,7 +1,9 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
+import { Player } from '../../types';
 
-export default function KickModal({ kickUserId, setKickUserId, kickPlayer, players }) {
+export default function KickModal({ kickUserId, setKickUserId, kickPlayer, players }: {
+  kickUserId: string | undefined, setKickUserId: Function, kickPlayer: Function, players: Player[]}) {
   // Citation:
   // Modified from https://react-bootstrap.github.io/components/modal/
   // Date: 07/09/2022
@@ -17,7 +19,7 @@ export default function KickModal({ kickUserId, setKickUserId, kickPlayer, playe
 
   return (
     <>
-      <Modal show={kickUserId} onHide={handleCloseKick}>
+      <Modal show={kickUserId === undefined} onHide={handleCloseKick}>
         <Modal.Header closeButton>
           <Modal.Title>Kick Player</Modal.Title>
         </Modal.Header>

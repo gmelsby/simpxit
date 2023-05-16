@@ -1,7 +1,10 @@
-import { Accordion, Card, Col, ListGroup, ListGroupItem } from 'react-bootstrap';
+import React from 'react';
+import { Accordion, Card as BootstrapCard, Col, ListGroup, ListGroupItem } from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
+import { Player, Card } from '../../types';
 
-export default function ScoringCard({ player, card, guessedPlayers, isStoryTeller }) {
+export default function ScoringCard({ player, card, guessedPlayers, isStoryTeller }:
+  {player: Player, card: Card, guessedPlayers: Player[], isStoryTeller: boolean}) {
   const GuessedInfo = () => {
     return (
       <>
@@ -14,18 +17,18 @@ export default function ScoringCard({ player, card, guessedPlayers, isStoryTelle
 
   return (
     <Col>
-      <Card>
-        <Card.Img variant="top" src={card.locator} />
+      <BootstrapCard>
+        <BootstrapCard.Img variant="top" src={card.locator} />
           <Accordion>
             <Accordion.Item eventKey="0">
-              <Accordion.Header>Card Info</Accordion.Header>
+              <Accordion.Header>BootstrapCard Info</Accordion.Header>
               <Accordion.Body>
                 <CardInfoWrapper card={card} />
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
-        <Card.Body>
-          <Card.Title>Submitted by {isStoryTeller && "Storyteller "}{!isStoryTeller && player.playerName}</Card.Title>
+        <BootstrapCard.Body>
+          <BootstrapCard.Title>Submitted by {isStoryTeller && "Storyteller "}{!isStoryTeller && player.playerName}</BootstrapCard.Title>
           <ListGroup variant="flush">
             <ListGroupItem>
               <p>Guessed by {guessedPlayers.length} Players</p>
@@ -36,8 +39,8 @@ export default function ScoringCard({ player, card, guessedPlayers, isStoryTelle
               <p>{player.playerName} now has {player.score} points.</p>
             </ListGroupItem>
           </ListGroup>
-        </Card.Body>
-      </Card>
+        </BootstrapCard.Body>
+      </BootstrapCard>
     </Col>
   );
 }

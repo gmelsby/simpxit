@@ -1,8 +1,12 @@
+import React from 'react';
 import { Spinner } from "react-bootstrap";
+import {CardInfo} from '../../types';
 
-export default function CardInfoText({ cardInfo }) {
+
+
+export default function CardInfoText({ cardInfo }: { cardInfo: CardInfo | undefined}) {
   // case where we cannot load or are waiting on loading card info
-  if (!(cardInfo)) {
+  if (cardInfo === undefined) {
     return (
       <>
         <Spinner animation="border" />
@@ -12,7 +16,7 @@ export default function CardInfoText({ cardInfo }) {
   }
 
   // each line of subtitles gets its own line
-  const SubtitleDisplay = ({ subtitles }) => {
+  const SubtitleDisplay = ({ subtitles }: {subtitles: string[]}) => {
     return (
       <>
         {subtitles.map((subtitle, idx) =>
@@ -28,6 +32,7 @@ export default function CardInfoText({ cardInfo }) {
       <SubtitleDisplay subtitles={cardInfo.subtitles} />
       <p><b>Writer:</b> {cardInfo.writer}</p>
       <p><b>Director:</b> {cardInfo.director}</p>
+      <p><b>Air Date:</b> {cardInfo.airdate}</p>
     </>
   );
 }

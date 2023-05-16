@@ -1,6 +1,7 @@
-import { React, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Form, Image, Modal, Col} from 'react-bootstrap';
 import ButtonTimer from './ButtonTimer';
+import { Card } from '../../types';
 
 export default function StoryModal({
                                     selectedCard,
@@ -8,30 +9,37 @@ export default function StoryModal({
                                     descriptor,
                                     setDescriptor,
                                     handleSubmit
+                                    }:
+                                    {
+                                      selectedCard: Card | null,
+                                      setSelectedCard: Function,
+                                      descriptor: string,
+                                      setDescriptor: Function,
+                                      handleSubmit: Function
                                     }) {
 
   const handleCloseSelect = () => {
-    setSelectedCard(false);
+    setSelectedCard(null);
     setDescriptor("");
   };
 
 
-  const descriptionForm = useRef(null);
+  const descriptionForm = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (selectedCard) {
+    if (selectedCard && descriptionForm.current !== null) {
       descriptionForm.current.focus();
     }
   }, [selectedCard]);
 
   
   return (
-    <Modal show={selectedCard} onHide={handleCloseSelect}>
+    <Modal show={selectedCard !== null} onHide={handleCloseSelect}>
       <Modal.Header closeButton>
         <Modal.Title>You selected this image:</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Image src={selectedCard.locator} fluid />
+        <Image src={selectedCard?.locator} fluid />
       </Modal.Body>
       <Form onSubmit={e => {
                 e.preventDefault();
@@ -40,7 +48,7 @@ export default function StoryModal({
         <Modal.Footer>
             <Col xs={8}>
               <Form.Control type="text" required name="descriptor"
-              maxLength="45" placeholder="Describe the image"
+              maxLength={45} placeholder="Describe the image"
               value={descriptor}
               onChange={e => setDescriptor(e.target.value.trimStart())}
               ref={descriptionForm} />

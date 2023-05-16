@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
-import Hand from '../components/Hand.js';
-import OtherPlayerModal from '../components/OtherPlayerModal.js';
-import CardInfoWaiting from '../components/CardInfoWaiting.js';
+import Hand from '../components/Hand';
+import OtherPlayerModal from '../components/OtherPlayerModal';
+import CardInfoWaiting from '../components/CardInfoWaiting';
 import WaitingOn from '../components/WaitingOn';
 
 export default function OtherPlayersGuess({ 
@@ -21,7 +21,7 @@ export default function OtherPlayersGuess({
     window.scrollTo(0, 0);
   }, []);
 
-  const [selectedCard, setSelectedCard] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
   const guessedCardId = submittedGuesses[userId];
   
   

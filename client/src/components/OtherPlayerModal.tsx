@@ -1,5 +1,7 @@
+import React from 'react';
 import { Button, Stack, Image, Modal } from 'react-bootstrap';
-import ButtonTimer from '../components/ButtonTimer';
+import ButtonTimer from './ButtonTimer';
+import { Card } from '../../types';
 
 export default function OtherPlayerModal({
                                     use,
@@ -7,10 +9,17 @@ export default function OtherPlayerModal({
                                     setSelectedCard,
                                     storyDescriptor,
                                     handleSubmit
+                                    }:
+                                    {
+                                      use: 'deceive' | 'guess',
+                                      selectedCard: Card | null,
+                                      setSelectedCard: Function,
+                                      storyDescriptor: string,
+                                      handleSubmit: Function
                                     }) {
 
   const handleCloseSelect = () => {
-    setSelectedCard(false);
+    setSelectedCard(null);
   };
 
   const submitCard = () => {
@@ -18,7 +27,7 @@ export default function OtherPlayerModal({
   }
 
   return (
-    <Modal show={selectedCard} onHide={handleCloseSelect}>
+    <Modal show={selectedCard !== null} onHide={handleCloseSelect}>
       <Modal.Header closeButton>
         {use === "deceive" &&
         <Modal.Title>
@@ -30,7 +39,7 @@ export default function OtherPlayerModal({
         </Modal.Title>}
       </Modal.Header>
       <Modal.Body>
-        <Image src={selectedCard.locator} fluid />
+        <Image src={selectedCard !== null ? selectedCard.locator : ""} fluid />
       </Modal.Body>
       <Modal.Footer>
         <Stack direction="horizontal" gap={3}>

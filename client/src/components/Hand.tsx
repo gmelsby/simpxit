@@ -1,13 +1,15 @@
 import React from 'react';
 import { Image, Col, Row } from 'react-bootstrap';
+import { Card } from "../../types"
 
-export default function Hand( { hand, setSelectedCard, gallery } ) {
+export default function Hand( { hand, setSelectedCard, isGallery }: {hand: Card[], setSelectedCard: Function, isGallery: boolean}) {
   
-  const handleSelectCard = card => {
+  const handleSelectCard = (card: Card) => {
     setSelectedCard(card);
   };
 
-  const selectable = gallery ? "" : "selectable";
+  // makes cards selectable if Hand is not a Gallery
+  const selectable = isGallery ? "" : "selectable";
 
   return(
     <Row xs={1} sm={2} md={Math.min(3, hand.length)} className="justify-content-center g-2 my-3 mx-3">
@@ -17,4 +19,4 @@ export default function Hand( { hand, setSelectedCard, gallery } ) {
       </Col>)}
     </Row>
   );
-}
+};
