@@ -21,7 +21,7 @@ export default function ScoringCard({ player, card, guessedPlayers, isStoryTelle
         <BootstrapCard.Img variant="top" src={card.locator} />
           <Accordion>
             <Accordion.Item eventKey="0">
-              <Accordion.Header>BootstrapCard Info</Accordion.Header>
+              <Accordion.Header>Card Info</Accordion.Header>
               <Accordion.Body>
                 <CardInfoWrapper card={card} />
               </Accordion.Body>

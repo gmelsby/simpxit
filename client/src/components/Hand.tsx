@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Col, Row } from 'react-bootstrap';
 import { Card } from "../../types"
 
-export default function Hand( { hand, setSelectedCard, isGallery }: {hand: Card[], setSelectedCard: Function, isGallery: boolean}) {
+export default function Hand( { hand, setSelectedCard, isGallery }: {hand: Card[], setSelectedCard: Function, isGallery?: boolean}) {
   
   const handleSelectCard = (card: Card) => {
     setSelectedCard(card);

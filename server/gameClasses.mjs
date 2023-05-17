@@ -6,7 +6,7 @@ import axios from 'axios';
   constructor(adminId) {
     this.players = [];
     this.gamePhase = "lobby";
-    this.storyCard = undefined;
+    this.storyCardId = undefined;
     this.storyDescriptor = undefined;
     this.kickedPlayers = [];
     this.submittedCards = [];
@@ -194,7 +194,7 @@ import axios from 'axios';
     // adds playerId to the submitted object
     card.submitter = uuid;
     this.submittedCards.push(card);
-    this.storyCard = card.cardId;
+    this.storyCardId = card.cardId;
     this.storyDescriptor = descriptor;
     this.lastModified = Date.now();
     this.advanceGamePhase();
@@ -298,7 +298,7 @@ import axios from 'axios';
   // assigns points to players who fooled other players.
   handleFoolingPoints() {
     // console.log('Distributing points for fooling other players');
-    const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCard);
+    const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCardId);
     for (const fakeId of successfulFakes) {
       const fakerId = this.submittedCards.find(c => c.cardId === fakeId).submitter;
       this.getPlayer(fakerId).incrementScore(1);
@@ -307,7 +307,7 @@ import axios from 'axios';
 
   scoreRound() {
     const guessers = Object.keys(this.guesses);
-    const correctGuessers = guessers.filter(playerId => this.guesses[playerId] === this.storyCard);
+    const correctGuessers = guessers.filter(playerId => this.guesses[playerId] === this.storyCardId);
     if (correctGuessers.length > 0 && correctGuessers.length < this.playerCount - 1) {
       this.handleSomeCorrectSomeIncorrect(correctGuessers);
     }
@@ -375,7 +375,7 @@ import axios from 'axios';
 
   resetToLobby() {
     this.gamePhase = "lobby";
-    this.storyCard = undefined;
+    this.storyCardId = undefined;
     this.storyDescriptor = undefined;
     destroyCards(this.submittedCards.map(c => c.cardId));
     this.submittedCards = [];

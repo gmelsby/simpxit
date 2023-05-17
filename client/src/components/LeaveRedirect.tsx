@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
 
-export default function LeaveRedirect({ kick, immediate }: {kick: boolean, immediate: boolean}){
+export default function LeaveRedirect({ kick, immediate }: {kick?: boolean, immediate?: boolean}){
   
   const [leave, setLeave] = useState(immediate);
 

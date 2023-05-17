@@ -7,7 +7,7 @@ export default function filterFrinkiac(data) {
     title: data.Episode.Title,
     director: data.Episode.Director,
     writer: data.Episode.Writer,
-    airdate: data.Episode.Airdate
+    airdate: data.Episode.OriginalAirDate
   };
 
   // processes and adds subtitles

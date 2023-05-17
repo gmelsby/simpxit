@@ -33,6 +33,7 @@ export default function CardInfoText({ cardInfo }: { cardInfo: CardInfo | undefi
       <p><b>Writer:</b> {cardInfo.writer}</p>
       <p><b>Director:</b> {cardInfo.director}</p>
       <p><b>Air Date:</b> {cardInfo.airdate}</p>
+      <p>{JSON.stringify(cardInfo)}</p>
     </>
   );
 }

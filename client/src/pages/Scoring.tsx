@@ -3,6 +3,7 @@ import { Container } from 'react-bootstrap';
 import ButtonTimer from '../components/ButtonTimer';
 import ScoringCardHand from '../components/ScoringCardHand';
 import WaitingOn from '../components/WaitingOn';
+import { Player, Card } from '../../types';
 
 export default function Scoring({ 
                                  userId,
@@ -10,11 +11,23 @@ export default function Scoring({
                                  roomId,
                                  socket,
                                  players,
-                                 storyCard,
+                                 storyCardId,
                                  submittedCards,
                                  guesses,
                                  readyPlayers,
                                  targetScore
+                                 }:
+                                 {
+                                  userId: string,
+                                  storyTeller: Player,
+                                  roomId: string,
+                                  socket: any,
+                                  players: Player[],
+                                  storyCardId: string,
+                                  submittedCards: Card[],
+                                  guesses: {[key: string]: string},
+                                  readyPlayers: string[],
+                                  targetScore: number
                                  }) {
 
   // scroll to top of page automatically
@@ -33,11 +46,11 @@ export default function Scoring({
     const isReady = readyPlayers.includes(userId);
     const waitingOn = players.filter(p => !(readyPlayers.includes(p.playerId)));
 
-    const correctGuesses = Object.values(guesses).filter(cardId => cardId === storyCard);
+    const correctGuesses = Object.values(guesses).filter(cardId => cardId === storyCardId);
 
     let topMessage = `Nobody guessed the storyteller's card.`;
     if (correctGuesses.length > 0 && correctGuesses.length < Object.values(guesses).length) {
-      topMessage = `${players.filter(p => guesses[p.playerId] === storyCard).map(p => p.playerName).join(", ")} guessed the storyteller's card.`;
+      topMessage = `${players.filter(p => guesses[p.playerId] === storyCardId).map(p => p.playerName).join(", ")} guessed the storyteller's card.`;
     }
 
     else if (correctGuesses.length === Object.values(guesses).length) {

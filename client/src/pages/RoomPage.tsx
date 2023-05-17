@@ -12,24 +12,30 @@ import OtherPlayersPick from './OtherPlayersPick';
 import OtherPlayersGuess from './OtherPlayersGuess';
 import Scoring from './Scoring';
 import { io } from "socket.io-client";
+import { Room } from '../../types';
+import { Socket } from 'socket.io-client'; 
 
 
-export default function RoomPage({ userId }) {
+export default function RoomPage({ userId }: {userId: string}) {
   
-  const { roomId } = useParams();
+  const { roomId }: { roomId: string } = useParams();
   const [isConnected, setIsConnected] = useState(false);
-  const [socket, setSocket] = useState(undefined);
-  const [roomState, setRoomState] = useState({
-    adminId: "placeholder", 
-    players: [{playerId: ' ', playerName: ''}, {playerId: userId}], 
+  const [socket, setSocket] = useState<Socket | null>(null);
+  // sets up base room state
+  const [roomState, setRoomState] = useState<Room>({
+    players: [
+      {playerId: 'placeholder', playerName: '', score: 0, hand: [], scoredThisRound: 0}, 
+      {playerId: userId, playerName: '', score: 0, hand: [], scoredThisRound: 0}
+    ], 
     gamePhase: "lobby", 
     submittedCards: [], 
-    playersToSubmit: [],
     kickedPlayers: [],
+    storyDescriptor: "",
     handSize: 6, 
     maxPlayers: 8, 
     targetScore: 25, 
     playerTurn: 0,
+    storyCardId: "",
     guesses: {},
     readyForNextRound:  [],
     lastModified: 0
@@ -73,7 +79,7 @@ export default function RoomPage({ userId }) {
       return;
     }
 
-    socket.emit('joinRoom', { roomId, userId }, error => {
+    socket.emit('joinRoom', { roomId, userId }, (error: string) => {
       if(error) {
         setErrorMessage(error);
       }
@@ -112,7 +118,7 @@ export default function RoomPage({ userId }) {
 
 
   // loading screen
-  if (roomState.adminId === "placeholder") {
+  if (roomState.players[0].playerId === "placeholder") {
     return (
       <Container className="text-center my-5">
         <Spinner animation="border" variant="primary" />
@@ -125,8 +131,9 @@ export default function RoomPage({ userId }) {
   const storyTeller = roomState.players[roomState.playerTurn];
 
   const handleLeave = () => {
+    if (socket === null) return;
     setLeaveAttempt(true);
-    socket.emit('leaveRoom', { roomId, userId }, error => {
+    socket.emit('leaveRoom', { roomId, userId }, (error: string) => {
       if(error) {
         setErrorMessage(error);
       }
@@ -134,15 +141,18 @@ export default function RoomPage({ userId }) {
   }
   
   const kickPlayer = () => {
+    if (socket === null) return;
     socket.emit('kickPlayer', { roomId, userId, kickUserId });
     setKickUserId('');
   }
   
-  const changeName = newName => {
+  const changeName = (newName: string) => {
+    if (socket === null) return;
     socket.emit('changeName', { roomId, userId, newName });
   }
   
-  const changeOptions = newOptions => {
+  const changeOptions = (newOptions: number) => {
+    if (socket === null) return;
     socket.emit('changeOptions', { roomId, userId, newOptions });
   }
   
@@ -171,8 +181,8 @@ export default function RoomPage({ userId }) {
           submittedGuesses={roomState.guesses} />}
       
         {roomState.gamePhase === "scoring" && <Scoring userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
-          players={roomState.players} submittedCards={roomState.submittedCards} submittedGuesses={roomState.guesses} 
-          readyPlayers={roomState.readyForNextRound} storyCard={roomState.storyCard} guesses={roomState.guesses} targetScore={roomState.targetScore} />} 
+          players={roomState.players} submittedCards={roomState.submittedCards} readyPlayers={roomState.readyForNextRound}
+          storyCardId={roomState.storyCardId} guesses={roomState.guesses} targetScore={roomState.targetScore} />} 
     </>
   );
 }

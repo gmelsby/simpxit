@@ -1,16 +1,18 @@
 import React, { StrictMode } from 'react';
-import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 // gets bootstrap style sheet
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-ReactDOM.render(
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Failed to find the root element');
+const root = createRoot(rootElement);
+root.render(
   (<StrictMode>
     <App />
-  </StrictMode>), 
-  document.getElementById('root') as HTMLElement
+  </StrictMode>)
 );
 
 reportWebVitals();
