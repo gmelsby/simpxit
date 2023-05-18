@@ -69,7 +69,7 @@ function NameForm({ players, roomId, userId, socket }:
   const nameFormRef = useRef<HTMLInputElement>(null);
   const undoRef = useRef<HTMLInputElement>(null);
 
-  const handleNameChange = useCallback((e: React.SyntheticEvent) => {
+  const handleNameChange = useCallback((e: MouseEvent | React.SyntheticEvent) => {
     e.preventDefault();
     setIsEditingName(false);
     if (newName === currentName) {
@@ -90,8 +90,8 @@ function NameForm({ players, roomId, userId, socket }:
 
   // check if click outside of text box, if so cancels update
   useEffect(() => {
-    const clickHandler = (e: any) => {
-      if(nameFormRef.current && !nameFormRef.current.contains(e.target) && undoRef.current && !undoRef.current.contains(e.target)) {
+    const clickHandler = (e: MouseEvent) => {
+      if(nameFormRef.current && !nameFormRef.current.contains(e.target as Node) && undoRef.current && !undoRef.current.contains(e.target as Node)) {
         handleNameChange(e);
       }
     }
