@@ -1,4 +1,4 @@
-import React, { ReactText, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import OptionsModal from '../components/OptionsModal';
 import PlayerList from '../components/PlayerList';

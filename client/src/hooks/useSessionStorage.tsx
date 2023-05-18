@@ -9,11 +9,12 @@ import { useState } from 'react';
 const PREFIX = "image-game-";
 
 
-export default function useSessionStorage(key, initialValue) {
+export default function useSessionStorage<T>(key: string, initialValue: T) {
   
   // key to store our value, prefix to limit collision with other apps
   key = PREFIX + key
   const [storedValue, setStoredValue] = useState(() => {
+    // case where rendering is happening server-side
     if (typeof window === "undefined") {
       return initialValue;
     }
@@ -31,7 +32,7 @@ export default function useSessionStorage(key, initialValue) {
   });
 
   // returns a wrapped version of useState's setter function that persists state
-  const setValue = (value) => {
+  const setValue = (value: T | ((_: T) => T)) => {
     try {
       // Allow value to be a function so we have same API as useState
       const valueToStore =
