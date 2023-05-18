@@ -6,7 +6,7 @@ import KickModal from '../components/KickModal';
 import NameModal from '../components/NameModal'
 import LeaveRedirect from '../components/LeaveRedirect'
 import Scoreboard from '../components/Scoreboard';
-import Lobby from './Lobby.js';
+import Lobby from './Lobby';
 import StoryTellerPick from './StoryTellerPick'
 import OtherPlayersPick from './OtherPlayersPick';
 import OtherPlayersGuess from './OtherPlayersGuess';
@@ -168,7 +168,7 @@ export default function RoomPage({ userId }: {userId: string}) {
       {roomState.gamePhase !== "lobby" && <Scoreboard players={roomState.players} userId={userId} targetScore={roomState.targetScore} />}
     
         {roomState.gamePhase === "lobby" && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
-          isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={roomState.targetScore} changeOptions={changeOptions} socket={socket}/>}
+          isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} socket={socket}/>}
 
         {roomState.gamePhase === "storyTellerPick" && <StoryTellerPick userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
           handSize={roomState.handSize} />}

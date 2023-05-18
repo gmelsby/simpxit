@@ -3,7 +3,7 @@ import { Button, Col, Row, Container } from 'react-bootstrap';
 import { Player } from '../../types';
 
 export default function PlayerList({ players, setKickUserId, userId, isAdmin, isScoreboard }:
-  {players: Player[], setKickUserId?: Function, userId: string, isAdmin?: boolean, isScoreboard: boolean}) {
+  {players: Player[], setKickUserId?: Function, userId: string, isAdmin?: boolean, isScoreboard?: boolean}) {
   // descending sort
   const playerList = isScoreboard ? players.sort((p1, p2) => p2.score - p1.score) : players;
   return (
@@ -19,7 +19,7 @@ export default function PlayerList({ players, setKickUserId, userId, isAdmin, is
 }
 
 function PlayerEntry({ player, setKickUserId, userId, isAdmin, isScoreboard }:
-  {player: Player, setKickUserId?: Function, userId: string, isAdmin?: boolean, isScoreboard: boolean}) {
+  {player: Player, setKickUserId?: Function, userId: string, isAdmin?: boolean, isScoreboard?: boolean}) {
   const handleKickThisPlayer = () => {
     if (setKickUserId !== undefined) {
       setKickUserId(player.playerId);
