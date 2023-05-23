@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
-import CardInfoWaiting from '../components/CardInfoWaiting.js';
-import Hand from '../components/Hand.js';
-import OtherPlayerModal from '../components/OtherPlayerModal.js';
+import CardInfoWaiting from '../components/CardInfoWaiting';
+import Hand from '../components/Hand';
+import OtherPlayerModal from '../components/OtherPlayerModal';
+import { Card, Player } from '../../types';
+import { Socket } from 'socket.io-client';
 
 export default function OtherPlayersPick({ 
                                         userId,
@@ -12,17 +14,26 @@ export default function OtherPlayersPick({
                                         socket,
                                         players,
                                         submittedCards
+                                        }:
+                                        {
+                                          userId: string,
+                                          storyTeller: Player,
+                                          roomId: string,
+                                          storyDescriptor: string,
+                                          socket: Socket | null,
+                                          players: Player[],
+                                          submittedCards: Card[]
                                         }) {
 
-  const [selectedCard, setSelectedCard] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
   const user = players.find(p => p.playerId === userId);
-
+  const handLength = user?.hand.length;
   // resets selected card if a card has been submitted
   // scrolls to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
-    setSelectedCard(false);
-  }, [user.hand.length]);
+    setSelectedCard(null);
+  }, [handLength]);
   
   const playerSubmittedCards = submittedCards.filter(c => c.submitter === userId);
   const expectedCards = players.length === 3 ? 2 : 1;
@@ -47,11 +58,12 @@ export default function OtherPlayersPick({
   
   
   const handleSubmit = () => {
-    if (selectedCard) {
+    if (selectedCard && socket !== null) {
       socket.emit('submitOtherCard', {roomId, userId, selectedCard} );
     }
   }
-  
+
+  const userHand = user !== undefined ? user.hand : []
   return (
     <>
       <OtherPlayerModal use="deceive" selectedCard={selectedCard} setSelectedCard={setSelectedCard}
@@ -60,7 +72,7 @@ export default function OtherPlayersPick({
       <Container className="text-center">
         <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
         <h5>Pick a card from your hand to fool the other players!</h5>
-        <Hand hand={user.hand} setSelectedCard={setSelectedCard} />
+        <Hand hand={userHand} setSelectedCard={setSelectedCard} />
       </Container>
     </>
   );

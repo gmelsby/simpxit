@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import PlayerList from './PlayerList';
+import { Player } from '../../types';
 
-export default function Scoreboard({ players, userId, targetScore }) {
+export default function Scoreboard({ players, userId, targetScore }: {players: Player[], userId: string, targetScore: number}) {
 
   const [showScoreboard, setShowScoreboard] = useState(false);
 
@@ -21,7 +22,7 @@ export default function Scoreboard({ players, userId, targetScore }) {
       </Modal.Header>
       <Modal.Body className="text-center">
         <h6>Target Score: {targetScore}</h6>
-        <PlayerList players={players} userId={userId} scoreboard />
+        <PlayerList players={players} userId={userId} isScoreboard />
       </Modal.Body>
       <Modal.Footer>
         <div className="col text-center">

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Spinner } from 'react-bootstrap';
-import Hand from '../components/Hand.js';
-import StoryModal from '../components/StoryModal.js';
+import Hand from '../components/Hand';
+import StoryModal from '../components/StoryModal';
+import { Card, Player } from '../../types';
 
 export default function StoryTellerPick({ 
                                         userId,
@@ -9,6 +10,13 @@ export default function StoryTellerPick({
                                         roomId,
                                         socket,
                                         handSize
+                                        }:
+                                        {
+                                          userId: string,
+                                          storyTeller: Player,
+                                          roomId: string,
+                                          socket: any,
+                                          handSize: number
                                         }) {
 
   // scroll to top of page automatically
@@ -16,7 +24,7 @@ export default function StoryTellerPick({
     window.scrollTo(0, 0);
   }, []);
 
-  const [selectedCard, setSelectedCard] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [descriptor, setDescriptor] = useState("");
 
   if (storyTeller.hand.length < handSize) {

@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
+import { Options } from '../../types';
 
-export default function OptionsModal({ currentOptions, changeOptions }) {
+export default function OptionsModal({ currentOptions, changeOptions }:{ currentOptions: Options, changeOptions: Function }) {
 
   const [showOptions, setShowOptions] = useState(false);
-  const [newOptions, setNewOptions] = useState(currentOptions);
+  const [newOptions, setNewOptions] = useState(currentOptions.targetScore);
 
   const handleCloseOptions = () => setShowOptions(false);
   const handleShowOptions = () => setShowOptions(true);
   
-  const changeOptionsToNew = e => {
+  const changeOptionsToNew = (e: React.SyntheticEvent) => {
     e.preventDefault();
     changeOptions(newOptions);
     handleCloseOptions();
@@ -31,9 +32,9 @@ export default function OptionsModal({ currentOptions, changeOptions }) {
                 <Form.Label htmlFor="new-target-score">Target Score (Default 25, Valid range [5-100]):</Form.Label>
                 <Form.Control className="w-auto" type="number" required name="new-target-score"
                 value={newOptions}
-                max="100"
-                min="5"
-                onChange={e => setNewOptions(e.target.value)} />
+                max={100}
+                min={5}
+                onChange={e => setNewOptions(Number(e.target.value))} />
               <Button type="submit">Submit</Button>
               </Form.Group>
             </Form>

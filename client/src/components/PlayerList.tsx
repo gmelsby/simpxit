@@ -1,27 +1,32 @@
 import React from 'react';
 import { Button, Col, Row, Container } from 'react-bootstrap';
+import { Player } from '../../types';
 
-export default function PlayerList({ players, setKickUserId, userId, isAdmin, scoreboard }) {
+export default function PlayerList({ players, setKickUserId, userId, isAdmin, isScoreboard }:
+  {players: Player[], setKickUserId?: Function, userId: string, isAdmin?: boolean, isScoreboard?: boolean}) {
   // descending sort
-  const playerList = scoreboard ? players.sort((p1, p2) => p2.score - p1.score ) : players;
+  const playerList = isScoreboard ? players.sort((p1, p2) => p2.score - p1.score) : players;
   return (
   <Container>
     {playerList.map((player) => <PlayerEntry player={player} 
       setKickUserId={setKickUserId} 
       userId={userId} 
       isAdmin={isAdmin} 
-      scoreboard={scoreboard}
+      isScoreboard={isScoreboard}
       key={player.playerId} />)}
   </Container>
   );
 }
 
-function PlayerEntry({ player, setKickUserId, userId, isAdmin, scoreboard }) {
+function PlayerEntry({ player, setKickUserId, userId, isAdmin, isScoreboard }:
+  {player: Player, setKickUserId?: Function, userId: string, isAdmin?: boolean, isScoreboard?: boolean}) {
   const handleKickThisPlayer = () => {
-    setKickUserId(player.playerId);
+    if (setKickUserId !== undefined) {
+      setKickUserId(player.playerId);
+    }
   };
   
-  if (scoreboard) {
+  if (isScoreboard) {
     return (
       <Row>
         <Col xs="auto">

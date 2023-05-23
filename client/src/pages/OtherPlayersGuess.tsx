@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from 'react-bootstrap';
-import Hand from '../components/Hand.js';
-import OtherPlayerModal from '../components/OtherPlayerModal.js';
-import CardInfoWaiting from '../components/CardInfoWaiting.js';
+import Hand from '../components/Hand';
+import OtherPlayerModal from '../components/OtherPlayerModal';
+import CardInfoWaiting from '../components/CardInfoWaiting';
 import WaitingOn from '../components/WaitingOn';
+import { Socket } from 'socket.io-client';
+import { Card, Player } from '../../types';
 
 export default function OtherPlayersGuess({ 
                                         userId,
@@ -14,6 +16,16 @@ export default function OtherPlayersGuess({
                                         players,
                                         submittedCards,
                                         submittedGuesses
+                                        }:
+                                        {
+                                          userId: string,
+                                          storyTeller: Player,
+                                          roomId: string,
+                                          storyDescriptor: string,
+                                          socket: Socket | null,
+                                          players: Player[],
+                                          submittedCards: Card[],
+                                          submittedGuesses: {[key: string]: string};
                                         }) {
 
   // scroll to top of page automatically
@@ -21,13 +33,13 @@ export default function OtherPlayersGuess({
     window.scrollTo(0, 0);
   }, []);
 
-  const [selectedCard, setSelectedCard] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
   const guessedCardId = submittedGuesses[userId];
   
   
   const waitingOn = players.filter(p => !(Object.keys(submittedGuesses).includes(p.playerId)) && !Object.is(p, storyTeller));
 
-  const [otherCards, setOtherCards] = useState([]);
+  const [otherCards, setOtherCards] = useState<Card[]>([]);
 
   // shuffles cards on load
   useEffect(() => {
@@ -47,7 +59,7 @@ export default function OtherPlayersGuess({
   
   if (userId !== storyTeller.playerId) {
     const handleSubmit = () => {
-      if (selectedCard) {
+      if (selectedCard && socket !== null) {
         socket.emit('guess', {roomId, userId, selectedCard} );
       }
     }
@@ -56,8 +68,10 @@ export default function OtherPlayersGuess({
       const guessedCard = Object.values(submittedCards).filter(c => c.cardId === guessedCardId)[0];
 
       return (
-        <CardInfoWaiting className="my-4" use="guess" cards={[guessedCard]} storyDescriptor={storyDescriptor} 
+        <Container className="my-4">
+          <CardInfoWaiting use="guess" cards={[guessedCard]} storyDescriptor={storyDescriptor} 
           waitingOn={waitingOn} />
+        </Container>
       );
     }
 
@@ -69,7 +83,7 @@ export default function OtherPlayersGuess({
         <Container className="text-center">
           <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
           <h5>Guess which card is the storyteller's!</h5>
-          <Hand hand={otherCards} selectedCard={selectedCard} setSelectedCard={setSelectedCard} />
+          <Hand hand={otherCards} setSelectedCard={setSelectedCard} />
         </Container>
       </>
     );
@@ -79,7 +93,7 @@ export default function OtherPlayersGuess({
     <Container className="text-center">
       <h3 className="my-4">Here are all the cards that were submitted:</h3>
       <h5>Wait for other players to guess...</h5>
-      <Hand hand={Object.values(submittedCards)} gallery />
+      <Hand hand={Object.values(submittedCards)} isGallery />
       <Container className="my-4">
         <WaitingOn waitingOn={waitingOn} />
       </Container>

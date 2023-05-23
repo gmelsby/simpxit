@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button, Spinner } from 'react-bootstrap';
 import { useState, useEffect, useRef } from 'react';
 
@@ -5,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 * Wrapper for react-bootstrap Button that activates a cooldown timer when pressed
 * Default value for timeout is 6 seconds, can be modified by passing in "timer" as a prop
 */
-export default function ButtonTimer(props) {
+export default function ButtonTimer(props: any) {
   // copy props and store children seperately
   const buttonProps = {...props};
   const children = buttonProps.children;
@@ -13,7 +14,7 @@ export default function ButtonTimer(props) {
 
 
   // handles clearing timeout when component unmounted
-  const timeoutRef = useRef(null);
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   useEffect(() => {
     return () => clearTimeout(timeoutRef.current);
   }, []);

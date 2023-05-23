@@ -3,6 +3,8 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import OptionsModal from '../components/OptionsModal';
 import PlayerList from '../components/PlayerList';
 import { BiPencil, BiUndo } from 'react-icons/bi';
+import { Socket } from 'socket.io-client';
+import { Player, Options } from "../../types";
 
 export default function Lobby({ players,
                                 roomId,
@@ -13,6 +15,17 @@ export default function Lobby({ players,
                                 currentOptions,
                                 changeOptions,
                                 socket
+                              }:
+                              {
+                                players: Player[],
+                                roomId: string,
+                                userId: string,
+                                handleLeave: React.MouseEventHandler<HTMLButtonElement>,
+                                isAdmin: boolean,
+                                setKickUserId: Function,
+                                currentOptions: Options,
+                                changeOptions: Function,
+                                socket: Socket | null
                               }) {
 
   // scroll to top of page automatically
@@ -22,14 +35,16 @@ export default function Lobby({ players,
 
 
   function handleStartGame() {
-    socket.emit('startGame', { roomId, userId } );
+    if (socket !== null) {
+      socket.emit('startGame', { roomId, userId } );
+    }
   }
 
  
   return (
     <>
       {isAdmin && <OptionsModal currentOptions={currentOptions} changeOptions={changeOptions} />}
-      <Container align="center">
+      <Container className="text-center justify-content-center">
         <p>Share this code (or the page's url) to let players join this room!</p>
         <h1>Room Code: {roomId}</h1>
         <NameForm players={players} roomId={roomId} userId={userId} socket={socket}/>
@@ -46,25 +61,28 @@ export default function Lobby({ players,
   );
 }
 
-function NameForm({ players, roomId, userId, socket }) {
+function NameForm({ players, roomId, userId, socket }:
+  {players: Player[], roomId: string, userId: string, socket: Socket | null}) {
   const currentName = players.filter(player => player.playerId === userId)[0].playerName;
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(currentName);
-  const nameFormRef = useRef(null);
-  const undoRef = useRef(null);
+  const nameFormRef = useRef<HTMLInputElement>(null);
+  const undoRef = useRef<HTMLInputElement>(null);
 
-  const handleNameChange = useCallback(e => {
+  const handleNameChange = useCallback((e: MouseEvent | React.SyntheticEvent) => {
     e.preventDefault();
     setIsEditingName(false);
     if (newName === currentName) {
       return;
     }
-    socket.emit('changeName', { roomId, userId, newName });
+    if (socket !== null) {
+      socket.emit('changeName', { roomId, userId, newName });
+    }
   }, [roomId, userId, newName, socket, currentName]);
 
   // automatically selects text box
   useEffect(() => {
-    if (isEditingName) {
+    if (isEditingName && nameFormRef !== null && nameFormRef.current !== null) {
       nameFormRef.current.focus();
       nameFormRef.current.select();
     }
@@ -72,8 +90,8 @@ function NameForm({ players, roomId, userId, socket }) {
 
   // check if click outside of text box, if so cancels update
   useEffect(() => {
-    const clickHandler = e => {
-      if(nameFormRef.current && !nameFormRef.current.contains(e.target) && undoRef.current && !undoRef.current.contains(e.target)) {
+    const clickHandler = (e: MouseEvent) => {
+      if(nameFormRef.current && !nameFormRef.current.contains(e.target as Node) && undoRef.current && !undoRef.current.contains(e.target as Node)) {
         handleNameChange(e);
       }
     }
@@ -87,14 +105,14 @@ function NameForm({ players, roomId, userId, socket }) {
   if (isEditingName) {
     return (
     <>
-      <Form onSubmit={handleNameChange} align="center">
+      <Form onSubmit={handleNameChange} className="text-center justify-content-center">
         <Row className='justify-content-center'>
           <Col xs="auto">
             <h5 className='mx-0'>Your Name: </h5>
           </Col>
           <Col xs="auto">
             <Form.Control className="px-1 mx-0" type="text" required name="new-name"
-            maxLength="20" placeholder="New Name"
+            maxLength={20} placeholder="New Name"
             value={newName}
             onChange={e => setNewName(e.target.value.trimStart())}
             ref={nameFormRef} />

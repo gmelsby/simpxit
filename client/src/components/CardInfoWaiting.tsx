@@ -1,9 +1,17 @@
-import { React } from 'react';
+import React from 'react';
 import { Container, Row, Col, Image } from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
 import WaitingOn from './WaitingOn';
+import { Player, Card } from '../../types';
 
-export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn }) {
+
+
+export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn }:  {use: "storyTeller" | "deceive" | "guess",
+  storyDescriptor: string,
+  cards: Card[],
+  waitingOn: Player[]
+  }) 
+{
 
   const use_to_message_map = {
     storyTeller : `You submitted the descriptor "${storyDescriptor}" for this image:`,
