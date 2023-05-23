@@ -4,7 +4,7 @@ import OptionsModal from '../components/OptionsModal';
 import PlayerList from '../components/PlayerList';
 import { BiPencil, BiUndo } from 'react-icons/bi';
 import { Socket } from 'socket.io-client';
-import { Player, Options } from "../../types";
+import { Player, Options } from "../../../types";
 
 export default function Lobby({ players,
                                 roomId,

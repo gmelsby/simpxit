@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Col, Row, Container } from 'react-bootstrap';
-import { Player } from '../../types';
+import { Player } from '../../../types';
 
 export default function PlayerList({ players, setKickUserId, userId, isAdmin, isScoreboard }:
   {players: Player[], setKickUserId?: Function, userId: string, isAdmin?: boolean, isScoreboard?: boolean}) {

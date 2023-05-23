@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { Options } from '../../types';
+import { Options } from '../../../types';
 
 export default function OptionsModal({ currentOptions, changeOptions }:{ currentOptions: Options, changeOptions: Function }) {
 

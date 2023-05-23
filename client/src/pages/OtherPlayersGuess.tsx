@@ -5,7 +5,7 @@ import OtherPlayerModal from '../components/OtherPlayerModal';
 import CardInfoWaiting from '../components/CardInfoWaiting';
 import WaitingOn from '../components/WaitingOn';
 import { Socket } from 'socket.io-client';
-import { Card, Player } from '../../types';
+import { Card, Player } from '../../../types';
 
 export default function OtherPlayersGuess({ 
                                         userId,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Spinner } from "react-bootstrap";
-import {CardInfo} from '../../types';
+import {CardInfo} from '../../../types';
 
 
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Row, Col, Image } from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
 import WaitingOn from './WaitingOn';
-import { Player, Card } from '../../types';
+import { Player, Card } from '../../../types';
 
 
 

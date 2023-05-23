@@ -1,5 +1,5 @@
 import React from 'react';
-import { Player } from '../../types';
+import { Player } from '../../../types';
 
 export default function WaitingOn({ waitingOn }: { waitingOn: Player[] }) {
   return (

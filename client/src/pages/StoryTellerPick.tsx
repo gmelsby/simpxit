@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Spinner } from 'react-bootstrap';
 import Hand from '../components/Hand';
 import StoryModal from '../components/StoryModal';
-import { Card, Player } from '../../types';
+import { Card, Player } from '../../../types';
 
 export default function StoryTellerPick({ 
                                         userId,

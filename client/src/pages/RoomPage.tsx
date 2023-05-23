@@ -12,7 +12,7 @@ import OtherPlayersPick from './OtherPlayersPick';
 import OtherPlayersGuess from './OtherPlayersGuess';
 import Scoring from './Scoring';
 import { io } from "socket.io-client";
-import { Room } from '../../types';
+import { Room } from '../../../types';
 import { Socket } from 'socket.io-client'; 
 
 

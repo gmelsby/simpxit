@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { Player } from '../../types';
+import { Player } from '../../../types';
 
 export default function KickModal({ kickUserId, setKickUserId, kickPlayer, players }: {
   kickUserId: string | undefined, setKickUserId: Function, kickPlayer: Function, players: Player[]}) {

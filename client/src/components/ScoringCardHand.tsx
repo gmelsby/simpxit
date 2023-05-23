@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Carousel } from "react-bootstrap";
 import ScoringCard from './ScoringCard';
-import { Card, Player } from '../../types';
+import { Card, Player } from '../../../types';
 
 export default function ScoringCardHand({storyTeller,
                                          players,
