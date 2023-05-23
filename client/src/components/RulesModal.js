@@ -25,7 +25,7 @@ export default function RulesModal() {
         <Modal.Body>
           <h5>Gameplay</h5>
             <p>
-              Each round, one player will be designated the storyteller. 
+              Each round, one player is designated the storyteller. 
               
               That player chooses a card
               and picks a word to go along with it. 

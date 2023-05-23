@@ -55,7 +55,8 @@ export default function HomePage( { userId }) {
     <>
       <RulesModal />
           <Container align="center">
-          <h1>Simpxit: A Simpsons Fan Game!</h1>
+          <h1>Simpxit: A Simpsons/Dixit Fan Game!</h1>
+          <h5>Mashup of the board game <a href="https://boardgamegeek.com/boardgame/39856/dixit" target="_blank" rel="noopener noreferrer">Dixit</a> with screencaps of <a href="https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x" target="_blank" rel="noopener noreferrer">The Simpsons</a> via <a href="https://frinkiac.com/" target="_blank" rel="noopener noreferrer">Frinkiac</a></h5>
           <h5>To play, create a room or join an already existing room.</h5>
           <ButtonTimer onClick={handleCreateRoom}>Create Room</ButtonTimer>
 
