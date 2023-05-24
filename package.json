@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx tsc && node serverbuild/index.mjs",
-    "devstart": "nodemon serverbuild/index.mjs",
+    "devstart": "npx tsc && nodemon serverbuild/index.mjs",
     "build-client": "cd client && npm i && npm run build"
   },
   "keywords": [],
