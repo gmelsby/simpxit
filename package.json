@@ -2,11 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.mjs",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/index.mjs",
-    "devstart": "nodemon server/index.mjs",
+    "start": "npx tsc && node serverbuild/index.mjs",
+    "devstart": "nodemon serverbuild/index.mjs",
     "build-client": "cd client && npm i && npm run build"
   },
   "keywords": [],
@@ -25,6 +26,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/node-cron": "^3.0.7",
     "@types/uuid": "^9.0.1",
     "nodemon": "^2.0.19"
   },

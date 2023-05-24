@@ -1,8 +1,9 @@
 import cron from "node-cron";
+import { Room  } from '../gameClasses.mjs';
 
-const isExpired = (room, interval, timestamp) => {
+const isExpired = (room: Room, interval: number, timestamp: number) => {
   return room.lastModified + (interval * 60000) < timestamp || room.playerCount === 0;
-}
+};
 
 /*
 * Sets up a recurring job to clean up unused rooms
@@ -10,7 +11,7 @@ const isExpired = (room, interval, timestamp) => {
 * cronString: String to set cron job timing
 * timeoutInterval: number (in minutes) of when to consider room timed out
 */
-export default function roomCleaner(rooms, cronString, timeoutInterval) {
+export function roomCleaner(rooms: {[key: string]: Room}, cronString: string, timeoutInterval: number) {
   cron.schedule(cronString, () => {
     console.log('running cleaner job');
 

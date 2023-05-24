@@ -1,6 +1,6 @@
 import { generateRoomCode } from './utilities/generateUtils.js';
 import { Room, retrieveCardInfo } from './gameClasses.mjs';
-import roomCleaner from './utilities/roomCleaner.mjs';
+import { roomCleaner } from './utilities/roomCleaner.js';
 import express from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';

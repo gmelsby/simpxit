@@ -1,7 +1,7 @@
 import { CardInfo } from '../../types';
 
 // returns a filtered version of the Frinkiac response
-function filterFrinkiac(data: { Episode: 
+export function filterFrinkiac(data: { Episode: 
                                                 {
                                                   Key: string,
                                                   Title: string,
@@ -27,5 +27,3 @@ function filterFrinkiac(data: { Episode:
 
   return result;
 }
-
-export { filterFrinkiac };
