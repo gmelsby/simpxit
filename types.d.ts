@@ -1,12 +1,10 @@
 export interface CardInfo {
-  id: number;
   episode: string;
   title: string;
   director: string;
   writer: string;
   airdate: string;
   subtitles: string[];
-  locator: string[];
 }
 
 export interface Card extends CardInfo {
