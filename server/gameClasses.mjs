@@ -1,6 +1,8 @@
-import { generateUuid } from './utilities/generateUtils.mjs';
-import filterFrinkiac from './utilities/filterFrinkiac.mjs';
+import { generateUuid } from './utilities/generateUtils.js';
+import { filterFrinkiac } from './utilities/filterFrinkiac.js';
 import axios from 'axios';
+
+console.log(typeof filterFrinkiac);
 
  export class Room {
   constructor(adminId) {

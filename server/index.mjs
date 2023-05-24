@@ -1,4 +1,4 @@
-import { generateRoomCode } from './utilities/generateUtils.mjs';
+import { generateRoomCode } from './utilities/generateUtils.js';
 import { Room, retrieveCardInfo } from './gameClasses.mjs';
 import roomCleaner from './utilities/roomCleaner.mjs';
 import express from 'express';

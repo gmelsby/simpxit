@@ -5,6 +5,7 @@ export interface CardInfo {
   writer: string;
   airdate: string;
   subtitles: string[];
+  locator: string;
 }
 
 export interface Card extends CardInfo {
