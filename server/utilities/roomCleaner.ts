@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { Room  } from '../gameClasses.mjs';
+import { Room  } from '../gameClasses.js';
 
 const isExpired = (room: Room, interval: number, timestamp: number) => {
   return room.lastModified + (interval * 60000) < timestamp || room.playerCount === 0;

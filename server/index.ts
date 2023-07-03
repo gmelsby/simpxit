@@ -1,5 +1,5 @@
 import { generateRoomCode } from './utilities/generateUtils.js';
-import { Room, retrieveCardInfo } from './gameClasses.mjs';
+import { Room, retrieveCardInfo } from './gameClasses.js';
 import { roomCleaner } from './utilities/roomCleaner.js';
 import express from 'express';
 import helmet from 'helmet';
@@ -35,7 +35,7 @@ const io = new Server(server, {
 );
 
 // will probably be changed to a database/redis? at some point
-const rooms = {};
+const rooms: {[key: string]: Room} = {};
 roomCleaner(rooms, '*/30 * * * *', 30);
 
 io.on('connection', socket => {

@@ -8,7 +8,7 @@ export interface CardInfo {
   locator: string;
 }
 
-export interface Card extends CardInfo {
+export interface Card extends Partial<CardInfo> {
   cardId: string;
   locator: string;
   submitter?: string;
@@ -28,7 +28,7 @@ export interface Options {
 
 export interface Room {
   players: Player[];
-  gamePhase: "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlayersGuess" | "scoring",
+  gamePhase: "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlayersGuess" | "scoring";
   storyCardId: string;
   storyDescriptor: string;
   kickedPlayers: string[];

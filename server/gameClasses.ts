@@ -1,14 +1,30 @@
 import { generateUuid } from './utilities/generateUtils.js';
 import { filterFrinkiac } from './utilities/filterFrinkiac.js';
 import axios from 'axios';
+import { Room as IRoom, Player as IPlayer, Card } from '../types';
 
+type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlayersGuess" | "scoring";
 
- export class Room {
-  constructor(adminId) {
+ export class Room implements IRoom {
+  players: Player[];
+  gamePhase: IGamePhase;
+  storyCardId: string;
+  storyDescriptor: string;
+  kickedPlayers: string[];
+  submittedCards: Card[];
+  guesses: {[key: string]: string};
+  handSize: number;
+  maxPlayers: number;
+  targetScore: number;
+  playerTurn: number;
+  readyForNextRound: string[];
+  lastModified: number;
+
+  constructor(adminId: string) {
     this.players = [];
     this.gamePhase = "lobby";
-    this.storyCardId = undefined;
-    this.storyDescriptor = undefined;
+    this.storyCardId = "";
+    this.storyDescriptor = "";
     this.kickedPlayers = [];
     this.submittedCards = [];
     this.guesses = {};
@@ -23,7 +39,7 @@ import axios from 'axios';
 
 
   // gamePhaseDict maps game phases to next game phase
-  static gamePhaseDict = {
+  static gamePhaseDict: {[key: string]: IGamePhase} = {
                         "lobby": "storyTellerPick",
                         "storyTellerPick": "otherPlayersPick",
                         "otherPlayersPick": "otherPlayersGuess",
@@ -50,7 +66,7 @@ import axios from 'axios';
   }
   
   // returns true if a player with the currently passed-in id is already in the room
-  isCurrentPlayer(uuid) {
+  isCurrentPlayer(uuid: string) {
     if (this.players.map(p => p.playerId).includes(uuid)){
       return true;
     }
@@ -59,7 +75,7 @@ import axios from 'axios';
   }
   
   // adds a player with the passed-in id
-  addPlayer(uuid) {
+  addPlayer(uuid: string) {
     let playerNumber = 1;
     while(this.players.map(p => p.playerName).includes(`Player ${playerNumber}`)) {
       playerNumber++;
@@ -69,7 +85,7 @@ import axios from 'axios';
   }
   
   // removes the player with the passed-in id
-  removePlayer(uuid) {
+  removePlayer(uuid: string) {
     if (!(this.isCurrentPlayer(uuid))) {
       return false;
     }
@@ -83,7 +99,7 @@ import axios from 'axios';
   }
    
   // returns true if the uuid is the admin, otherwise false
-  isAdmin(uuid) {
+  isAdmin(uuid: string) {
     if (!(this.isCurrentPlayer(uuid))) {
       return false;
     }
@@ -92,7 +108,7 @@ import axios from 'axios';
   }
 
   // returns true if the uuid is the storyteller, otherwise false 
-  isStoryteller(uuid) {
+  isStoryteller(uuid: string) {
     if (!(this.isCurrentPlayer(uuid))) {
       return false;
     }
@@ -101,7 +117,7 @@ import axios from 'axios';
   }
    
   // returns Player object given the player's id
-  getPlayer(uuid) {
+  getPlayer(uuid: string) {
     // if player does not exist return undefined
     if (!(this.isCurrentPlayer(uuid))) {
       return undefined;
@@ -110,7 +126,7 @@ import axios from 'axios';
   }
    
   // removes player with kickId if adminId is admin
-  kickPlayer(adminId, kickId) {
+  kickPlayer(adminId: string, kickId: string) {
     // check that both players are current players
     if (!(this.isCurrentPlayer(adminId)) || !(this.isCurrentPlayer(kickId))) {
       return false;
@@ -124,25 +140,29 @@ import axios from 'axios';
     return false;
   }
   
-  isKicked(uuid) {
+  isKicked(uuid: string) {
     return this.kickedPlayers.includes(uuid);
   }
    
   // returns true if name change is successful, false otherwise
-  changeName(uuid, newName) {
+  changeName(uuid: string, newName: string) {
     // check that target player is a player
     if (!(this.isCurrentPlayer(uuid)) || this.isNameInUse(newName) || newName.length === 0) {
       return false;
     }
     
     // renames player
-    this.players.find(player => player.playerId === uuid).playerName = newName;
-    this.lastModified = Date.now();
-    return true;
+    const player = this.getPlayer(uuid);
+    if (player !== undefined) {
+      player.playerName = newName;
+      this.lastModified = Date.now();
+      return true;
+    }
+    return false;
   }
 
   // returns true if name is in use, false otherwise
-  isNameInUse(newName) {
+  isNameInUse(newName: string) {
     if(this.players.map(player => player.playerName).includes(newName)) {
       return true;
     }
@@ -151,7 +171,7 @@ import axios from 'axios';
   }
 
   // return true if options change is successful, false otherwise
-  changeOptions(uuid, newOptions) {
+  changeOptions(uuid: string, newOptions: number) {
     // check that requesting player is admin
     if (!(this.isAdmin(uuid)) || newOptions < 5 || newOptions > 100) {
       return false;
@@ -167,7 +187,7 @@ import axios from 'axios';
   }
    
   // starts the game if gamePhase is lobby, 3 or more players are in, and requesting player is admin
-  startGame(uuid) {
+  startGame(uuid: string) {
     if (this.gamePhase === "lobby" && this.playerCount >= 3 && this.isAdmin(uuid)) {
       this.advanceGamePhase();
       this.lastModified = Date.now();
@@ -187,7 +207,7 @@ import axios from 'axios';
 
    
   // submits the story card and descriptor hint
-  submitStoryCard(uuid, card, descriptor) {
+  submitStoryCard(uuid: string, card: Card, descriptor: string) {
     if (this.gamePhase !== "storyTellerPick" || !this.isStoryteller(uuid)) { 
       return false;
     }
@@ -203,7 +223,7 @@ import axios from 'axios';
   }
    
   // submits other players cards
-  submitOtherCard(uuid, card) {
+  submitOtherCard(uuid: string, card: Card) {
     if (!(this.isOtherCardSubmittable(uuid, card.cardId))) {
       return false;
     }
@@ -211,7 +231,7 @@ import axios from 'axios';
     card.submitter = uuid;
     this.submittedCards.push(card);
     // remove card from player hand
-    this.players.find(p => p.playerId === uuid).playCard(card.cardId);
+    this.players.find(p => p.playerId === uuid)?.playCard(card.cardId);
     if (this.submittedCards.length === this.expectedSubmitCount) {
       this.advanceGamePhase();
     }
@@ -228,13 +248,13 @@ import axios from 'axios';
   }
 
   // checks whether a card submission from uuid is able to proceed, returns true if so, false if not
-  isOtherCardSubmittable(uuid, cardId) {
+  isOtherCardSubmittable(uuid: string, cardId: string) {
     if (!this.isCurrentPlayer(uuid) || this.gamePhase !== "otherPlayersPick") {
       return false;
     }
 
     // check that card is in player's hand
-    if (!this.players.find(p => p.playerId === uuid).isCardInHand(cardId)) {
+    if (!this.players.find(p => p.playerId === uuid)?.isCardInHand(cardId)) {
       return false;
     }
 
@@ -252,7 +272,7 @@ import axios from 'axios';
     return true;
   }
    
-  makeGuess(uuid, cardId) {
+  makeGuess(uuid: string, cardId: string) {
     if (!(this.canMakeGuess(uuid))) {
       return false;
     }
@@ -267,7 +287,7 @@ import axios from 'axios';
   }
    
   // returns true if player can make a guess, false othewise
-  canMakeGuess(uuid) {
+  canMakeGuess(uuid: string) {
     if (!this.isCurrentPlayer(uuid) || this.gamePhase !== "otherPlayersGuess") {
       return false;
     }
@@ -280,11 +300,11 @@ import axios from 'axios';
   }
 
   // assigns points for case where some players guessed the correct card and some did not
-  handleSomeCorrectSomeIncorrect(correctGuessers) {
+  handleSomeCorrectSomeIncorrect(correctGuessers: string[]) {
       // console.log('Some players guessed correctly, some did not');
       this.players[this.playerTurn].incrementScore(3);
       for (const correctGuesser of correctGuessers) {
-        this.getPlayer(correctGuesser).incrementScore(3);
+        this.getPlayer(correctGuesser)?.incrementScore(3);
       }
   }
 
@@ -301,8 +321,9 @@ import axios from 'axios';
     // console.log('Distributing points for fooling other players');
     const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCardId);
     for (const fakeId of successfulFakes) {
-      const fakerId = this.submittedCards.find(c => c.cardId === fakeId).submitter;
-      this.getPlayer(fakerId).incrementScore(1);
+      const fakerId = this.submittedCards.find(c => c.cardId === fakeId)?.submitter;
+      if (fakerId === undefined) return;
+      this.getPlayer(fakerId)?.incrementScore(1);
     }
   }
 
@@ -320,7 +341,7 @@ import axios from 'axios';
   }
    
   // ends the Scoring phase and starts a new Round if no victory
-  endScoring(uuid) {
+  endScoring(uuid: string) {
     if (!(this.isAbleToEndScoring(uuid))) {
       return false;
     }
@@ -334,7 +355,7 @@ import axios from 'axios';
   }
 
   // returns true if uuid is able to end the scoring phase, false if not
-  isAbleToEndScoring(uuid) {
+  isAbleToEndScoring(uuid: string) {
     if (this.gamePhase !== "scoring") {
       return false;
     }
@@ -376,8 +397,8 @@ import axios from 'axios';
 
   resetToLobby() {
     this.gamePhase = "lobby";
-    this.storyCardId = undefined;
-    this.storyDescriptor = undefined;
+    this.storyCardId = "";
+    this.storyDescriptor = "";
     destroyCards(this.submittedCards.map(c => c.cardId));
     this.submittedCards = [];
     this.guesses = {};
@@ -399,8 +420,14 @@ import axios from 'axios';
 }
 
 
-export class Player {
-  constructor(playerId, playerName) {
+export class Player implements IPlayer {
+  playerId: string;
+  playerName: string;
+  score: number;
+  hand: Card[];
+  scoredThisRound: number;
+
+  constructor(playerId: string, playerName: string) {
     this.playerId = playerId;
     this.playerName = playerName;
     this.score = 0;
@@ -408,22 +435,22 @@ export class Player {
     this.hand = [];
   }
   
-  async populateHand(size) {
+  async populateHand(size: number) {
     for (let i = this.hand.length; i < size; i++) {
       const freshCard = await newCard();
       this.hand.push(freshCard);
     }
   }
   
-  playCard(cardId) {
+  playCard(cardId: string) {
     this.hand = this.hand.filter(card => card.cardId !== cardId);
   }
 
-  isCardInHand(cardId) {
+  isCardInHand(cardId: string) {
     return this.hand.map(c => c.cardId).includes(cardId);
   }
 
-  incrementScore(points) {
+  incrementScore(points: number) {
     this.score += points;
     this.scoredThisRound += points;
   }
@@ -433,7 +460,7 @@ export class Player {
   }
 
   destroyHand() {
-    destroyCards(this.hand);
+    destroyCards(this.hand.map(c => c.cardId));
     this.hand = [];
   }
 
@@ -447,18 +474,18 @@ export class Player {
 }
 
 // function to remove played cards from cache
-const destroyCards = cardIds => {
+const destroyCards = (cardIds: string[]) => {
   for (const cardId of cardIds){
-    // console.log(`deleting card ${cardId}`)
+    console.log(`deleting card ${cardId}`)
     delete cardCache[cardId];
-    // console.log(`removed cardId ${cardId}`);
+    console.log(`removed cardId ${cardId}`);
   }
 }
 
-const cardCache = {}
+const cardCache: { [key: string]: Card } = {}
 
 // returns the info for a card with passed-in id 
-export function retrieveCardInfo(cardId) {
+export function retrieveCardInfo(cardId: string) {
   return cardCache[cardId];
 }
 
