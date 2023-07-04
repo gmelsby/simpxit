@@ -25,7 +25,7 @@ app.use(helmet({
 app.use(cors());
 
 // allows static content from react app build
-app.use(express.static(path.resolve(path.dirname(''), './client/build')));
+app.use(express.static(path.resolve(path.dirname(''), './client/dist')));
 
 const server = createServer(app);
 const io = new Server(server, {
@@ -245,7 +245,7 @@ app.post('/room', (req, res) => {
 
 // serves react app for all other routes
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(path.dirname(''), './client/build', 'index.html'))
+  res.sendFile(path.resolve(path.dirname(''), './client/dist', 'index.html'))
 });
 
 

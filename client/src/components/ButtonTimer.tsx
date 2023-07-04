@@ -14,7 +14,7 @@ export default function ButtonTimer(props: any) {
 
 
   // handles clearing timeout when component unmounted
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
     return () => clearTimeout(timeoutRef.current);
   }, []);
