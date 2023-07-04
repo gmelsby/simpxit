@@ -215,14 +215,14 @@ io.on('connection', socket => {
 
 
 // allows users to get the card info for a card
-app.get('/cardinfo/:cardId', (req, res) => {
+app.get('/api/cardinfo/:cardId', (req, res) => {
   const { cardId } = req.params;
   //console.log(`received request for card info for card ${cardId}`);
   res.send(retrieveCardInfo(cardId));
 })
 
 // allows users to create a new room
-app.post('/room', (req, res) => {
+app.post('/api/room', (req, res) => {
   //console.log(`received create room request with UUID ${req.body.userId}`);
   const uuid  = req.body.userId;
   if (!uuid) {

@@ -8,7 +8,7 @@ export default function CardInfoWrapper({card}: {card: Card}) {
   const [cardInfo, setCardInfo] = useState(undefined);
 
   const loadCardInfo = useCallback(async () => {
-      const response = await fetch(`/cardinfo/${card.cardId}`);
+      const response = await fetch(`/api/cardinfo/${card.cardId}`);
       const data = await response.json();
       setCardInfo(data);
     }, [card]);

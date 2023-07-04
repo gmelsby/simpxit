@@ -50,7 +50,8 @@ export default function RoomPage({ userId }: {userId: string}) {
       return;
     }
 
-    const newSocket = io('/');
+    const newSocket = io('/', {
+    });
 
 
     newSocket.on('connect', () => {
