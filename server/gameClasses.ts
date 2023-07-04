@@ -476,9 +476,7 @@ export class Player implements IPlayer {
 // function to remove played cards from cache
 const destroyCards = (cardIds: string[]) => {
   for (const cardId of cardIds){
-    console.log(`deleting card ${cardId}`)
     delete cardCache[cardId];
-    console.log(`removed cardId ${cardId}`);
   }
 }
 
