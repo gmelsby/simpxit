@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, Col, Row } from 'react-bootstrap';
-import { Card } from "../../types"
+import { Card } from "../../../types"
 
 export default function Hand( { hand, setSelectedCard, isGallery }: {hand: Card[], setSelectedCard?: Function, isGallery?: boolean}) {
   

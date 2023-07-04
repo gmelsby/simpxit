@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Stack, Image, Modal } from 'react-bootstrap';
 import ButtonTimer from './ButtonTimer';
-import { Card } from '../../types';
+import { Card } from '../../../types';
 
 export default function OtherPlayerModal({
                                     use,

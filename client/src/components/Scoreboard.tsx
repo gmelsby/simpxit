@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import PlayerList from './PlayerList';
-import { Player } from '../../types';
+import { Player } from '../../../types';
 
 export default function Scoreboard({ players, userId, targetScore }: {players: Player[], userId: string, targetScore: number}) {
 

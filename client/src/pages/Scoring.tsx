@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap';
 import ButtonTimer from '../components/ButtonTimer';
 import ScoringCardHand from '../components/ScoringCardHand';
 import WaitingOn from '../components/WaitingOn';
-import { Player, Card } from '../../types';
+import { Player, Card } from '../../../types';
 
 export default function Scoring({ 
                                  userId,

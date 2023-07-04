@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useCallback, useEffect } from 'react';
 import CardInfoText from "./CardInfoText";
-import { Card } from "../../types"
+import { Card } from "../../../types"
  
 export default function CardInfoWrapper({card}: {card: Card}) {
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Form, Image, Modal, Col} from 'react-bootstrap';
 import ButtonTimer from './ButtonTimer';
-import { Card } from '../../types';
+import { Card } from '../../../types';
 
 export default function StoryModal({
                                     selectedCard,

@@ -1,15 +1,14 @@
 export interface CardInfo {
-  id: number;
   episode: string;
   title: string;
   director: string;
   writer: string;
   airdate: string;
   subtitles: string[];
-  locator: string[];
+  locator: string;
 }
 
-export interface Card extends CardInfo {
+export interface Card extends Partial<CardInfo> {
   cardId: string;
   locator: string;
   submitter?: string;
@@ -29,7 +28,7 @@ export interface Options {
 
 export interface Room {
   players: Player[];
-  gamePhase: "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlayersGuess" | "scoring",
+  gamePhase: "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlayersGuess" | "scoring";
   storyCardId: string;
   storyDescriptor: string;
   kickedPlayers: string[];
@@ -41,4 +40,6 @@ export interface Room {
   playerTurn: number;
   readyForNextRound: string[];
   lastModified: number;
+  playerCount?: number;
+  storyTeller?: Player;
 }

@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap';
 import CardInfoWaiting from '../components/CardInfoWaiting';
 import Hand from '../components/Hand';
 import OtherPlayerModal from '../components/OtherPlayerModal';
-import { Card, Player } from '../../types';
+import { Card, Player } from '../../../types';
 import { Socket } from 'socket.io-client';
 
 export default function OtherPlayersPick({ 

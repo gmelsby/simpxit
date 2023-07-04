@@ -1,7 +1,7 @@
 import React from 'react';
 import { Accordion, Card as BootstrapCard, Col, ListGroup, ListGroupItem } from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
-import { Player, Card } from '../../types';
+import { Player, Card } from '../../../types';
 
 export default function ScoringCard({ player, card, guessedPlayers, isStoryTeller }:
   {player: Player, card: Card, guessedPlayers: Player[], isStoryTeller: boolean}) {
