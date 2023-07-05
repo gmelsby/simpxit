@@ -39,7 +39,7 @@ export default function StoryModal({
         <Modal.Title>You selected this image:</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Image src={selectedCard?.locator} fluid />
+        <Image src={selectedCard?.locator} className="card-img" fluid />
       </Modal.Body>
       <Form onSubmit={e => {
                 e.preventDefault();

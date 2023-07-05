@@ -17,8 +17,8 @@ export default function ScoringCard({ player, card, guessedPlayers, isStoryTelle
 
   return (
     <Col>
-      <BootstrapCard>
-        <BootstrapCard.Img variant="top" src={card.locator} />
+      <BootstrapCard className="card-img">
+        <BootstrapCard.Img variant="top" src={card.locator} className="card-img"/>
           <Accordion>
             <Accordion.Item eventKey="0">
               <Accordion.Header>Card Info</Accordion.Header>
