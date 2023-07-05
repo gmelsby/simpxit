@@ -30,7 +30,9 @@ function App() {
         <Route path="/" element={<HomePage userId={userId} />} />
         <Route path="/room">
           <Route path=":roomId" element={<RoomPage userId={userId} />} />
+          <Route path="/room" element={<p>Page not found.</p>}/>
         </Route>
+        <Route path="*" element={<p>Page not found.</p>}/>
       </Routes>
     </BrowserRouter>
     </>
