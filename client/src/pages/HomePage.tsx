@@ -1,28 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Col, Container, Row, Form } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import RulesModal from '../components/RulesModal';
 import ButtonTimer from '../components/ButtonTimer';
 
 
 export default function HomePage( { userId }: { userId: string}) {
   
+  const [enteredRoomId, setEnteredRoomId] = useState('');
+  const [roomIdSubmitted, setroomIdSubmitted] = useState(false);
+
   // scroll to top of page automatically
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const [enteredRoomId, setEnteredRoomId] = useState('');
-  const [roomIdSubmitted, setroomIdSubmitted] = useState(false);
+  // navigate to room page when roomId submitted
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (roomIdSubmitted) navigate(`/room/${enteredRoomId}`);
+  }, [roomIdSubmitted])
+
   
   const roomCodeSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setroomIdSubmitted(true);
   };
   
-  if (roomIdSubmitted) {
-    return <Redirect push to={`/room/${enteredRoomId}`} />;
-  }
+  
   
   // to make a new room before automatically being sent there
   const handleCreateRoom = async () => {
