@@ -37,7 +37,8 @@ export default function OtherPlayersPick({
   
   const playerSubmittedCards = submittedCards.filter(c => c.submitter === userId);
   const expectedCards = players.length === 3 ? 2 : 1;
-  const waitingOn = players.filter(p => p.playerId !== storyTeller.playerId && submittedCards.filter(c => c.submitter === p.playerId).length < expectedCards);
+  const waitingOn = players.filter(p => p.playerId !== storyTeller.playerId && 
+    submittedCards.filter(c => c.submitter === p.playerId).length < expectedCards);
 
   // executes if storyteller 
   if (storyTeller.playerId === userId) {
@@ -71,7 +72,8 @@ export default function OtherPlayersPick({
 
       <Container className="text-center">
         <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
-        <h5>Pick a card from your hand to fool the other players!</h5>
+        <h5>Pick a {players.length === 3 && expectedCards - playerSubmittedCards.length == 1 && 'second '} 
+        card from your hand to fool the other players!</h5>
         <Hand hand={userHand} setSelectedCard={setSelectedCard} />
       </Container>
     </>
