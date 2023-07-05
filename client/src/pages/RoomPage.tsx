@@ -18,7 +18,7 @@ import { Socket } from 'socket.io-client';
 
 export default function RoomPage({ userId }: {userId: string}) {
   
-  const { roomId }: { roomId: string } = useParams();
+  const { roomId } = useParams<{ roomId: string }>();
   const [isConnected, setIsConnected] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
   // sets up base room state
@@ -87,6 +87,11 @@ export default function RoomPage({ userId }: {userId: string}) {
     });
 
   }, [socket, isConnected, roomId, userId]);
+
+  // handles missing roomId
+  if (roomId === undefined) {
+    return(<LeaveRedirect immediate />);
+  }
 
    // case where player clicked the leave button on an error screen
   if (errorMessage && leaveAttempt) {

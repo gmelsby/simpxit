@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import { Player } from '../../../types';
 
@@ -19,7 +19,7 @@ export default function KickModal({ kickUserId, setKickUserId, kickPlayer, playe
 
   return (
     <>
-      <Modal show={kickUserId === undefined} onHide={handleCloseKick}>
+      <Modal show={kickUserId !== ""} onHide={handleCloseKick}>
         <Modal.Header closeButton>
           <Modal.Title>Kick Player</Modal.Title>
         </Modal.Header>

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { v4 } from "uuid";
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import './App.css';
-import {BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RoomPage from './pages/RoomPage';
 import useSessionStorage from './hooks/useSessionStorage';
@@ -26,14 +26,12 @@ function App() {
   return (
     <>
     <BrowserRouter>
-      <Switch>
-        <Route path="/" exact>
-          <HomePage userId={userId} />
+      <Routes>
+        <Route path="/" element={<HomePage userId={userId} />} />
+        <Route path="/room">
+          <Route path=":roomId" element={<RoomPage userId={userId} />} />
         </Route>
-        <Route path="/room/:roomId">
-          <RoomPage userId={userId} />
-        </Route>
-      </Switch>
+      </Routes>
     </BrowserRouter>
     </>
   );
