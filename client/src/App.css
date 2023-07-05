@@ -14,9 +14,11 @@ body {
   border-style: solid;
 }
 
-.selectable:hover {
-  box-shadow: 0 0 1rem yellow;
-  transform: scale(1.05);
-  border-color: yellow;
-  cursor: pointer;
+@media (hover: hover) {
+  .selectable:hover {
+    box-shadow: 0 0 1rem yellow;
+    transform: scale(1.05);
+    border-color: yellow;
+    cursor: pointer;
+  }
 }
