@@ -41,7 +41,9 @@ export default function Scoring({
       }
     }
 
-    const winner = players.filter(p => p.score >= targetScore).sort((p1, p2) => p2.score - p1.score)[0];
+    // list of players whose scores are higher than target score
+    const aboveThreshold = players.filter(p => p.score >= targetScore).sort((p1, p2) => p2.score - p1.score);
+    const winners = aboveThreshold.filter(p => p.score === aboveThreshold[0].score);
 
     const isReady = readyPlayers.includes(userId);
     const waitingOn = players.filter(p => !(readyPlayers.includes(p.playerId)));
@@ -61,13 +63,13 @@ export default function Scoring({
     return (
       <>
         <Container className="text-center">
-            { winner && <h1>{winner.playerName} wins!</h1>}
+            { winners.length !== 0 && <h1>{winners.map(p => p.playerName).join(", ")} win{winners.length === 1 && "s"}!</h1>}
             <h3 className="my-4">{topMessage}</h3>
             <ScoringCardHand storyTeller={storyTeller} players={players} submittedCards={submittedCards} guesses={guesses} />
         </Container>
         <Container className="my-4 text-center">
-          {!(winner) && !(isReady) && <ButtonTimer onClick={handleReady}>Ready for Next Round</ButtonTimer>}
-          {winner && !(isReady) && <ButtonTimer onClick={handleReady}>Return to Room Lobby</ButtonTimer>}
+          {winners.length === 0 && !(isReady) && <ButtonTimer onClick={handleReady}>Ready for Next Round</ButtonTimer>}
+          {winners.length !== 0 && !(isReady) && <ButtonTimer onClick={handleReady}>Return to Room Lobby</ButtonTimer>}
           {isReady && <WaitingOn waitingOn={waitingOn} />}
         </Container>
       </>
