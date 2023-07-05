@@ -39,7 +39,7 @@ export default function OtherPlayerModal({
         </Modal.Title>}
       </Modal.Header>
       <Modal.Body>
-        <Image src={selectedCard !== null ? selectedCard.locator : ""} fluid />
+        <Image src={selectedCard !== null ? selectedCard.locator : ""} className="card-img" fluid />
       </Modal.Body>
       <Modal.Footer>
         <Stack direction="horizontal" gap={3}>
