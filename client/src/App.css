@@ -7,6 +7,16 @@ body {
   font-family:"Roboto", sans-serif;
 }
 
+.btn:hover {
+  transform: scale(1.1);
+  transition: transform 200ms ease-in-out;
+}
+
+.btn:active {
+  transform: scale(0.95);
+  transition: transform 200ms ease-in-out;
+}
+
 .card-img {
   border-color: black;
   border-radius: 1rem;
@@ -14,9 +24,19 @@ body {
   border-style: solid;
 }
 
-.selectable:hover {
-  box-shadow: 0 0 1rem yellow;
-  transform: scale(1.05);
-  border-color: yellow;
-  cursor: pointer;
+.carousel .carousel-item {
+  transition-duration: 300ms;
+}
+
+@media (hover: hover) {
+  .selectable:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+  }
+  .selectable-card:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+    box-shadow: 0 0 1rem yellow;
+    border-color: yellow;
+  }
 }

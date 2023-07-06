@@ -52,9 +52,9 @@ export default function Lobby({ players,
         <h3>Player List</h3>
         <PlayerList players={players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
         
-        <Button onClick={handleLeave} variant="danger">Leave Room</Button>
-        {isAdmin && players.length > 2 && <Button onClick={handleStartGame}>Start Game</Button>}
-        {isAdmin && players.length <= 2 && <Button disabled>Start Game</Button>}
+        <Button className="m-2" onClick={handleLeave} variant="danger">Leave Room</Button>
+        {isAdmin && players.length > 2 && <Button className="m-2" onClick={handleStartGame}>Start Game</Button>}
+        {isAdmin && players.length <= 2 && <Button className="m-2" disabled>Start Game</Button>}
         {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
       </Container>
     </>
@@ -102,6 +102,7 @@ function NameForm({ players, roomId, userId, socket }:
     };
   }, [nameFormRef, undoRef, handleNameChange]);
 
+  // allows for in-line editing of name
   if (isEditingName) {
     return (
     <>
