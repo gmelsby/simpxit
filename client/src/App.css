@@ -7,6 +7,16 @@ body {
   font-family:"Roboto", sans-serif;
 }
 
+.btn:hover {
+  transform: scale(1.1);
+  transition: transform 200ms ease-in-out;
+}
+
+.btn:active {
+  transform: scale(0.9);
+  transition: transform 200ms ease-in-out;
+}
+
 .card-img {
   border-color: black;
   border-radius: 1rem;
@@ -16,9 +26,13 @@ body {
 
 @media (hover: hover) {
   .selectable:hover {
-    box-shadow: 0 0 1rem yellow;
-    transform: scale(1.05);
-    border-color: yellow;
+    transform: scale(1.1);
     cursor: pointer;
+  }
+  .selectable-card:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+    box-shadow: 0 0 1rem yellow;
+    border-color: yellow;
   }
 }

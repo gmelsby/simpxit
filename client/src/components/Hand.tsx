@@ -11,13 +11,13 @@ export default function Hand( { hand, setSelectedCard, isGallery }: {hand: Card[
   };
 
   // makes cards selectable if Hand is not a Gallery
-  const selectable = isGallery ? "" : "selectable";
+  const selectablecard = isGallery ? "" : "selectable-card";
 
   return(
     <Row xs={1} sm={2} md={Math.min(3, hand.length)} className="justify-content-center g-2 my-3 mx-3">
       {hand.map(card =>
       <Col key={card.cardId} >
-        <Image src={card.locator} className={`${selectable} card-img`} fluid onClick={() => handleSelectCard(card)} />
+        <Image src={card.locator} className={`${selectablecard} card-img`} fluid onClick={() => handleSelectCard(card)} />
       </Col>)}
     </Row>
   );
