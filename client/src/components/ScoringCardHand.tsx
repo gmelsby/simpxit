@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Carousel } from "react-bootstrap";
+import { Container, Row, Carousel } from "react-bootstrap";
 import ScoringCard from './ScoringCard';
 import { Card, Player } from '../../../types';
 
@@ -29,14 +29,14 @@ export default function ScoringCardHand({storyTeller,
           )}
       </Row>
 
-      <Carousel className="d-xs-flex d-md-none" interval={null} variant="dark">
+      <Carousel className="d-xs-flex d-md-none" interval={null} variant="dark" controls={false}>
       {submittedCards.map(c => 
         <Carousel.Item key={c.cardId}> 
-          <Row className="mx-5">
+          <Container>
             <ScoringCard player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
             guessedPlayers={playersWhoGuessed(c.cardId)} 
             isStoryTeller={c.submitter === storyTeller.playerId} />
-          </Row>
+          </Container>
         </Carousel.Item>
       )}
       </Carousel>
