@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Image, Col, Row, Carousel, Container, Button } from 'react-bootstrap';
+import GameCard from './GameCard';
 import { Card } from "../../../types"
 
 export default function Hand( { hand, setSelectedCard, isGallery }: {hand: Card[], setSelectedCard?: Function, isGallery?: boolean}) {
@@ -30,14 +31,14 @@ export default function Hand( { hand, setSelectedCard, isGallery }: {hand: Card[
       <Row xs={1} sm={2} md={Math.min(3, hand.length)} className="justify-content-center g-2 my-3 mx-3 d-none d-md-flex">
         {hand.map(card =>
         <Col key={card.cardId}>
-          <Image src={card.locator} className={`${selectablecard} card-img`} fluid onClick={() => handleSelectCard(card)} />
+          <GameCard card={card} handleSelectCard={handleSelectCard} selectablecard={selectablecard}/>
         </Col>)}
       </Row>
       <Carousel className="d-xs-flex d-md-none" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
         {hand.map(c => 
           <Carousel.Item key={c.cardId}> 
             <Container>
-              <Image src={c.locator} className={`card-img mb-5`} fluid />
+              <GameCard className="mb-5" card={c} selectablecard={selectablecard}></GameCard>
             </Container>
           </Carousel.Item>
         )}
