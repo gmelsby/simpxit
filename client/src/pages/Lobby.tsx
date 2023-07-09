@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import OptionsModal from '../components/OptionsModal';
 import PlayerList from '../components/PlayerList';
-import { BiPencil, BiUndo } from 'react-icons/bi';
+import { BiPencil, BiUndo, BiCopy, BiIntersect } from 'react-icons/bi';
 import { Socket } from 'socket.io-client';
 import { Player, Options } from "../../../types";
 
@@ -45,8 +45,8 @@ export default function Lobby({ players,
     <>
       {isAdmin && <OptionsModal currentOptions={currentOptions} changeOptions={changeOptions} />}
       <Container className="text-center justify-content-center">
-        <p>Share this code (or the page's url) to let players join this room!</p>
-        <h1>Room Code: {roomId}</h1>
+        <p>Share this code (or the page's url <CopyIcon text={window.location.href}/>) to let players join this room!</p>
+        <h1>Room Code: {roomId} <CopyIcon text={roomId}/></h1>
         <NameForm players={players} roomId={roomId} userId={userId} socket={socket}/>
         
         <h3>Player List</h3>
@@ -61,6 +61,7 @@ export default function Lobby({ players,
   );
 }
 
+// allows for in-line editing of player name
 function NameForm({ players, roomId, userId, socket }:
   {players: Player[], roomId: string, userId: string, socket: Socket | null}) {
   const currentName = players.filter(player => player.playerId === userId)[0].playerName;
@@ -136,5 +137,22 @@ function NameForm({ players, roomId, userId, socket }:
         <BiPencil className="mx-2 selectable" onClick={() => {setIsEditingName(true)}}></BiPencil>
       </h4>
     </>
+  );
+}
+
+// icon that when clicked copies text to browser clipboard
+function CopyIcon({ text }: { text: string }) {
+  const [clicked, setClicked] = useState(false);
+  const putTextInClipboard = () => {
+    navigator.clipboard.writeText(text);
+    setClicked(true);
+    setTimeout(() => setClicked(false), 1000);
+  }
+
+  return (
+    <>
+    <BiCopy className={clicked ? "copying" : "selectable"} onClick={putTextInClipboard}/>
+    </>
+    
   );
 }

@@ -28,6 +28,17 @@ body {
   transition-duration: 300ms;
 }
 
+.copying {
+  transform: rotateZ(180deg);
+  transition: transform 500ms ease-in-out;
+  color: green;
+}
+
+.selectable:focus {
+  transform: scale(0.95);
+  transition: transform 200ms ease-in-out;
+}
+
 @media (hover: hover) {
   .selectable:hover {
     transform: scale(1.1);
