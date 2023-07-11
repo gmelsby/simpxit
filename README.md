@@ -20,6 +20,7 @@ It is nice that this takes care of potential desync issues--if a client misses a
 This can be mitigated by only sending clients the data they need to transform their game state into the current game state.
 In the event of disconnection, the entire game state _can_ be sent to the client on reconnection to get them up-to-date, but we do not need to do so for every update.
 Possible implementations that only send clients the data they need to transform their Room objects into the current game state could be defining a specific event type for every kind of update or (what I'm leaning toward) defining another event type called something like `partialUpdate` that just sends updates in [JSON Patch](https://jsonpatch.com/) format.
-- Currently the site design is usable, but it is not exactly good-looking. I'd like to improve on the design as a way to increase my CSS skills.
+- Currently the site design is usable, but it is not exactly good-looking. I'd like to improve on the design as a way to increase my CSS skills. Perhaps changing card info to text on the back of cards and allowing them to be flipped in 3D space?
 - Update favicon, icons, and manifest.
+- Server-side image processing to rule out images that are all or mostly all one color would improve gameplay experience. Sometimes players receive images of the show credits that are difficult to give clues for.
 
