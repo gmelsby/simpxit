@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Alert, Button, Spinner, Container } from 'react-bootstrap';
-import RulesModal  from '../components/RulesModal';
+import RulesModal  from '../components/Rules';
 import KickModal from '../components/KickModal';
 import NameModal from '../components/NameModal'
 import LeaveRedirect from '../components/LeaveRedirect'
@@ -14,6 +14,7 @@ import Scoring from './Scoring';
 import { io } from "socket.io-client";
 import { Room } from '../../../types';
 import { Socket } from 'socket.io-client'; 
+import Sidebar from '../components/Sidebar';
 
 
 export default function RoomPage({ userId }: {userId: string}) {
@@ -168,7 +169,7 @@ export default function RoomPage({ userId }: {userId: string}) {
       {!isConnected && 
         <Alert variant="danger" className="my-0">Connection with server interrupted. Attempting to reconnect...</Alert>
       }
-      <RulesModal />
+      <Sidebar />
       <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
       {roomState.gamePhase !== "lobby" && <Scoreboard players={roomState.players} userId={userId} targetScore={roomState.targetScore} />}

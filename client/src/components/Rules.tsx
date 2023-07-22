@@ -1,28 +1,8 @@
-import React, { useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
-
-export default function RulesModal() {
-  // Citation:
-  // Modified from https://react-bootstrap.github.io/components/modal/
-  // Date: 07/09/2022
-
-
-  const [showRules, setShowRules] = useState(false);
-
-  const handleCloseRules = () => setShowRules(false);
-  const handleShowRules = () => setShowRules(true);
+import React from "react";
+export default function Rules() {
 
   return (
     <>
-     <Button onClick={handleShowRules}>
-        View Rules
-      </Button>
-
-      <Modal show={showRules} onHide={handleCloseRules}>
-        <Modal.Header closeButton>
-          <Modal.Title>Game Rules</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
           <h5>Gameplay</h5>
             <p>
               Each round, one player is designated the storyteller. 
@@ -51,15 +31,6 @@ export default function RulesModal() {
               <p>If no other players guess the storyteller's card, the storyteller gets 0 points and all other players get 2 points.</p>
               <p>If at least one player but not every player guesses the storyteller's card, the storyteller and players who guesssed correctly get 3 points.</p>
               <p>If a non-storyteller fools another player into guessing their card, they get an additional point per player fooled.</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <div className="col text-center">
-            <Button variant="secondary" onClick={handleCloseRules}>
-              Close
-            </Button>
-          </div>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 }

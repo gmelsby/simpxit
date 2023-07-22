@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import OptionsModal from '../components/OptionsModal';
 import PlayerList from '../components/PlayerList';
-import { BiPencil, BiUndo, BiCopy, BiIntersect } from 'react-icons/bi';
+import { BiPencil, BiUndo, BiCopy } from 'react-icons/bi';
 import { Socket } from 'socket.io-client';
 import { Player, Options } from "../../../types";
 
