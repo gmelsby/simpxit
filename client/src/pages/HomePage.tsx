@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Col, Container, Row, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import RulesModal from '../components/RulesModal';
 import ButtonTimer from '../components/ButtonTimer';
+import Sidebar from '../components/Sidebar';
 
 
 export default function HomePage( { userId }: { userId: string}) {
@@ -58,27 +58,28 @@ export default function HomePage( { userId }: { userId: string}) {
   
   return (
     <>
-      <RulesModal />
-          <Container className="text-center justify-content-center">
+      <Sidebar />
+      <Container className="d-flex flex-column justify-content-start text-center align-items-center pt-5 h-100">
+        <Container>
           <h1>Simpxit: A Simpsons/Dixit Fan Game!</h1>
           <h5>Mashup of the board game <a href="https://boardgamegeek.com/boardgame/39856/dixit" target="_blank" rel="noopener noreferrer">Dixit</a> with screencaps of <a href="https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x" target="_blank" rel="noopener noreferrer">The Simpsons</a> via <a href="https://frinkiac.com/" target="_blank" rel="noopener noreferrer">Frinkiac</a>.</h5>
           <h5>To play, create a room or join an already existing room.</h5>
-          <ButtonTimer onClick={handleCreateRoom}>Create Room</ButtonTimer>
-
-        <h5 className="mt-5">Join Existing Room</h5>
+          <ButtonTimer className="my-3" onClick={handleCreateRoom}>Create Room</ButtonTimer>
+        </Container>
         <Row className="justify-content-center">
-        <Col xs={5} sm={3}>
-        <Form onSubmit={roomCodeSubmit}>
-          <Form.Group className="justify-content-center">
-            <Form.Label htmlFor="input-room-code">Room Code:</Form.Label>
-            <Form.Control className="text-center" type="text" name="input-room-code" 
-              required maxLength={4} placeholder="XYZW" pattern="[A-Z]{4}"
-              value={enteredRoomId}
-              onChange={e => setEnteredRoomId(e.target.value.toUpperCase())} />
-            <Button className="my-2" type="submit" disabled={enteredRoomId.length !== 4}>Join!</Button>
-          </Form.Group>
-        </Form>
-        </Col>
+          <h4 className="mt-5">Join Existing Room</h4>
+          <Col xs={5} sm={3}>
+            <Form onSubmit={roomCodeSubmit}>
+              <Form.Group className="justify-content-center">
+                <Form.Label htmlFor="input-room-code">Room Code:</Form.Label>
+                <Form.Control className="text-center" type="text" name="input-room-code" 
+                  required maxLength={4} placeholder="XYZW" pattern="[A-Z]{4}"
+                  value={enteredRoomId}
+                  onChange={e => setEnteredRoomId(e.target.value.toUpperCase())} />
+                <Button className="my-2" type="submit" disabled={enteredRoomId.length !== 4}>Join!</Button>
+              </Form.Group>
+            </Form>
+          </Col>
         </Row>
       </Container>
     </>

@@ -29,7 +29,7 @@ export default function StoryTellerPick({
 
   if (storyTeller.hand.length < handSize) {
     return (
-      <Container className="text-center">
+      <Container className="text-center align-items-center pt-5">
           <Spinner className="mx-auto mt-5" animation="border" variant="primary" />
           <h5>Generating cards...</h5>
       </Container>
@@ -48,7 +48,7 @@ export default function StoryTellerPick({
       <>
         <StoryModal selectedCard={selectedCard} setSelectedCard={setSelectedCard} descriptor={descriptor} 
           setDescriptor={setDescriptor} handleSubmit={handleSubmit} />
-        <Container className="text-center">
+        <Container className="text-center pt-5">
           <h3>You are the storyteller! Pick an image and come up with a description.</h3>
           <Hand hand={storyTeller.hand} setSelectedCard={setSelectedCard} />
         </Container>
@@ -57,7 +57,7 @@ export default function StoryTellerPick({
   }
 
   return (
-    <Container className="text-center">
+    <Container className="text-center pt-5">
       <h3 className="mt-2">{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h3>
     </Container>
   );

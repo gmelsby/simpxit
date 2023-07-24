@@ -42,12 +42,12 @@ function PlayerEntry({ player, setKickUserId, userId, isAdmin, isScoreboard }:
 
   return (
     <Row className="justify-content-center">
-      <Col xs={3}></Col>
-      <Col xs="auto">
+      <Col></Col>
+      <Col>
         {player.playerId === userId && <p><b>{player.playerName}</b></p>}
         {player.playerId !== userId && <p>{player.playerName}</p>}
       </Col>
-      <Col xs={3}>
+      <Col className="d-flex flex-direction-row justify-content-start">
       {isAdmin && player.playerId !== userId && 
         <Button variant="danger" onClick={handleKickThisPlayer}>Kick</Button>}
       </Col>

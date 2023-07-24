@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Alert, Button, Spinner, Container } from 'react-bootstrap';
-import RulesModal  from '../components/RulesModal';
 import KickModal from '../components/KickModal';
-import NameModal from '../components/NameModal'
+import OptionsModal from '../components/OptionsModal';
 import LeaveRedirect from '../components/LeaveRedirect'
-import Scoreboard from '../components/Scoreboard';
 import Lobby from './Lobby';
 import StoryTellerPick from './StoryTellerPick'
 import OtherPlayersPick from './OtherPlayersPick';
@@ -14,6 +12,7 @@ import Scoring from './Scoring';
 import { io } from "socket.io-client";
 import { Room } from '../../../types';
 import { Socket } from 'socket.io-client'; 
+import Sidebar from '../components/Sidebar';
 
 
 export default function RoomPage({ userId }: {userId: string}) {
@@ -161,20 +160,21 @@ export default function RoomPage({ userId }: {userId: string}) {
     if (socket === null) return;
     socket.emit('changeOptions', { roomId, userId, newOptions });
   }
-  
+
+  const currentName = roomState.players.find(p => p.playerId === userId)?.playerName
+
 
   return (
     <>
+      <Sidebar players={roomState.players} targetScore={roomState.targetScore} {...{userId, currentName, changeName}}/>
+      {isAdmin && roomState.gamePhase == "lobby" && <OptionsModal currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} />}
       {!isConnected && 
         <Alert variant="danger" className="my-0">Connection with server interrupted. Attempting to reconnect...</Alert>
       }
-      <RulesModal />
-      <NameModal currentName={roomState.players.filter(player => player.playerId === userId)[0].playerName} changeName={changeName}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
-      {roomState.gamePhase !== "lobby" && <Scoreboard players={roomState.players} userId={userId} targetScore={roomState.targetScore} />}
     
         {roomState.gamePhase === "lobby" && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
-          isAdmin={isAdmin} setKickUserId={setKickUserId} currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} socket={socket}/>}
+          isAdmin={isAdmin} setKickUserId={setKickUserId} socket={socket}/>}
 
         {roomState.gamePhase === "storyTellerPick" && <StoryTellerPick userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
           handSize={roomState.handSize} />}

@@ -68,10 +68,8 @@ export default function OtherPlayersGuess({
       const guessedCard = Object.values(submittedCards).filter(c => c.cardId === guessedCardId)[0];
 
       return (
-        <Container className="my-4">
-          <CardInfoWaiting use="guess" cards={[guessedCard]} storyDescriptor={storyDescriptor} 
-          waitingOn={waitingOn} />
-        </Container>
+        <CardInfoWaiting use="guess" cards={[guessedCard]} storyDescriptor={storyDescriptor} 
+        waitingOn={waitingOn} />
       );
     }
 
@@ -80,7 +78,7 @@ export default function OtherPlayersGuess({
         <OtherPlayerModal use="guess" selectedCard={selectedCard} 
           setSelectedCard={setSelectedCard} storyDescriptor={storyDescriptor}
           handleSubmit={handleSubmit} />
-        <Container className="text-center">
+        <Container className="text-center pt-5">
           <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
           <h5>Guess which card is the storyteller's!</h5>
           <Hand hand={otherCards} setSelectedCard={setSelectedCard} />
@@ -90,11 +88,11 @@ export default function OtherPlayersGuess({
   }
   
   return (
-    <Container className="text-center">
-      <h3 className="my-4">Here are all the cards that were submitted:</h3>
+    <Container className="text-center pt-5">
+      <h3> Here are all the cards that were submitted:</h3>
       <h5>Wait for other players to guess...</h5>
       <Hand hand={Object.values(submittedCards)} isGallery />
-      <Container className="my-4">
+      <Container className="mt-4 pb-5">
         <WaitingOn waitingOn={waitingOn} />
       </Container>
     </Container>

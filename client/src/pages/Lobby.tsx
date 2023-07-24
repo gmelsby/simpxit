@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import OptionsModal from '../components/OptionsModal';
 import PlayerList from '../components/PlayerList';
-import { BiPencil, BiUndo, BiCopy, BiIntersect } from 'react-icons/bi';
+import { BiPencil, BiUndo, BiCopy } from 'react-icons/bi';
 import { Socket } from 'socket.io-client';
 import { Player, Options } from "../../../types";
 
@@ -12,8 +11,6 @@ export default function Lobby({ players,
                                 handleLeave,
                                 isAdmin,
                                 setKickUserId,
-                                currentOptions,
-                                changeOptions,
                                 socket
                               }:
                               {
@@ -23,8 +20,6 @@ export default function Lobby({ players,
                                 handleLeave: React.MouseEventHandler<HTMLButtonElement>,
                                 isAdmin: boolean,
                                 setKickUserId: Function,
-                                currentOptions: Options,
-                                changeOptions: Function,
                                 socket: Socket | null
                               }) {
 
@@ -43,19 +38,24 @@ export default function Lobby({ players,
  
   return (
     <>
-      {isAdmin && <OptionsModal currentOptions={currentOptions} changeOptions={changeOptions} />}
-      <Container className="text-center justify-content-center">
-        <p>Share this code (or the page's url <CopyIcon text={window.location.href}/>) to let players join this room!</p>
-        <h1>Room Code: {roomId} <CopyIcon text={roomId}/></h1>
-        <NameForm players={players} roomId={roomId} userId={userId} socket={socket}/>
-        
-        <h3>Player List</h3>
-        <PlayerList players={players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
-        
-        <Button className="m-2" onClick={handleLeave} variant="danger">Leave Room</Button>
-        {isAdmin && players.length > 2 && <Button className="m-2" onClick={handleStartGame}>Start Game</Button>}
-        {isAdmin && players.length <= 2 && <Button className="m-2" disabled>Start Game</Button>}
-        {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
+      <Container className="h-100 d-flex flex-column text-center pt-5">
+        <Container>
+          <p>Share this code (or the page's url <CopyIcon text={window.location.href}/>) to let players join this room!</p>
+          <h1>Room Code: {roomId} <CopyIcon text={roomId}/></h1>
+        </Container>
+        <Container className="my-0 my-md-4">
+          <NameForm players={players} roomId={roomId} userId={userId} socket={socket}/>
+        </Container>
+        <Container>
+          <h3>Player List</h3>
+          <PlayerList players={players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
+        </Container>
+        <Container className="my-0 my-md-4">
+          <Button className="m-2" onClick={handleLeave} variant="danger">Leave Room</Button>
+          {isAdmin && players.length > 2 && <Button className="m-2" onClick={handleStartGame}>Start Game</Button>}
+          {isAdmin && players.length <= 2 && <Button className="m-2" disabled>Start Game</Button>}
+          {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
+        </Container>
       </Container>
     </>
   );
@@ -64,7 +64,7 @@ export default function Lobby({ players,
 // allows for in-line editing of player name
 function NameForm({ players, roomId, userId, socket }:
   {players: Player[], roomId: string, userId: string, socket: Socket | null}) {
-  const currentName = players.filter(player => player.playerId === userId)[0].playerName;
+  const currentName = players.find(player => player.playerId === userId)?.playerName;
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(currentName);
   const nameFormRef = useRef<HTMLInputElement>(null);
@@ -80,6 +80,11 @@ function NameForm({ players, roomId, userId, socket }:
       socket.emit('changeName', { roomId, userId, newName });
     }
   }, [roomId, userId, newName, socket, currentName]);
+
+  // updates name if updated elsewhere
+  useEffect(() => {
+    if (currentName !== undefined) setNewName(currentName);
+  }, [setNewName, currentName])
 
   // automatically selects text box
   useEffect(() => {
@@ -144,9 +149,12 @@ function NameForm({ players, roomId, userId, socket }:
 function CopyIcon({ text }: { text: string }) {
   const [clicked, setClicked] = useState(false);
   const putTextInClipboard = () => {
-    navigator.clipboard.writeText(text);
-    setClicked(true);
-    setTimeout(() => setClicked(false), 1000);
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        setClicked(true);
+        setTimeout(() => setClicked(false), 1000);
+      })
+      .catch(() => alert('Unable to copy to clipboard'));
   }
 
   return (

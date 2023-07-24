@@ -62,15 +62,15 @@ export default function Scoring({
 
     return (
       <>
-        <Container className="text-center">
+        <Container className="text-center pt-5">
             { winners.length !== 0 && <h1>{winners.map(p => p.playerName).join(", ")} win{winners.length === 1 && "s"}!</h1>}
-            <h3 className="my-4">{topMessage}</h3>
+            <h3 className="mb-4">{topMessage}</h3>
             <ScoringCardHand storyTeller={storyTeller} players={players} submittedCards={submittedCards} guesses={guesses} />
-        </Container>
-        <Container className="my-4 text-center">
-          {winners.length === 0 && !(isReady) && <ButtonTimer onClick={handleReady}>Ready for Next Round</ButtonTimer>}
-          {winners.length !== 0 && !(isReady) && <ButtonTimer onClick={handleReady}>Return to Room Lobby</ButtonTimer>}
-          {isReady && <WaitingOn waitingOn={waitingOn} />}
+          <Container className="mt-4 pb-5">
+            {winners.length === 0 && !(isReady) && <ButtonTimer onClick={handleReady}>Ready for Next Round</ButtonTimer>}
+            {winners.length !== 0 && !(isReady) && <ButtonTimer onClick={handleReady}>Return to Room Lobby</ButtonTimer>}
+            {isReady && <WaitingOn waitingOn={waitingOn} />}
+          </Container>
         </Container>
       </>
     );
