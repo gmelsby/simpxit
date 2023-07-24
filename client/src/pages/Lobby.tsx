@@ -149,9 +149,12 @@ function NameForm({ players, roomId, userId, socket }:
 function CopyIcon({ text }: { text: string }) {
   const [clicked, setClicked] = useState(false);
   const putTextInClipboard = () => {
-    navigator.clipboard.writeText(text);
-    setClicked(true);
-    setTimeout(() => setClicked(false), 1000);
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        setClicked(true);
+        setTimeout(() => setClicked(false), 1000);
+      })
+      .catch(() => alert('Unable to copy to clipboard'));
   }
 
   return (
