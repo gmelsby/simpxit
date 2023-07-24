@@ -24,14 +24,14 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
   return (
     <>
     {cards.map(card => 
-      <Container className="text-center" key={card.cardId}>
-        <h3 className="my-4">{message}</h3>
+      <Container className="text-center pt-5 mb-4" key={card.cardId}>
+        <h3 className="mb-4">{message}</h3>
         <Row xs={1} md={2}>
           <Col><Image src={card.locator} className="card-img" fluid /></Col>
           <Col className="my-auto"><CardInfoWrapper card={card} /></Col>
         </Row>
       </Container>)}
-    <Container className="text-center my-4">
+    <Container className="text-center mt-4 pb-5">
       <WaitingOn waitingOn={waitingOn} />
     </Container>
     </>

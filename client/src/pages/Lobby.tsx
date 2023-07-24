@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import OptionsModal from '../components/OptionsModal';
 import PlayerList from '../components/PlayerList';
 import { BiPencil, BiUndo, BiCopy } from 'react-icons/bi';
 import { Socket } from 'socket.io-client';
@@ -12,8 +11,6 @@ export default function Lobby({ players,
                                 handleLeave,
                                 isAdmin,
                                 setKickUserId,
-                                currentOptions,
-                                changeOptions,
                                 socket
                               }:
                               {
@@ -23,8 +20,6 @@ export default function Lobby({ players,
                                 handleLeave: React.MouseEventHandler<HTMLButtonElement>,
                                 isAdmin: boolean,
                                 setKickUserId: Function,
-                                currentOptions: Options,
-                                changeOptions: Function,
                                 socket: Socket | null
                               }) {
 
@@ -43,8 +38,7 @@ export default function Lobby({ players,
  
   return (
     <>
-      {isAdmin && <OptionsModal currentOptions={currentOptions} changeOptions={changeOptions} />}
-      <Container className="text-center justify-content-center">
+      <Container className="text-center justify-content-center pt-5">
         <p>Share this code (or the page's url <CopyIcon text={window.location.href}/>) to let players join this room!</p>
         <h1>Room Code: {roomId} <CopyIcon text={roomId}/></h1>
         <NameForm players={players} roomId={roomId} userId={userId} socket={socket}/>

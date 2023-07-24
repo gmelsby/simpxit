@@ -12,7 +12,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <Button variant="light" onClick={handleShow}>
+      <Button variant="light" className="sidebar position-absolute top-0 start-0 btn-outline-dark" onClick={handleShow}>
         <BiMenu />
       </Button>
 
