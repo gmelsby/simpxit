@@ -64,7 +64,7 @@ export default function Lobby({ players,
 // allows for in-line editing of player name
 function NameForm({ players, roomId, userId, socket }:
   {players: Player[], roomId: string, userId: string, socket: Socket | null}) {
-  const currentName = players.filter(player => player.playerId === userId)[0].playerName;
+  const currentName = players.find(player => player.playerId === userId)?.playerName;
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(currentName);
   const nameFormRef = useRef<HTMLInputElement>(null);
@@ -80,6 +80,11 @@ function NameForm({ players, roomId, userId, socket }:
       socket.emit('changeName', { roomId, userId, newName });
     }
   }, [roomId, userId, newName, socket, currentName]);
+
+  // updates name if updated elsewhere
+  useEffect(() => {
+    if (currentName !== undefined) setNewName(currentName);
+  }, [setNewName, currentName])
 
   // automatically selects text box
   useEffect(() => {

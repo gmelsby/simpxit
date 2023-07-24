@@ -29,7 +29,7 @@ export default function Rules() {
           <h5>Scoring</h5> 
               <p>If all other players guess the storyteller's card, the storyteller gets 0 points and all other players get 2 points.</p>
               <p>If no other players guess the storyteller's card, the storyteller gets 0 points and all other players get 2 points.</p>
-              <p>If at least one player but not every player guesses the storyteller's card, the storyteller and players who guesssed correctly get 3 points.</p>
+              <p>If at least one player but not every player guesses the storyteller's card, the storyteller and players who guessed correctly get 3 points.</p>
               <p>If a non-storyteller fools another player into guessing their card, they get an additional point per player fooled.</p>
     </>
   );

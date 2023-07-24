@@ -160,11 +160,13 @@ export default function RoomPage({ userId }: {userId: string}) {
     if (socket === null) return;
     socket.emit('changeOptions', { roomId, userId, newOptions });
   }
-  
+
+  const currentName = roomState.players.find(p => p.playerId === userId)?.playerName
+
 
   return (
     <>
-      <Sidebar />
+      <Sidebar players={roomState.players} targetScore={roomState.targetScore} {...{userId, currentName, changeName}}/>
       {isAdmin && roomState.gamePhase == "lobby" && <OptionsModal currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} />}
       {!isConnected && 
         <Alert variant="danger" className="my-0">Connection with server interrupted. Attempting to reconnect...</Alert>
