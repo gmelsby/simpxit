@@ -29,7 +29,7 @@ export default function OptionsModal({ currentOptions, changeOptions }:{ current
         <Modal.Body>
             <Form onSubmit={changeOptionsToNew}>
               <Form.Group>
-                <Form.Label htmlFor="new-target-score">Target Score (Default 25, Valid range [5-100]):</Form.Label>
+                <Form.Label htmlFor="new-target-score">Points to Win (Default 25, Valid range [5-100]):</Form.Label>
                 <Form.Control className="w-auto" type="number" required name="new-target-score"
                 value={newOptions}
                 max={100}
