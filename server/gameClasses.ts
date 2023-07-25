@@ -3,9 +3,9 @@ import { filterFrinkiac } from './utilities/filterFrinkiac.js';
 import axios from 'axios';
 import { Room as IRoom, Player as IPlayer, Card } from '../types';
 
-type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlayersGuess" | "scoring";
+type IGamePhase = 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlayersGuess' | 'scoring';
 
- export class Room implements IRoom {
+export class Room implements IRoom {
   players: Player[];
   gamePhase: IGamePhase;
   storyCardId: string;
@@ -22,9 +22,9 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
 
   constructor(adminId: string) {
     this.players = [];
-    this.gamePhase = "lobby";
-    this.storyCardId = "";
-    this.storyDescriptor = "";
+    this.gamePhase = 'lobby';
+    this.storyCardId = '';
+    this.storyDescriptor = '';
     this.kickedPlayers = [];
     this.submittedCards = [];
     this.guesses = {};
@@ -40,12 +40,12 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
 
   // gamePhaseDict maps game phases to next game phase
   static gamePhaseDict: {[key: string]: IGamePhase} = {
-                        "lobby": "storyTellerPick",
-                        "storyTellerPick": "otherPlayersPick",
-                        "otherPlayersPick": "otherPlayersGuess",
-                        "otherPlayersGuess": "scoring",
-                        "scoring": "storyTellerPick"
-                         };
+    'lobby': 'storyTellerPick',
+    'storyTellerPick': 'otherPlayersPick',
+    'otherPlayersPick': 'otherPlayersGuess',
+    'otherPlayersGuess': 'scoring',
+    'scoring': 'storyTellerPick'
+  };
   get playerCount() {
     return this.players.length;
   }
@@ -188,7 +188,7 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
    
   // starts the game if gamePhase is lobby, 3 or more players are in, and requesting player is admin
   startGame(uuid: string) {
-    if (this.gamePhase === "lobby" && this.playerCount >= 3 && this.isAdmin(uuid)) {
+    if (this.gamePhase === 'lobby' && this.playerCount >= 3 && this.isAdmin(uuid)) {
       this.advanceGamePhase();
       this.lastModified = Date.now();
       return true;
@@ -202,13 +202,13 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
     for (const player of this.players) {
       await player.populateHand(this.handSize);
     }
-    return true
+    return true;
   }
 
    
   // submits the story card and descriptor hint
   submitStoryCard(uuid: string, card: Card, descriptor: string) {
-    if (this.gamePhase !== "storyTellerPick" || !this.isStoryteller(uuid)) { 
+    if (this.gamePhase !== 'storyTellerPick' || !this.isStoryteller(uuid)) { 
       return false;
     }
     this.players[this.playerTurn].playCard(card.cardId);
@@ -249,7 +249,7 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
 
   // checks whether a card submission from uuid is able to proceed, returns true if so, false if not
   isOtherCardSubmittable(uuid: string, cardId: string) {
-    if (!this.isCurrentPlayer(uuid) || this.gamePhase !== "otherPlayersPick") {
+    if (!this.isCurrentPlayer(uuid) || this.gamePhase !== 'otherPlayersPick') {
       return false;
     }
 
@@ -288,7 +288,7 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
    
   // returns true if player can make a guess, false othewise
   canMakeGuess(uuid: string) {
-    if (!this.isCurrentPlayer(uuid) || this.gamePhase !== "otherPlayersGuess") {
+    if (!this.isCurrentPlayer(uuid) || this.gamePhase !== 'otherPlayersGuess') {
       return false;
     }
     // player has already guessed!
@@ -301,11 +301,11 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
 
   // assigns points for case where some players guessed the correct card and some did not
   handleSomeCorrectSomeIncorrect(correctGuessers: string[]) {
-      // console.log('Some players guessed correctly, some did not');
-      this.players[this.playerTurn].incrementScore(3);
-      for (const correctGuesser of correctGuessers) {
-        this.getPlayer(correctGuesser)?.incrementScore(3);
-      }
+    // console.log('Some players guessed correctly, some did not');
+    this.players[this.playerTurn].incrementScore(3);
+    for (const correctGuesser of correctGuessers) {
+      this.getPlayer(correctGuesser)?.incrementScore(3);
+    }
   }
 
   // assigns points for case where all or no players guessed the correct card
@@ -336,7 +336,7 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
     else {
       this.handleAllOrNoneCorrect();
     }
-    this.handleFoolingPoints()
+    this.handleFoolingPoints();
     this.lastModified = Date.now();
   }
    
@@ -356,7 +356,7 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
 
   // returns true if uuid is able to end the scoring phase, false if not
   isAbleToEndScoring(uuid: string) {
-    if (this.gamePhase !== "scoring") {
+    if (this.gamePhase !== 'scoring') {
       return false;
     }
     if (!this.isCurrentPlayer(uuid)) {
@@ -381,7 +381,7 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
     // console.log("starting next round");
     destroyCards(this.submittedCards.map(c => c.cardId));
     this.resetRoundValues();
-    this.gamePhase = "storyTellerPick";
+    this.gamePhase = 'storyTellerPick';
   }
 
   resetRoundValues() {
@@ -396,9 +396,9 @@ type IGamePhase = "lobby" | "storyTellerPick" | "otherPlayersPick" | "otherPlaye
   }
 
   resetToLobby() {
-    this.gamePhase = "lobby";
-    this.storyCardId = "";
-    this.storyDescriptor = "";
+    this.gamePhase = 'lobby';
+    this.storyCardId = '';
+    this.storyDescriptor = '';
     destroyCards(this.submittedCards.map(c => c.cardId));
     this.submittedCards = [];
     this.guesses = {};
@@ -431,7 +431,7 @@ export class Player implements IPlayer {
     this.playerId = playerId;
     this.playerName = playerName;
     this.score = 0;
-    this.scoredThisRound = 0
+    this.scoredThisRound = 0;
     this.hand = [];
   }
   
@@ -478,9 +478,9 @@ const destroyCards = (cardIds: string[]) => {
   for (const cardId of cardIds){
     delete cardCache[cardId];
   }
-}
+};
 
-const cardCache: { [key: string]: Card } = {}
+const cardCache: { [key: string]: Card } = {};
 
 // returns the info for a card with passed-in id 
 export function retrieveCardInfo(cardId: string) {
@@ -488,16 +488,16 @@ export function retrieveCardInfo(cardId: string) {
 }
 
 const newCard = async () => {
-    const cardId = generateUuid();
-    const info = await getNewCardInfo()
-    // console.log(`cardInfo: ${JSON.stringify(info)}`);
-    cardCache[cardId] = info;
-    const locator = cardCache[cardId].locator;
-    return { cardId, locator };
-}
+  const cardId = generateUuid();
+  const info = await getNewCardInfo();
+  // console.log(`cardInfo: ${JSON.stringify(info)}`);
+  cardCache[cardId] = info;
+  const locator = cardCache[cardId].locator;
+  return { cardId, locator };
+};
 
 const getNewCardInfo = async () => {
-  return axios.get("https://frinkiac.com/api/random")
+  return axios.get('https://frinkiac.com/api/random')
     .then(response => {
       if (response.status == 200) {
         // console.log(response.data);
@@ -514,5 +514,5 @@ const getNewCardInfo = async () => {
       console.error(err);
       return err;
     });
-}
+};
 

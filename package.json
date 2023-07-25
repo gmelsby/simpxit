@@ -26,6 +26,9 @@
   "devDependencies": {
     "@types/node-cron": "^3.0.7",
     "@types/uuid": "^9.0.1",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0",
+    "eslint": "^8.45.0",
     "typescript": "^5.1.6"
   }
 }

@@ -21,7 +21,7 @@ export function filterFrinkiac(data: { Episode:
     director: data.Episode.Director,
     writer: data.Episode.Writer,
     airdate: data.Episode.OriginalAirDate,
-    subtitles: data.Subtitles.map((sub: any) => sub.Content),
+    subtitles: data.Subtitles.map((sub: { Content: string }) => sub.Content),
     locator: `https://frinkiac.com/img/${data.Episode.Key}/${data.Frame.Timestamp}.jpg`
   };
 

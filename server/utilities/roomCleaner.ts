@@ -1,4 +1,4 @@
-import cron from "node-cron";
+import cron from 'node-cron';
 import { Room  } from '../gameClasses.js';
 
 const isExpired = (room: Room, interval: number, timestamp: number) => {
