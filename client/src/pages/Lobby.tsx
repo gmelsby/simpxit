@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import PlayerList from '../components/PlayerList';
-import { BiPencil, BiUndo, BiCopy } from 'react-icons/bi';
+import { CopyIcon } from '../components/CopyIcon';
+import { BiPencil, BiUndo } from 'react-icons/bi';
 import { Socket } from 'socket.io-client';
 import { Player } from '../../../types';
 
@@ -40,8 +41,8 @@ export default function Lobby({ players,
     <>
       <Container className="h-100 d-flex flex-column text-center pt-5">
         <Container>
-          <p>Share this code (or the page&apos;s url <CopyIcon text={window.location.href}/>) to let players join this room!</p>
-          <h1>Room Code: {roomId} <CopyIcon text={roomId}/></h1>
+          <h5>Share this code (or the page&apos;s url <CopyIcon text={window.location.href} descriptor="Room URL"/>) to let players join this room!</h5>
+          <h1>Room Code: {roomId} <CopyIcon text={roomId} descriptor='Room Code'/></h1>
         </Container>
         <Container className="my-0 my-md-4">
           <NameForm players={players} roomId={roomId} userId={userId} socket={socket}/>
@@ -145,22 +146,3 @@ function NameForm({ players, roomId, userId, socket }:
   );
 }
 
-// icon that when clicked copies text to browser clipboard
-function CopyIcon({ text }: { text: string }) {
-  const [clicked, setClicked] = useState(false);
-  const putTextInClipboard = () => {
-    navigator.clipboard.writeText(text)
-      .then(() => {
-        setClicked(true);
-        setTimeout(() => setClicked(false), 1000);
-      })
-      .catch(() => alert('Unable to copy to clipboard'));
-  };
-
-  return (
-    <>
-      <BiCopy className={clicked ? 'copying' : 'selectable'} onClick={putTextInClipboard}/>
-    </>
-    
-  );
-}

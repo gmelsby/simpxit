@@ -41,3 +41,5 @@ packages/react-devtools-shell/dist
 packages/react-devtools-timeline/dist
 
 dist
+App.css
+App.css.map
