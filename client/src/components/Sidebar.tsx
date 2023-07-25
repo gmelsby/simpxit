@@ -5,13 +5,13 @@ import Rules from './Rules';
 import { Player } from '../../../types';
 import PlayerList from './PlayerList';
 
-export default function Sidebar({ players, userId, currentName, changeName, targetScore }: { players?: Player[], userId?: string, currentName?: string, changeName?: Function, targetScore?: number }) {
+export default function Sidebar({ players, userId, currentName, changeName, targetScore }: { players?: Player[], userId?: string, currentName?: string, changeName?: (newName: string) => void, targetScore?: number }) {
   const [show, setShow] = useState(false);
-  const [newName, setNewName] = useState(currentName !== undefined ? currentName : "");
+  const [newName, setNewName] = useState(currentName !== undefined ? currentName : '');
   const [tabKey, setTabKey] = useState(players == undefined || userId == undefined ? 'rules' : 'scoreboard');
   useEffect(() => {
     if (currentName !== undefined) setNewName(currentName);
-  }, [currentName, setNewName])  
+  }, [currentName, setNewName]);  
 
 
   // for swipe detection
@@ -80,11 +80,11 @@ export default function Sidebar({ players, userId, currentName, changeName, targ
                 }>
                   <Form.Group>
                     <Form.Control className="w-auto" type="text" required name="new-name"
-                    maxLength={20} placeholder="New Name"
-                    value={newName}
-                    onChange={e => setNewName(e.target.value.trimStart())}
+                      maxLength={20} placeholder="New Name"
+                      value={newName}
+                      onChange={e => setNewName(e.target.value.trimStart())}
                     />
-                  <Button type="submit" className="my-2">Submit</Button>
+                    <Button type="submit" className="my-2">Submit</Button>
                   </Form.Group>
                 </Form>
               </Tab>

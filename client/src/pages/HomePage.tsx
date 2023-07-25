@@ -19,7 +19,7 @@ export default function HomePage( { userId }: { userId: string}) {
   const navigate = useNavigate();
   useEffect(() => {
     if (roomIdSubmitted) navigate(`/room/${enteredRoomId}`);
-  }, [roomIdSubmitted])
+  }, [roomIdSubmitted]);
 
   
   const roomCodeSubmit = (e: React.SyntheticEvent) => {
@@ -32,7 +32,7 @@ export default function HomePage( { userId }: { userId: string}) {
   // to make a new room before automatically being sent there
   const handleCreateRoom = async () => {
     const adminId = { userId };
-    const response = await fetch(`/api/room`, {
+    const response = await fetch('/api/room', {
       method: 'POST',
       body: JSON.stringify(adminId),
       headers: {
@@ -52,7 +52,7 @@ export default function HomePage( { userId }: { userId: string}) {
     }
     
     else {
-      alert(`Failed to create room: ${response.status}`)
+      alert(`Failed to create room: ${response.status}`);
     }
   };
   

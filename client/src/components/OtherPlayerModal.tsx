@@ -4,18 +4,18 @@ import ButtonTimer from './ButtonTimer';
 import { Card } from '../../../types';
 
 export default function OtherPlayerModal({
-                                    use,
-                                    selectedCard,
-                                    setSelectedCard,
-                                    storyDescriptor,
-                                    handleSubmit
-                                    }:
+  use,
+  selectedCard,
+  setSelectedCard,
+  storyDescriptor,
+  handleSubmit
+}:
                                     {
                                       use: 'deceive' | 'guess',
                                       selectedCard: Card | null,
-                                      setSelectedCard: Function,
+                                      setSelectedCard: React.Dispatch<React.SetStateAction<Card | null>>,
                                       storyDescriptor: string,
-                                      handleSubmit: Function
+                                      handleSubmit: () => void
                                     }) {
 
   const handleCloseSelect = () => {
@@ -24,22 +24,17 @@ export default function OtherPlayerModal({
 
   const submitCard = () => {
     handleSubmit();
-  }
+  };
 
   return (
     <Modal show={selectedCard !== null} onHide={handleCloseSelect}>
       <Modal.Header closeButton>
-        {use === "deceive" &&
         <Modal.Title>
-          Do you want to submit this card for the phrase "{storyDescriptor}"?
-        </Modal.Title>}
-        {use === "guess" &&
-        <Modal.Title>
-          Do you want to guess this card for the phrase "{storyDescriptor}"?
-        </Modal.Title>}
+          Do you want to {use === 'deceive' ? 'submit' : 'guess'} this card for the phrase <b>{storyDescriptor}</b>?
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Image src={selectedCard !== null ? selectedCard.locator : ""} className="card-img" fluid />
+        <Image src={selectedCard !== null ? selectedCard.locator : ''} className="card-img" fluid />
       </Modal.Body>
       <Modal.Footer>
         <Stack direction="horizontal" gap={3}>

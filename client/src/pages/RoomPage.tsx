@@ -3,13 +3,13 @@ import { useParams } from 'react-router-dom';
 import { Alert, Button, Spinner, Container } from 'react-bootstrap';
 import KickModal from '../components/KickModal';
 import OptionsModal from '../components/OptionsModal';
-import LeaveRedirect from '../components/LeaveRedirect'
+import LeaveRedirect from '../components/LeaveRedirect';
 import Lobby from './Lobby';
-import StoryTellerPick from './StoryTellerPick'
+import StoryTellerPick from './StoryTellerPick';
 import OtherPlayersPick from './OtherPlayersPick';
 import OtherPlayersGuess from './OtherPlayersGuess';
 import Scoring from './Scoring';
-import { io } from "socket.io-client";
+import { io } from 'socket.io-client';
 import { Room } from '../../../types';
 import { Socket } from 'socket.io-client'; 
 import Sidebar from '../components/Sidebar';
@@ -26,15 +26,15 @@ export default function RoomPage({ userId }: {userId: string}) {
       {playerId: 'placeholder', playerName: '', score: 0, hand: [], scoredThisRound: 0}, 
       {playerId: userId, playerName: '', score: 0, hand: [], scoredThisRound: 0}
     ], 
-    gamePhase: "lobby", 
+    gamePhase: 'lobby', 
     submittedCards: [], 
     kickedPlayers: [],
-    storyDescriptor: "",
+    storyDescriptor: '',
     handSize: 6, 
     maxPlayers: 8, 
     targetScore: 25, 
     playerTurn: 0,
-    storyCardId: "",
+    storyCardId: '',
     guesses: {},
     readyForNextRound:  [],
     lastModified: 0
@@ -61,17 +61,17 @@ export default function RoomPage({ userId }: {userId: string}) {
       setIsConnected(false);
     });
 
-    newSocket.on("receiveRoomState", data => {
+    newSocket.on('receiveRoomState', data => {
       setRoomState(data);
-    })
+    });
    
     setSocket(newSocket);
 
     return () => {
       newSocket.close();
-    }
+    };
 
-  }, [userId, roomId])
+  }, [userId, roomId]);
 
   // queries for up-to-date room info
   useEffect(() => {
@@ -92,7 +92,7 @@ export default function RoomPage({ userId }: {userId: string}) {
     return(<LeaveRedirect immediate />);
   }
 
-   // case where player clicked the leave button on an error screen
+  // case where player clicked the leave button on an error screen
   if (errorMessage && leaveAttempt) {
     return(<LeaveRedirect immediate />);
   }
@@ -102,7 +102,7 @@ export default function RoomPage({ userId }: {userId: string}) {
       <>
         <Alert variant="warning">Error: {errorMessage}</Alert>
         <Container className="text-center">
-          <Button onClick={() => {setLeaveAttempt(true)}}>Return to homepage</Button>
+          <Button onClick={() => {setLeaveAttempt(true);}}>Return to homepage</Button>
         </Container>
       </>
     );
@@ -123,7 +123,7 @@ export default function RoomPage({ userId }: {userId: string}) {
 
 
   // loading screen
-  if (roomState.players[0].playerId === "placeholder") {
+  if (roomState.players[0].playerId === 'placeholder') {
     return (
       <Container className="text-center my-5">
         <Spinner animation="border" variant="primary" />
@@ -143,52 +143,52 @@ export default function RoomPage({ userId }: {userId: string}) {
         setErrorMessage(error);
       }
     });
-  }
+  };
   
   const kickPlayer = () => {
     if (socket === null) return;
     socket.emit('kickPlayer', { roomId, userId, kickUserId });
     setKickUserId('');
-  }
+  };
   
   const changeName = (newName: string) => {
     if (socket === null) return;
     socket.emit('changeName', { roomId, userId, newName });
-  }
+  };
   
   const changeOptions = (newOptions: number) => {
     if (socket === null) return;
     socket.emit('changeOptions', { roomId, userId, newOptions });
-  }
+  };
 
-  const currentName = roomState.players.find(p => p.playerId === userId)?.playerName
+  const currentName = roomState.players.find(p => p.playerId === userId)?.playerName;
 
 
   return (
     <>
       <Sidebar players={roomState.players} targetScore={roomState.targetScore} {...{userId, currentName, changeName}}/>
-      {isAdmin && roomState.gamePhase == "lobby" && <OptionsModal currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} />}
+      {isAdmin && roomState.gamePhase == 'lobby' && <OptionsModal currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} />}
       {!isConnected && 
         <Alert variant="danger" className="my-0">Connection with server interrupted. Attempting to reconnect...</Alert>
       }
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
     
-        {roomState.gamePhase === "lobby" && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
-          isAdmin={isAdmin} setKickUserId={setKickUserId} socket={socket}/>}
+      {roomState.gamePhase === 'lobby' && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
+        isAdmin={isAdmin} setKickUserId={setKickUserId} socket={socket}/>}
 
-        {roomState.gamePhase === "storyTellerPick" && <StoryTellerPick userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
-          handSize={roomState.handSize} />}
+      {roomState.gamePhase === 'storyTellerPick' && <StoryTellerPick userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
+        handSize={roomState.handSize} />}
       
-        {roomState.gamePhase === "otherPlayersPick" && <OtherPlayersPick userId={userId} storyTeller={storyTeller} roomId={roomId}
-          storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards} />}
+      {roomState.gamePhase === 'otherPlayersPick' && <OtherPlayersPick userId={userId} storyTeller={storyTeller} roomId={roomId}
+        storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards} />}
 
-        {roomState.gamePhase === "otherPlayersGuess" && <OtherPlayersGuess userId={userId} storyTeller={storyTeller} roomId={roomId}
-          storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards}
-          submittedGuesses={roomState.guesses} />}
+      {roomState.gamePhase === 'otherPlayersGuess' && <OtherPlayersGuess userId={userId} storyTeller={storyTeller} roomId={roomId}
+        storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards}
+        submittedGuesses={roomState.guesses} />}
       
-        {roomState.gamePhase === "scoring" && <Scoring userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
-          players={roomState.players} submittedCards={roomState.submittedCards} readyPlayers={roomState.readyForNextRound}
-          storyCardId={roomState.storyCardId} guesses={roomState.guesses} targetScore={roomState.targetScore} />} 
+      {roomState.gamePhase === 'scoring' && <Scoring userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
+        players={roomState.players} submittedCards={roomState.submittedCards} readyPlayers={roomState.readyForNextRound}
+        storyCardId={roomState.storyCardId} guesses={roomState.guesses} targetScore={roomState.targetScore} />} 
     </>
   );
 }

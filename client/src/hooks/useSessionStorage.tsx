@@ -6,16 +6,16 @@
 // But for testing in my browsers I need storage by tab, not browser
 import { useState } from 'react';
 
-const PREFIX = "image-game-";
+const PREFIX = 'simpxit-';
 
 
 export default function useSessionStorage<T>(key: string, initialValue: T) {
   
   // key to store our value, prefix to limit collision with other apps
-  key = PREFIX + key
+  key = PREFIX + key;
   const [storedValue, setStoredValue] = useState(() => {
     // case where rendering is happening server-side
-    if (typeof window === "undefined") {
+    if (typeof window === 'undefined') {
       return initialValue;
     }
 
@@ -39,7 +39,7 @@ export default function useSessionStorage<T>(key: string, initialValue: T) {
         value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
       // Save to local storage
-      if (typeof window !== "undefined") {
+      if (typeof window !== 'undefined') {
         window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
       }
     } catch (error) {

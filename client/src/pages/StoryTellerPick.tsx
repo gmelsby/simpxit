@@ -3,19 +3,20 @@ import { Container, Spinner } from 'react-bootstrap';
 import Hand from '../components/Hand';
 import StoryModal from '../components/StoryModal';
 import { Card, Player } from '../../../types';
+import { Socket } from 'socket.io-client';
 
 export default function StoryTellerPick({ 
-                                        userId,
-                                        storyTeller,
-                                        roomId,
-                                        socket,
-                                        handSize
-                                        }:
+  userId,
+  storyTeller,
+  roomId,
+  socket,
+  handSize
+}:
                                         {
                                           userId: string,
                                           storyTeller: Player,
                                           roomId: string,
-                                          socket: any,
+                                          socket: Socket | null,
                                           handSize: number
                                         }) {
 
@@ -25,20 +26,20 @@ export default function StoryTellerPick({
   }, []);
 
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-  const [descriptor, setDescriptor] = useState("");
+  const [descriptor, setDescriptor] = useState('');
 
   if (storyTeller.hand.length < handSize) {
     return (
       <Container className="text-center align-items-center pt-5">
-          <Spinner className="mx-auto mt-5" animation="border" variant="primary" />
-          <h5>Generating cards...</h5>
+        <Spinner className="mx-auto mt-5" animation="border" variant="primary" />
+        <h5>Generating cards...</h5>
       </Container>
-    )
+    );
   }
 
   if (userId === storyTeller.playerId) {
     const handleSubmit = () => {
-      if (selectedCard) {
+      if (selectedCard && socket !== null) {
         socket.emit('submitStoryCard', {roomId, userId, selectedCard, descriptor} );
       }
     };

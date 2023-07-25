@@ -4,23 +4,23 @@ import ButtonTimer from './ButtonTimer';
 import { Card } from '../../../types';
 
 export default function StoryModal({
-                                    selectedCard,
-                                    setSelectedCard,
-                                    descriptor,
-                                    setDescriptor,
-                                    handleSubmit
-                                    }:
+  selectedCard,
+  setSelectedCard,
+  descriptor,
+  setDescriptor,
+  handleSubmit
+}:
                                     {
                                       selectedCard: Card | null,
-                                      setSelectedCard: Function,
+                                      setSelectedCard: React.Dispatch<React.SetStateAction<Card | null>>,
                                       descriptor: string,
-                                      setDescriptor: Function,
-                                      handleSubmit: Function
+                                      setDescriptor: React.Dispatch<React.SetStateAction<string>>,
+                                      handleSubmit: () => void
                                     }) {
 
   const handleCloseSelect = () => {
     setSelectedCard(null);
-    setDescriptor("");
+    setDescriptor('');
   };
 
 
@@ -42,20 +42,20 @@ export default function StoryModal({
         <Image src={selectedCard?.locator} className="card-img" fluid />
       </Modal.Body>
       <Form onSubmit={e => {
-                e.preventDefault();
-                handleSubmit();
-              }}>
+        e.preventDefault();
+        handleSubmit();
+      }}>
         <Modal.Footer>
-            <Col xs={8}>
-              <Form.Control type="text" required name="descriptor"
+          <Col xs={8}>
+            <Form.Control type="text" required name="descriptor"
               maxLength={45} placeholder="Describe the image"
               value={descriptor}
               onChange={e => setDescriptor(e.target.value.trimStart())}
               ref={descriptionForm} />
-            </Col>
-            <Col>
-              <ButtonTimer onClick={handleSubmit} disabled={descriptor.length < 1}>Submit</ButtonTimer>
-            </Col>
+          </Col>
+          <Col>
+            <ButtonTimer onClick={handleSubmit} disabled={descriptor.length < 1}>Submit</ButtonTimer>
+          </Col>
         </Modal.Footer>
       </Form>
     </Modal>

@@ -3,23 +3,23 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import PlayerList from '../components/PlayerList';
 import { BiPencil, BiUndo, BiCopy } from 'react-icons/bi';
 import { Socket } from 'socket.io-client';
-import { Player, Options } from "../../../types";
+import { Player } from '../../../types';
 
 export default function Lobby({ players,
-                                roomId,
-                                userId,
-                                handleLeave,
-                                isAdmin,
-                                setKickUserId,
-                                socket
-                              }:
+  roomId,
+  userId,
+  handleLeave,
+  isAdmin,
+  setKickUserId,
+  socket
+}:
                               {
                                 players: Player[],
                                 roomId: string,
                                 userId: string,
                                 handleLeave: React.MouseEventHandler<HTMLButtonElement>,
                                 isAdmin: boolean,
-                                setKickUserId: Function,
+                                setKickUserId: (value: React.SetStateAction<string>) => void,
                                 socket: Socket | null
                               }) {
 
@@ -40,7 +40,7 @@ export default function Lobby({ players,
     <>
       <Container className="h-100 d-flex flex-column text-center pt-5">
         <Container>
-          <p>Share this code (or the page's url <CopyIcon text={window.location.href}/>) to let players join this room!</p>
+          <p>Share this code (or the page&apos;s url <CopyIcon text={window.location.href}/>) to let players join this room!</p>
           <h1>Room Code: {roomId} <CopyIcon text={roomId}/></h1>
         </Container>
         <Container className="my-0 my-md-4">
@@ -84,7 +84,7 @@ function NameForm({ players, roomId, userId, socket }:
   // updates name if updated elsewhere
   useEffect(() => {
     if (currentName !== undefined) setNewName(currentName);
-  }, [setNewName, currentName])
+  }, [setNewName, currentName]);
 
   // automatically selects text box
   useEffect(() => {
@@ -100,38 +100,38 @@ function NameForm({ players, roomId, userId, socket }:
       if(nameFormRef.current && !nameFormRef.current.contains(e.target as Node) && undoRef.current && !undoRef.current.contains(e.target as Node)) {
         handleNameChange(e);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", clickHandler);
+    document.addEventListener('mousedown', clickHandler);
     return () => {
-      document.removeEventListener("mousedown", clickHandler);
+      document.removeEventListener('mousedown', clickHandler);
     };
   }, [nameFormRef, undoRef, handleNameChange]);
 
   // allows for in-line editing of name
   if (isEditingName) {
     return (
-    <>
-      <Form onSubmit={handleNameChange} className="text-center justify-content-center">
-        <Row className='justify-content-center'>
-          <Col xs="auto">
-            <h5 className='mx-0'>Your Name: </h5>
-          </Col>
-          <Col xs="auto">
-            <Form.Control className="px-1 mx-0" type="text" required name="new-name"
-            maxLength={20} placeholder="New Name"
-            value={newName}
-            onChange={e => setNewName(e.target.value.trimStart())}
-            ref={nameFormRef} />
-          </Col>
-          <Col xs="auto" className="d-none d-md-flex" ref={undoRef}>
-            <h5>
-              <BiUndo className="mx-1 selectable" onClick={() => {setIsEditingName(false)}}></BiUndo>
-            </h5>
-          </Col>
-        </Row>
-      </Form>
-    </>
+      <>
+        <Form onSubmit={handleNameChange} className="text-center justify-content-center">
+          <Row className='justify-content-center'>
+            <Col xs="auto">
+              <h5 className='mx-0'>Your Name: </h5>
+            </Col>
+            <Col xs="auto">
+              <Form.Control className="px-1 mx-0" type="text" required name="new-name"
+                maxLength={20} placeholder="New Name"
+                value={newName}
+                onChange={e => setNewName(e.target.value.trimStart())}
+                ref={nameFormRef} />
+            </Col>
+            <Col xs="auto" className="d-none d-md-flex" ref={undoRef}>
+              <h5>
+                <BiUndo className="mx-1 selectable" onClick={() => {setIsEditingName(false);}}></BiUndo>
+              </h5>
+            </Col>
+          </Row>
+        </Form>
+      </>
     );
   }
 
@@ -139,7 +139,7 @@ function NameForm({ players, roomId, userId, socket }:
     <>
       <h4>
         Your Name: {currentName}
-        <BiPencil className="mx-2 selectable" onClick={() => {setIsEditingName(true)}}></BiPencil>
+        <BiPencil className="mx-2 selectable" onClick={() => {setIsEditingName(true);}}></BiPencil>
       </h4>
     </>
   );
@@ -155,11 +155,11 @@ function CopyIcon({ text }: { text: string }) {
         setTimeout(() => setClicked(false), 1000);
       })
       .catch(() => alert('Unable to copy to clipboard'));
-  }
+  };
 
   return (
     <>
-    <BiCopy className={clicked ? "copying" : "selectable"} onClick={putTextInClipboard}/>
+      <BiCopy className={clicked ? 'copying' : 'selectable'} onClick={putTextInClipboard}/>
     </>
     
   );

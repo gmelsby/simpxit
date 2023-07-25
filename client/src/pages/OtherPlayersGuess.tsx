@@ -8,15 +8,15 @@ import { Socket } from 'socket.io-client';
 import { Card, Player } from '../../../types';
 
 export default function OtherPlayersGuess({ 
-                                        userId,
-                                        storyTeller,
-                                        roomId,
-                                        storyDescriptor,
-                                        socket,
-                                        players,
-                                        submittedCards,
-                                        submittedGuesses
-                                        }:
+  userId,
+  storyTeller,
+  roomId,
+  storyDescriptor,
+  socket,
+  players,
+  submittedCards,
+  submittedGuesses
+}:
                                         {
                                           userId: string,
                                           storyTeller: Player,
@@ -33,7 +33,7 @@ export default function OtherPlayersGuess({
     window.scrollTo(0, 0);
   }, []);
 
-  const [selectedCard, setSelectedCard] = useState(null);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const guessedCardId = submittedGuesses[userId];
   
   
@@ -62,14 +62,14 @@ export default function OtherPlayersGuess({
       if (selectedCard && socket !== null) {
         socket.emit('guess', {roomId, userId, selectedCard} );
       }
-    }
+    };
     
     if (guessedCardId) {
       const guessedCard = Object.values(submittedCards).filter(c => c.cardId === guessedCardId)[0];
 
       return (
         <CardInfoWaiting use="guess" cards={[guessedCard]} storyDescriptor={storyDescriptor} 
-        waitingOn={waitingOn} />
+          waitingOn={waitingOn} />
       );
     }
 
@@ -79,8 +79,8 @@ export default function OtherPlayersGuess({
           setSelectedCard={setSelectedCard} storyDescriptor={storyDescriptor}
           handleSubmit={handleSubmit} />
         <Container className="text-center pt-5">
-          <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
-          <h5>Guess which card is the storyteller's!</h5>
+          <h3>The storyteller submitted the descriptor <b>{storyDescriptor}</b></h3>
+          <h5>Guess which card is the storyteller&apos;s!</h5>
           <Hand hand={otherCards} setSelectedCard={setSelectedCard} />
         </Container>
       </>

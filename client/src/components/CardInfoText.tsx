@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spinner } from "react-bootstrap";
+import { Spinner } from 'react-bootstrap';
 import {CardInfo} from '../../../types';
 
 
@@ -20,9 +20,9 @@ export default function CardInfoText({ cardInfo }: { cardInfo: CardInfo | undefi
     return (
       <>
         {subtitles.map((subtitle, idx) =>
-        <p key={idx}>{subtitle}</p>)}
+          <p key={idx}>{subtitle}</p>)}
       </>
-    )
+    );
   };
 
   return (

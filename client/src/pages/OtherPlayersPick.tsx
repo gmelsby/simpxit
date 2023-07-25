@@ -7,14 +7,14 @@ import { Card, Player } from '../../../types';
 import { Socket } from 'socket.io-client';
 
 export default function OtherPlayersPick({ 
-                                        userId,
-                                        storyTeller,
-                                        roomId,
-                                        storyDescriptor,
-                                        socket,
-                                        players,
-                                        submittedCards
-                                        }:
+  userId,
+  storyTeller,
+  roomId,
+  storyDescriptor,
+  socket,
+  players,
+  submittedCards
+}:
                                         {
                                           userId: string,
                                           storyTeller: Player,
@@ -25,7 +25,7 @@ export default function OtherPlayersPick({
                                           submittedCards: Card[]
                                         }) {
 
-  const [selectedCard, setSelectedCard] = useState(null);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const user = players.find(p => p.playerId === userId);
   const handLength = user?.hand.length;
   // resets selected card if a card has been submitted
@@ -43,17 +43,17 @@ export default function OtherPlayersPick({
   // executes if storyteller 
   if (storyTeller.playerId === userId) {
     return (
-        <CardInfoWaiting use="storyTeller" cards={playerSubmittedCards} 
-          storyDescriptor={storyDescriptor} waitingOn={waitingOn} />
-    )
+      <CardInfoWaiting use="storyTeller" cards={playerSubmittedCards} 
+        storyDescriptor={storyDescriptor} waitingOn={waitingOn} />
+    );
   }
 
   // or player who has submitted a fake card
   if (playerSubmittedCards.length === expectedCards) {
-     return (
-        <CardInfoWaiting use="deceive" cards={playerSubmittedCards} 
-          storyDescriptor={storyDescriptor} waitingOn={waitingOn} />
-    )
+    return (
+      <CardInfoWaiting use="deceive" cards={playerSubmittedCards} 
+        storyDescriptor={storyDescriptor} waitingOn={waitingOn} />
+    );
 
   }
   
@@ -62,16 +62,16 @@ export default function OtherPlayersPick({
     if (selectedCard && socket !== null) {
       socket.emit('submitOtherCard', {roomId, userId, selectedCard} );
     }
-  }
+  };
 
-  const userHand = user !== undefined ? user.hand : []
+  const userHand = user !== undefined ? user.hand : [];
   return (
     <>
       <OtherPlayerModal use="deceive" selectedCard={selectedCard} setSelectedCard={setSelectedCard}
         storyDescriptor={storyDescriptor} handleSubmit={handleSubmit} />
 
       <Container className="text-center pt-5">
-        <h3>The storyteller submitted the descriptor "{storyDescriptor}"</h3>
+        <h3>The storyteller submitted the descriptor <b>{storyDescriptor}</b></h3>
         <h5>Pick a {players.length === 3 && expectedCards - playerSubmittedCards.length == 1 && 'second '} 
         card from your hand to fool the other players!</h5>
         <Hand hand={userHand} setSelectedCard={setSelectedCard} />

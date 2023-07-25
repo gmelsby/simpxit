@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { v4 } from "uuid";
+import { v4 } from 'uuid';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -17,24 +17,24 @@ function App() {
     setUserId(v4());
   }, [setUserId]);
 
-   useEffect(() => {
+  useEffect(() => {
     if (userId === '') {
-       generateUuid();
+      generateUuid();
     }
   }, [userId, generateUuid]);
 
   return (
     <>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage userId={userId} />} />
-        <Route path="/room">
-          <Route path=":roomId" element={<RoomPage userId={userId} />} />
-          <Route path="/room" element={<p>Page not found.</p>}/>
-        </Route>
-        <Route path="*" element={<p>Page not found.</p>}/>
-      </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage userId={userId} />} />
+          <Route path="/room">
+            <Route path=":roomId" element={<RoomPage userId={userId} />} />
+            <Route path="/room" element={<p>Page not found.</p>}/>
+          </Route>
+          <Route path="*" element={<p>Page not found.</p>}/>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }
