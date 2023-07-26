@@ -30,7 +30,7 @@ export default function Hand( { hand, setSelectedCard, isGallery }: {hand: Card[
     <>
       <Row xs={1} sm={2} md={Math.min(3, hand.length)} className="justify-content-center g-2 my-3 mx-3 d-none d-md-flex">
         {hand.map(card =>
-          <Col key={card.cardId}>
+          <Col key={card.cardId} className="d-flex flex-column justify-content-center">
             <GameCard card={card} handleSelectCard={handleSelectCard} selectablecard={selectablecard}/>
           </Col>)}
       </Row>
