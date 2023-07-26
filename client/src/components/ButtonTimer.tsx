@@ -1,13 +1,16 @@
 import React from 'react';
-import { Button, Spinner } from 'react-bootstrap';
+import { Button, ButtonProps, Spinner } from 'react-bootstrap';
 import { useState, useEffect, useRef } from 'react';
 
+
+interface TimerButtonProps extends ButtonProps {
+  timer?: number;
+}
 /*
 * Wrapper for react-bootstrap Button that activates a cooldown timer when pressed
 * Default value for timeout is 6 seconds, can be modified by passing in "timer" as a prop
 */
-//eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function ButtonTimer(props: any) {
+export default function ButtonTimer(props: TimerButtonProps) {
   // copy props and store children seperately
   const buttonProps = {...props};
   const children = buttonProps.children;
@@ -23,10 +26,10 @@ export default function ButtonTimer(props: any) {
   const [recentlyClicked, setRecentlyClicked] = useState(false);
 
   // modify passed-in onClick to use a timer
-  buttonProps.onClick  = () => {
+  buttonProps.onClick  = (event) => {
     setRecentlyClicked(true);
     if (props.onClick !== undefined) {
-      props.onClick();
+      props.onClick(event);
     }
 
     // default is 6 seconds unless props.timer is defined
