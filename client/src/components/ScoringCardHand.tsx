@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Carousel } from 'react-bootstrap';
 import ScoringCard from './ScoringCard';
 import { Card, Player } from '../../../types';
+import CarouselController from './CarouselController';
 
 export default function ScoringCardHand({storyTeller,
   players,
@@ -13,6 +14,12 @@ export default function ScoringCardHand({storyTeller,
                                          submittedCards: Card[],
                                          guesses: {[key: string]: string}
                                         }) {
+
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const updateActiveIndex = (eventKey: number) => {
+    setActiveIndex(eventKey);
+  };
   
   // returns list of player names that guessed the card
   const playersWhoGuessed = (cardId: string) => {
@@ -29,7 +36,7 @@ export default function ScoringCardHand({storyTeller,
         )}
       </Row>
 
-      <Carousel className="d-xs-flex d-md-none" interval={null} variant="dark" controls={false}>
+      <Carousel className="d-xs-flex d-md-none" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
         {submittedCards.map(c => 
           <Carousel.Item key={c.cardId}> 
             <Container>
@@ -40,6 +47,7 @@ export default function ScoringCardHand({storyTeller,
           </Carousel.Item>
         )}
       </Carousel>
+      <CarouselController hand={submittedCards} {...{activeIndex, updateActiveIndex}} />
     </>
   );
 
