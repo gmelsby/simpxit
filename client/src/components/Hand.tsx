@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Carousel, Container, Button } from 'react-bootstrap';
+import { BsCaretLeftFill, BsCaretRightFill } from 'react-icons/bs';
 import GameCard from './GameCard';
 import { Card } from '../../../types';
 
@@ -43,11 +44,19 @@ export default function Hand( { hand, setSelectedCard, isGallery }: {hand: Card[
           </Carousel.Item>
         )}
       </Carousel>
-      {!isGallery && <Button className="d-xs-flex d-md-none" 
-        onClick={() => handleSelectCard(hand[activeIndex])}>
+      {!isGallery && 
+      <Row className="d-xs-flex d-md-none">
+        <Button onClick={() => updateActiveIndex((((activeIndex - 1) % hand.length) + hand.length) % hand.length)}>
+          <BsCaretLeftFill />
+        </Button>
+        <Button
+          onClick={() => handleSelectCard(hand[activeIndex])}>
         Submit
-      </Button>}
-
+        </Button>
+        <Button onClick={() => updateActiveIndex((activeIndex + 1) % hand.length)}>
+          <BsCaretRightFill />
+        </Button>
+      </Row>}
     </>
   );
 }
