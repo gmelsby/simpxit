@@ -65,12 +65,32 @@ body {
 }
 
 /* Buttons no longer have hover effects for touch only devices */
+/* Quick fix, if theming is applied will use sass */
 @media (hover: none) {
-  .btn:hover {
+  .btn-primary:hover {
     transform: scale(1);
-    background-color: initial;
-    color: initial;
+    background-color: #0d6efd;
+    color: #fff;
   }
+  
+  .btn-danger:hover {
+    transform: scale(1); 
+    background-color: #dc3545;
+    color: #fff;
+  }
+
+  .btn-warning:hover {
+    transform: scale(1);
+    background-color: #ffc107;
+    color: #000;
+  }
+
+  .btn-light:hover {
+    transform: scale(1);
+    background-color: #f8f9fa;
+    color: #000;
+  }
+
 }
 
 .sidebar {
