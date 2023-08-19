@@ -63,9 +63,23 @@ body {
     border-color: yellow;
   }
 }
+
+/* Buttons no longer have hover effects for touch only devices */
+@media (hover: none) {
+  .btn:hover {
+    transform: scale(1);
+    background-color: initial;
+    color: initial;
+  }
+}
+
 .sidebar {
   border-radius: 0px 0px 10px 0px;
   border-width: 0px 2px 2px 0px;
+}
+
+.offcanvas {
+  max-width: 90vw;
 }
 
 /*# sourceMappingURL=App.css.map */

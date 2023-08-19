@@ -52,7 +52,7 @@ export default function Sidebar({ players, userId, currentName, changeName, targ
         <BiMenu />
       </Button>
 
-      <Offcanvas show={show} onHide={handleClose} className="mw-90" {...{onTouchStart, onTouchMove, onTouchEnd}}>
+      <Offcanvas show={show} onHide={handleClose} className="offcanvas" {...{onTouchStart, onTouchMove, onTouchEnd}}>
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>Info and Options</Offcanvas.Title>
         </Offcanvas.Header>
