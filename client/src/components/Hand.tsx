@@ -45,18 +45,26 @@ export default function Hand( { hand, setSelectedCard, isGallery }: {hand: Card[
         )}
       </Carousel>
       {!isGallery && 
-      <Row className="d-xs-flex d-md-none">
-        <Button onClick={() => updateActiveIndex((((activeIndex - 1) % hand.length) + hand.length) % hand.length)}>
-          <BsCaretLeftFill />
-        </Button>
-        <Button
-          onClick={() => handleSelectCard(hand[activeIndex])}>
-        Submit
-        </Button>
-        <Button onClick={() => updateActiveIndex((activeIndex + 1) % hand.length)}>
-          <BsCaretRightFill />
-        </Button>
-      </Row>}
+      <Container>
+        <Row className="d-xs-flex d-md-none">
+          <Col>
+            <Button onClick={() => updateActiveIndex((((activeIndex - 1) % hand.length) + hand.length) % hand.length)} className="px-3">
+              <BsCaretLeftFill />
+            </Button>
+          </Col>
+          <Col>
+            <Button
+              onClick={() => handleSelectCard(hand[activeIndex])}>
+            Submit
+            </Button>
+          </Col>
+          <Col>
+            <Button onClick={() => updateActiveIndex((activeIndex + 1) % hand.length)} className="px-3">
+              <BsCaretRightFill />
+            </Button>
+          </Col>
+        </Row>
+      </Container>}
     </>
   );
 }
