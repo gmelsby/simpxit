@@ -4,6 +4,7 @@ from dotenv import load_dotenv #type: ignore
 import requests #type: ignore
 from PIL import Image #type: ignore
 from pathlib import Path
+from time import sleep
 
 load_dotenv()
 
@@ -13,27 +14,14 @@ key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 
-
-test_card_info = {
-    'key': 'S12E20',
-    'episode_number': 20,
-    'season_number': 12,
-    'title': 'Children of a Lesser Clod',
-    'director': 'Mike Polcino',
-    'writer': 'Al Jean',
-    'original_air_date': '13-May-01',
-    'timestamp': 913996,
-    'subtitles': ["( grunts )", "YEAH, THEY'RE NOT GREAT."]
-}
-
 def get_random_card():
     r = requests.get(f'https://frinkiac.com/api/random')
+    results = r.json()
+    print(results)
+
     if r.status_code != 200:
         print(f'received status code {r.status_code}')
         return None
-    
-    results = r.json()
-    print(results)
 
     card_info = {
     'key': results['Episode']['Key'],
@@ -137,10 +125,39 @@ def add_card_to_database(card_info) -> bool:
 
 
 def main():
-    new_card = get_random_card()
-    add_card_to_database(test_card_info)
-    bytes_used = (sum(f.stat().st_size for f in Path('images').glob('**/*') if f.is_file()))
-    print(f'{bytes_used / (10 ** 6)} Mb used')
+    consecutive_failure_count = 0
+    while True:
+        new_card = get_random_card()
+
+        # handle issue with fetching
+        if new_card is None:
+            consecutive_failure_count += 1
+
+            # if we have repeated failures, exit
+            if consecutive_failure_count >= 5:
+                break
+
+            # sleep and try again
+            sleep(30)
+            continue
+
+        # reset failure count if execution makes it this far
+        consecutive_failure_count = 0
+
+        # filter out movie cards and season 13+ cards (larger image size)
+        if new_card['season_number'] < 1 or new_card['season_number'] >= 13:
+            sleep(5)
+            print('Card season out of range, skipping...')
+            continue
+
+        add_card_to_database(new_card)
+
+        bytes_used = (sum(f.stat().st_size for f in Path('images').glob('**/*') if f.is_file()))
+        print(f'{bytes_used / (10 ** 6)} Mb used')
+        if bytes_used > 8 * 10 ** 8:
+            break
+
+        sleep(5)
 
 if __name__ == "__main__":
     main()
