@@ -43,3 +43,7 @@ packages/react-devtools-timeline/dist
 dist
 App.css
 App.css.map
+
+data/*
+!data/downloader.py
+supabase/
