@@ -27,9 +27,28 @@ test_card_info = {
 }
 
 def get_random_card():
-    season = 1
-    if season < 1:
-        pass
+    r = requests.get(f'https://frinkiac.com/api/random')
+    if r.status_code != 200:
+        print(f'received status code {r.status_code}')
+        return None
+    
+    results = r.json()
+    print(results)
+
+    card_info = {
+    'key': results['Episode']['Key'],
+    'episode_number': results['Episode']['EpisodeNumber'],
+    'season_number': results['Episode']['Season'],
+    'title': results['Episode']['Title'],
+    'director': results['Episode']['Director'],
+    'writer': results['Episode']['Writer'],
+    'original_air_date': results['Episode']['OriginalAirDate'],
+    'timestamp': results['Frame']['Timestamp'],
+    'subtitles': [sub['Content'] for sub in results['Subtitles']]
+    }
+
+    print(card_info)
+    return card_info
 
 def download_image(key, timestamp) -> str:
     """
@@ -118,7 +137,10 @@ def add_card_to_database(card_info) -> bool:
 
 
 def main():
+    new_card = get_random_card()
     add_card_to_database(test_card_info)
+    bytes_used = (sum(f.stat().st_size for f in Path('images').glob('**/*') if f.is_file()))
+    print(f'{bytes_used / (10 ** 6)} Mb used')
 
 if __name__ == "__main__":
     main()
