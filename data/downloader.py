@@ -1,6 +1,9 @@
 import os
 from supabase import create_client, Client
 from dotenv import load_dotenv #type: ignore
+import requests #type: ignore
+from PIL import Image #type: ignore
+from pathlib import Path
 
 load_dotenv()
 
@@ -28,6 +31,29 @@ def get_random_card():
     if season < 1:
         pass
 
+def download_image(key, timestamp) -> str:
+    """
+    Downloads the image from frinkiac and saves the image as a webp. Returns the filename of the saved image
+    """ 
+    # saves jpg image in temp folder
+    res = requests.get(f'https://frinkiac.com/img/{key}/{timestamp}.jpg')
+    filename = f'{key}_{timestamp}'
+    temp_dir = 'images_temp'
+    with open(f'{temp_dir}/{filename}.jpg', 'wb') as file:
+        file.write(res.content)
+
+    # converts jpg image to webp
+    with Image.open(f'{temp_dir}/{filename}.jpg') as image:
+        image = image.convert()
+        image.save(f'images/{filename}.webp', 'webp')
+    
+    # cleans up old file
+    Path.unlink(f'{temp_dir}/{filename}.jpg')
+
+
+
+    return f'{filename}.webp'
+
 
 def add_card_to_database(card_info) -> bool:
     """
@@ -41,7 +67,11 @@ def add_card_to_database(card_info) -> bool:
                        .execute())
 
     # if episode does not exist, add it to the database
-    if not len(episode_data[1]):
+    if len(episode_data[1]):
+        print(f'Episode {card_info['key']} already exists')
+
+    else:
+        print(f'Creating episode {card_info['key']}')
         episode_data, _ = (supabase.table('episode')
             .insert({
                 'key': card_info['key'],
@@ -56,8 +86,6 @@ def add_card_to_database(card_info) -> bool:
 
     episode_id = episode_data[1][0]['id']
 
-    print(f'episode_id: {episode_id}')
-
 
     # checks if card with matching episode and timestamp exists in database
     card_data, _ = (supabase.table('card')
@@ -66,15 +94,16 @@ def add_card_to_database(card_info) -> bool:
                         .eq('timestamp', card_info['timestamp'])
                         .execute())
 
-    card_info['filename'] = f"{card_info['key']}_{card_info['timestamp']}.webp"
-
-    print(card_data)
 
     # exits early if card with same episode and timestamp exists
     if len(card_data[1]):
+        print('Card already exists!')
         return False
 
-    # if card with same episode and timestamp does not exist, creates card
+    # downloads image
+    card_info['filename'] = download_image(card_info['key'], card_info['timestamp'])
+    print(f'Downloaded image {card_info['filename']}')
+
     card_data, _ = (supabase.table('card')
                     .insert({
                         'timestamp': card_info['timestamp'],
@@ -84,6 +113,7 @@ def add_card_to_database(card_info) -> bool:
                         'episode_id': episode_id,
                     })
                     .execute())
+    print('Put new card in database')
     return True
 
 
