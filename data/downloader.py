@@ -16,12 +16,12 @@ supabase: Client = create_client(url, key)
 
 def get_random_card():
     r = requests.get(f'https://frinkiac.com/api/random')
-    results = r.json()
-    print(results)
-
     if r.status_code != 200:
         print(f'received status code {r.status_code}')
         return None
+
+    results = r.json()
+    print(results)
 
     card_info = {
     'key': results['Episode']['Key'],
@@ -146,8 +146,8 @@ def main():
 
         # filter out movie cards and season 13+ cards (larger image size)
         if new_card['season_number'] < 1 or new_card['season_number'] >= 13:
-            sleep(5)
             print('Card season out of range, skipping...')
+            sleep(5)
             continue
 
         add_card_to_database(new_card)
