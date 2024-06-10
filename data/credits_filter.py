@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 
-def dark_pixel_percentage(image_path: str, pixel_value_cutoff: int=10) -> float:
+def dark_pixel_percentage(image_path: str, pixel_value_cutoff: int=20) -> float:
     """
     Returns the percentage of dark pixels in the image at image_path 
     A pixel is considered dark if its greyscale value is < pixel_value_cutoff
@@ -13,14 +13,14 @@ def dark_pixel_percentage(image_path: str, pixel_value_cutoff: int=10) -> float:
         img_arr = np.array(image)
         # gets dimensions of image
         pixel_count = len(img_arr) * len(img_arr[0])
-        # filters for pictures with greyscale value < 10
+        # filters for pictures with greyscale value < pixel_value_cutoff
         dark_pixels = np.count_nonzero(img_arr < pixel_value_cutoff)
         
         return dark_pixels / pixel_count * 100
 
 def main(args):
     percent_threshold = int(args[1]) if len(args) > 1 else 70
-    pixel_cutoff = int(args[2]) if len(args) > 2 else 10
+    pixel_cutoff = int(args[2]) if len(args) > 2 else 20
 
     image_paths = Path('images').glob('*.webp')
     for image in image_paths:
