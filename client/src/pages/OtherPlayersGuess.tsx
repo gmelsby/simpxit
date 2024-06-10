@@ -39,22 +39,23 @@ export default function OtherPlayersGuess({
   
   const waitingOn = players.filter(p => !(Object.keys(submittedGuesses).includes(p.playerId)) && !Object.is(p, storyTeller));
 
-  const [otherCards, setOtherCards] = useState<Card[]>([]);
+  const [shuffleOrder, setShuffleOrder] = useState<number[]>([]);
 
   // shuffles cards on load
   useEffect(() => {
-    const shuffled = submittedCards.filter(c => c.submitter !== userId);
+    const shuffled = [...Array(submittedCards.length).keys()];
     // citation: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    setOtherCards(shuffled);
-  // change dependency array when socket updates just the values that changed
-  // currently each update updates every object, even when the same values
-  // this causes rerenders when specifying submittedCards as a dependency
-  // eslint-disable-next-line
-  }, []);
+    setShuffleOrder(shuffled);
+  }, [submittedCards.length]);
+
+  // shuffles cards based on shuffle order and removes cards that the guessing player has submitted
+  const otherCards = shuffleOrder
+    .map(idx => submittedCards[idx])
+    .filter(card => card.submitter !== userId);
 
   
   if (userId !== storyTeller.playerId) {
