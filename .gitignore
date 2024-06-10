@@ -46,4 +46,5 @@ App.css.map
 
 data/*
 !data/downloader.py
+!data/requirements.txt
 supabase/
