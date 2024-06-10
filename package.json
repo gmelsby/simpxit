@@ -2,12 +2,12 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "serverbuild/index.js",
+  "main": "serverbuild/app.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsc && node serverbuild/index.js",
-    "devstart": "npx tsc && nodemon serverbuild/index.js",
+    "start": "npx tsc && node serverbuild/app.js",
+    "devstart": "npx tsc && nodemon serverbuild/app.js",
     "build-client": "cd client && npm i && npm run build"
   },
   "keywords": [],
