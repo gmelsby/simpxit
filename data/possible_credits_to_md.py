@@ -1,6 +1,6 @@
 import sys
 
-folder_name = '.images'
+folder_name = './images'
 
 def main():
     for line in sys.stdin:
