@@ -46,6 +46,7 @@ App.css.map
 
 data/*
 !data/downloader.py
+!data/possible_credits_to_md.py
 !data/credits_filter.py
 !data/requirements.txt
 supabase/
