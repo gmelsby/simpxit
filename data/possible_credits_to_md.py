@@ -7,7 +7,7 @@ def main():
         file_name = line.strip()
         if not file_name:
             break
-        print(f'![{file_name}]({folder_name}/{file_name})')
+        print(f'![{file_name}]({folder_name}/{file_name})\n*{file_name}*\n')
 
 if __name__ == '__main__':
     main()
