@@ -140,6 +140,7 @@ export class Room implements IRoom {
     return false;
   }
   
+  // checks if player has been kicked from the game
   isKicked(uuid: string) {
     return this.kickedPlayers.includes(uuid);
   }
@@ -182,6 +183,7 @@ export class Room implements IRoom {
     return true;
   }
 
+  // game phase moves forward by one
   advanceGamePhase() {
     this.gamePhase = Room.gamePhaseDict[this.gamePhase];
   }
