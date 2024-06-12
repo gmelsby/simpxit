@@ -50,5 +50,6 @@ data/*
 !data/possible_credits_to_md.py
 !data/credits_filter.py
 !data/s3_uploader.py
+!data/s3_filecount.py
 !data/requirements.txt
 supabase/
