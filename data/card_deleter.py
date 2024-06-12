@@ -18,8 +18,6 @@ def main():
         print('Please specify a source file as a command line argument', file=sys.stderr)
         return
     
-
-
     db_delete_count = 0
     initial_image_count = len(list(Path(folder_name).glob('*')))
     with open(sys.argv[1], 'r') as files:

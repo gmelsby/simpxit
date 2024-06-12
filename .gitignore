@@ -49,5 +49,6 @@ data/*
 !data/card_deleter.py
 !data/possible_credits_to_md.py
 !data/credits_filter.py
+!data/s3_uploader.py
 !data/requirements.txt
 supabase/
