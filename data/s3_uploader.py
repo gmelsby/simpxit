@@ -26,9 +26,13 @@ s3 = boto3.resource(
 def main():
     bucket = s3.Bucket(bucket_name)
     image_paths = Path(folder_name).glob('*.webp')
+    count = 0
     for i, image in enumerate(image_paths):
-        bucket.upload_file(str(image), Path(image).name)
-        print(f'uploaded {i} files', end='\r')
+        bucket.upload_file(str(image), Path(image).name, ExtraArgs={'ContentType': 'image/webp'})
+        count = i + 1
+        print(f'  {('\\', '|', '/', '|')[i % 4]} uploaded {count} files', end='\r')
+
+    print(f'uploaded {count} files')
     
 if __name__ == '__main__':
     main()
