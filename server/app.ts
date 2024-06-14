@@ -9,6 +9,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import path from 'node:path';
 import { retrieveCardInfo } from './models/cardModel.js';
+import { GameCard } from '../types.js';
 
 
 const PORT = process.env.PORT || 3000;
@@ -43,11 +44,26 @@ roomCleaner(rooms, '*/30 * * * *', 30);
 // sets up socket connection logic
 socketHandler(io, rooms);
 
+// for caching card info, clears every 2 minutes
+let cardInfoCache: { [key: string]: GameCard } = {};
+setInterval(() => {
+  console.log('clearing cardInfoCache');
+  cardInfoCache = {};
+}, 1000 * 60 * 2);
+
+
 // allows users to get the card info for a card
 app.get('/api/cardinfo/:cardIdString', async (req, res) => {
   const { cardIdString } = req.params;
 
   console.log(`received request for card info for card ${cardIdString}`);
+
+  // case where value was cached
+  if (Object.keys(cardInfoCache).includes(cardIdString)) {
+    console.log('returning cached value');
+    res.send(cardInfoCache[cardIdString]);
+    return;
+  }
 
   // check that cardIdString is parsable as bigint
   let cardId = BigInt(0);
@@ -65,6 +81,9 @@ app.get('/api/cardinfo/:cardIdString', async (req, res) => {
     res.status(404).send('card not found');
     return;
   }
+
+  // cache result to minimize db calls
+  cardInfoCache[cardIdString] = cardInfo;
 
   res.send(cardInfo);
 });

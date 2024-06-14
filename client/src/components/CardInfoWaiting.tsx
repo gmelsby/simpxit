@@ -28,7 +28,7 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
           </h3>
           <Row xs={1} md={2}>
             <Col><Image src={card.locator} className="card-img" fluid /></Col>
-            <Col className="my-auto"><CardInfoWrapper card={card} /></Col>
+            <Col className="my-auto"><CardInfoWrapper cardId={card.id} /></Col>
           </Row>
         </Container>)}
       <Container className="text-center mt-4 pb-5">
