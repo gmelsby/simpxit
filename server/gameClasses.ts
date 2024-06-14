@@ -425,7 +425,7 @@ export class Player implements IPlayer {
   }
   
   async populateHand(size: number) {
-    this.hand.push(...(await drawCards(size)));
+    this.hand.push(...(await drawCards(size - this.hand.length)));
   }
   
   playCard(cardId: string) {
