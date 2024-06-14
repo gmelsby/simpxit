@@ -6,10 +6,11 @@ export interface CardInfo {
   airdate: string;
   subtitles: string[];
   locator: string;
+  timestamp: number;
 }
 
 export interface GameCard extends Partial<CardInfo> {
-  id: bigint;
+  id: string;
   locator: string;
   submitter?: string;
 }
@@ -29,11 +30,11 @@ export interface Options {
 export interface Room {
   players: Player[];
   gamePhase: 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlayersGuess' | 'scoring';
-  storyCardId: bigint;
+  storyCardId: string;
   storyDescriptor: string;
   kickedPlayers: string[];
   submittedCards: Card[];
-  guesses: {[key: string]: bigint};
+  guesses: {[key: string]: string};
   handSize: number;
   maxPlayers: number;
   targetScore: number;

@@ -6,11 +6,11 @@ type IGamePhase = 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlaye
 export class Room implements IRoom {
   players: Player[];
   gamePhase: IGamePhase;
-  storyCardId: bigint;
+  storyCardId: string;
   storyDescriptor: string;
   kickedPlayers: string[];
   submittedCards: GameCard[];
-  guesses: {[key: string]: bigint};
+  guesses: {[key: string]: string};
   handSize: number;
   maxPlayers: number;
   targetScore: number;
@@ -21,7 +21,7 @@ export class Room implements IRoom {
   constructor(adminId: string) {
     this.players = [];
     this.gamePhase = 'lobby';
-    this.storyCardId = BigInt(0);
+    this.storyCardId = '';
     this.storyDescriptor = '';
     this.kickedPlayers = [];
     this.submittedCards = [];
@@ -248,7 +248,7 @@ export class Room implements IRoom {
   }
 
   // checks whether a card submission from uuid is able to proceed, returns true if so, false if not
-  isOtherCardSubmittable(uuid: string, cardId: bigint) {
+  isOtherCardSubmittable(uuid: string, cardId: string) {
     if (!this.isCurrentPlayer(uuid) || this.gamePhase !== 'otherPlayersPick') {
       return false;
     }
@@ -272,7 +272,7 @@ export class Room implements IRoom {
     return true;
   }
    
-  makeGuess(uuid: string, cardId: bigint) {
+  makeGuess(uuid: string, cardId: string) {
     if (!(this.canMakeGuess(uuid))) {
       return false;
     }
@@ -396,7 +396,7 @@ export class Room implements IRoom {
 
   resetToLobby() {
     this.gamePhase = 'lobby';
-    this.storyCardId = BigInt(0);
+    this.storyCardId = '';
     this.storyDescriptor = '';
     this.submittedCards = [];
     this.guesses = {};
@@ -428,11 +428,11 @@ export class Player implements IPlayer {
     this.hand.push(...(await drawCards(size)));
   }
   
-  playCard(cardId: bigint) {
+  playCard(cardId: string) {
     this.hand = this.hand.filter(card => card.id !== cardId);
   }
 
-  isCardInHand(cardId: bigint) {
+  isCardInHand(cardId: string) {
     return this.hand.map(c => c.id).includes(cardId);
   }
 
