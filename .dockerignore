@@ -1,6 +1,10 @@
 .env
 node_modules
+dist
 build
+data
+.vscode
 serverbuild
+supabase
 .gitignore
 fly.toml

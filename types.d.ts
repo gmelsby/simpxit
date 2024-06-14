@@ -22,7 +22,7 @@ export interface Player {
   playerId: string;
   playerName: string;
   score: number;
-  hand: Card[];
+  hand: GameCard[];
   scoredThisRound: number;
 }
 
@@ -36,7 +36,7 @@ export interface Room {
   storyCardId: string;
   storyDescriptor: string;
   kickedPlayers: string[];
-  submittedCards: Card[];
+  submittedCards: GameCard[];
   guesses: {[key: string]: string};
   handSize: number;
   maxPlayers: number;
