@@ -19,7 +19,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      'img-src': ['\'self\'', 'https://frinkiac.com', 'data:'],
+      'img-src': ['\'self\'', `${process.env.IMAGE_BUCKET}`, 'data:'],
     }
   },
   crossOriginEmbedderPolicy: false
