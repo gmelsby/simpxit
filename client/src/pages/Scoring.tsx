@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap';
 import ButtonTimer from '../components/ButtonTimer';
 import ScoringCardHand from '../components/ScoringCardHand';
 import WaitingOn from '../components/WaitingOn';
-import { Player, Card } from '../../../types';
+import { Player, GameCard } from '../../../types';
 import { Socket } from 'socket.io-client';
 
 export default function Scoring({ 
@@ -25,7 +25,7 @@ export default function Scoring({
                                   socket: Socket | null,
                                   players: Player[],
                                   storyCardId: string,
-                                  submittedCards: Card[],
+                                  submittedCards: GameCard[],
                                   guesses: {[key: string]: string},
                                   readyPlayers: string[],
                                   targetScore: number

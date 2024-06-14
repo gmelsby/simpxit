@@ -1,10 +1,10 @@
 import React from 'react';
 import { Accordion, Card as BootstrapCard, Col, ListGroup, ListGroupItem } from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
-import { Player, Card } from '../../../types';
+import { Player, GameCard } from '../../../types';
 
 export default function ScoringCard({ player, card, guessedPlayers, isStoryTeller }:
-  {player: Player, card: Card, guessedPlayers: Player[], isStoryTeller: boolean}) {
+  {player: Player, card: GameCard, guessedPlayers: Player[], isStoryTeller: boolean}) {
   const GuessedInfo = () => {
     return (
       <>
@@ -23,7 +23,7 @@ export default function ScoringCard({ player, card, guessedPlayers, isStoryTelle
           <Accordion.Item eventKey="0">
             <Accordion.Header>Card Info</Accordion.Header>
             <Accordion.Body>
-              <CardInfoWrapper card={card} />
+              <CardInfoWrapper cardId={card.id} />
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>

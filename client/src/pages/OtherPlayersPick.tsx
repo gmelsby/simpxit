@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap';
 import CardInfoWaiting from '../components/CardInfoWaiting';
 import Hand from '../components/Hand';
 import OtherPlayerModal from '../components/OtherPlayerModal';
-import { Card, Player } from '../../../types';
+import { GameCard, Player } from '../../../types';
 import { Socket } from 'socket.io-client';
 
 export default function OtherPlayersPick({ 
@@ -22,10 +22,10 @@ export default function OtherPlayersPick({
                                           storyDescriptor: string,
                                           socket: Socket | null,
                                           players: Player[],
-                                          submittedCards: Card[]
+                                          submittedCards: GameCard[]
                                         }) {
 
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [selectedCard, setSelectedCard] = useState<GameCard | null>(null);
   const user = players.find(p => p.playerId === userId);
   const handLength = user?.hand.length;
   // resets selected card if a card has been submitted

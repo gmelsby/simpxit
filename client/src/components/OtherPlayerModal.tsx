@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Stack, Image, Modal } from 'react-bootstrap';
 import ButtonTimer from './ButtonTimer';
-import { Card } from '../../../types';
+import { GameCard } from '../../../types';
 
 export default function OtherPlayerModal({
   use,
@@ -12,8 +12,8 @@ export default function OtherPlayerModal({
 }:
                                     {
                                       use: 'deceive' | 'guess',
-                                      selectedCard: Card | null,
-                                      setSelectedCard: React.Dispatch<React.SetStateAction<Card | null>>,
+                                      selectedCard: GameCard | null,
+                                      setSelectedCard: React.Dispatch<React.SetStateAction<GameCard | null>>,
                                       storyDescriptor: string,
                                       handleSubmit: () => void
                                     }) {

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Form, Image, Modal, Col} from 'react-bootstrap';
 import ButtonTimer from './ButtonTimer';
-import { Card } from '../../../types';
+import { GameCard } from '../../../types';
 
 export default function StoryModal({
   selectedCard,
@@ -11,8 +11,8 @@ export default function StoryModal({
   handleSubmit
 }:
                                     {
-                                      selectedCard: Card | null,
-                                      setSelectedCard: React.Dispatch<React.SetStateAction<Card | null>>,
+                                      selectedCard: GameCard | null,
+                                      setSelectedCard: React.Dispatch<React.SetStateAction<GameCard | null>>,
                                       descriptor: string,
                                       setDescriptor: React.Dispatch<React.SetStateAction<string>>,
                                       handleSubmit: () => void
