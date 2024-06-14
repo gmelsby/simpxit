@@ -1,14 +1,14 @@
 import React from 'react';
 import { useState, useCallback, useEffect } from 'react';
 import CardInfoText from './CardInfoText';
-import { Card } from '../../../types';
+import { GameCard } from '../../../types';
  
-export default function CardInfoWrapper({card}: {card: Card}) {
+export default function CardInfoWrapper({card}: {card: GameCard}) {
 
   const [cardInfo, setCardInfo] = useState(undefined);
 
   const loadCardInfo = useCallback(async () => {
-    const response = await fetch(`/api/cardinfo/${card.cardId}`);
+    const response = await fetch(`/api/cardinfo/${card.id}`);
     const data = await response.json();
     setCardInfo(data);
   }, [card]);

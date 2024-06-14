@@ -5,7 +5,7 @@ import OtherPlayerModal from '../components/OtherPlayerModal';
 import CardInfoWaiting from '../components/CardInfoWaiting';
 import WaitingOn from '../components/WaitingOn';
 import { Socket } from 'socket.io-client';
-import { Card, Player } from '../../../types';
+import { GameCard, Player } from '../../../types';
 
 export default function OtherPlayersGuess({ 
   userId,
@@ -24,7 +24,7 @@ export default function OtherPlayersGuess({
                                           storyDescriptor: string,
                                           socket: Socket | null,
                                           players: Player[],
-                                          submittedCards: Card[],
+                                          submittedCards: GameCard[],
                                           submittedGuesses: {[key: string]: string};
                                         }) {
 
@@ -33,7 +33,7 @@ export default function OtherPlayersGuess({
     window.scrollTo(0, 0);
   }, []);
 
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [selectedCard, setSelectedCard] = useState<GameCard | null>(null);
   const guessedCardId = submittedGuesses[userId];
   
   
@@ -66,7 +66,7 @@ export default function OtherPlayersGuess({
     };
     
     if (guessedCardId) {
-      const guessedCard = Object.values(submittedCards).filter(c => c.cardId === guessedCardId)[0];
+      const guessedCard = Object.values(submittedCards).filter(c => c.id === guessedCardId)[0];
 
       return (
         <CardInfoWaiting use="guess" cards={[guessedCard]} storyDescriptor={storyDescriptor} 

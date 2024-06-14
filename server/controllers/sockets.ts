@@ -138,7 +138,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       const { roomId, userId, selectedCard, descriptor } = request;
       // check that user is able to submit card
       if (rooms[roomId] && rooms[roomId].submitStoryCard(userId, selectedCard, descriptor.trim())) {
-        console.log(`Story card ${selectedCard.cardId} submitted by ${userId}`);
+        console.log(`Story card ${selectedCard.id} submitted by ${userId}`);
         io.to(roomId).emit('receiveRoomState', rooms[roomId]);
       }
       
@@ -152,7 +152,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       const { roomId, userId, selectedCard} = request;
       // check that user is able to submit other card
       if (rooms[roomId] && rooms[roomId].submitOtherCard(userId, selectedCard)) {
-        console.log(`Other card ${selectedCard.cardId} submitted by ${userId}`);
+        console.log(`Other card ${selectedCard.id} submitted by ${userId}`);
         io.to(roomId).emit('receiveRoomState', rooms[roomId]);
       }
       
@@ -165,7 +165,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       console.log('received guess');
       const {roomId, userId, selectedCard} = request;
       // check that user is able to make guess
-      if (rooms[roomId] && rooms[roomId].makeGuess(userId, selectedCard.cardId)) {
+      if (rooms[roomId] && rooms[roomId].makeGuess(userId, selectedCard.id)) {
         console.log(`${userId} made guess`);
         io.to(roomId).emit('receiveRoomState', rooms[roomId]);
       }
