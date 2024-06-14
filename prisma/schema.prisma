@@ -10,19 +10,19 @@ datasource db {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model card {
+model Card {
   id            BigInt   @id(map: "card_pkey1") @default(autoincrement())
   subtitles     String[]
   locator       String
   episode_id    BigInt
   frinkiac_link String?
   timestamp     BigInt
-  episode       episode  @relation(fields: [episode_id], references: [id], onDelete: Cascade, map: "public_card_episode_id_fkey")
+  episode       Episode  @relation(fields: [episode_id], references: [id], onDelete: Cascade, map: "public_card_episode_id_fkey")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model episode {
+model Episode {
   id             BigInt @id(map: "card_pkey") @default(autoincrement())
   key            String
   title          String
@@ -31,5 +31,5 @@ model episode {
   airdate        String
   season_number  Int    @db.SmallInt
   episode_number Int    @db.SmallInt
-  card           card[]
+  cards           Card[]
 }
