@@ -3,6 +3,7 @@ import { GameCard } from '../../types';
 import prismaRandom from 'prisma-extension-random';
 
 const prisma = new PrismaClient().$extends(prismaRandom());
+const imageBucketUrl = process.env.IMAGE_BUCKET;
 
 export async function drawCards(count: number): Promise<GameCard[]>  {
   const newCards: {id: bigint, locator: string}[] = await prisma.card.findManyRandom(count,
@@ -12,8 +13,8 @@ export async function drawCards(count: number): Promise<GameCard[]>  {
   );
   return newCards.map(card => {
     return {
-      ...card,
       id: card.id.toString(),
+      locator: `${imageBucketUrl}/${card.locator}`
     };
   });
 }
@@ -25,17 +26,26 @@ export async function retrieveCardInfo(cardId: bigint): Promise<GameCard | null>
         equals: cardId
       }
     },
+    include: {
+      episode: true,
+    },
   });
 
   if (result === null) {
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { episode_id, ...gameCardResult } = { 
-    ...result,
-    id: result.id.toString(), 
-    timestamp: Number(result.timestamp),
+  return {
+    id: result.id.toString(),
+    locator: `${imageBucketUrl}/${result.locator}`,
+    subtitles: result.subtitles,
+    episode_key: result.episode.key,
+    season: result.episode.season_number,
+    episode: result.episode.episode_number,
+    title: result.episode.title,
+    writer: result.episode.writer,
+    director: result.episode.director,
+    airdate: result.episode.airdate,
+    frinkiacLink: result.frinkiac_link,
   };
-  return gameCardResult;
 }

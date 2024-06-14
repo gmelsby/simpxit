@@ -1,5 +1,7 @@
 export interface CardInfo {
-  episode: string;
+  episode_key: string;
+  season: number;
+  episode: number;
   title: string;
   director: string;
   writer: string;
@@ -7,6 +9,7 @@ export interface CardInfo {
   subtitles: string[];
   locator: string;
   timestamp: number;
+  frinkiacLink: string?;
 }
 
 export interface GameCard extends Partial<CardInfo> {
