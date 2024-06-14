@@ -1,18 +1,16 @@
-import { generateUuid } from './utilities/generateUtils.js';
-import { filterFrinkiac } from './utilities/filterFrinkiac.js';
-import axios from 'axios';
-import { Room as IRoom, Player as IPlayer, Card } from '../types';
+import { Room as IRoom, Player as IPlayer, GameCard } from '../types';
+import { drawCards } from './models/cardModel.js';
 
 type IGamePhase = 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlayersGuess' | 'scoring';
 
 export class Room implements IRoom {
   players: Player[];
   gamePhase: IGamePhase;
-  storyCardId: string;
+  storyCardId: bigint;
   storyDescriptor: string;
   kickedPlayers: string[];
-  submittedCards: Card[];
-  guesses: {[key: string]: string};
+  submittedCards: GameCard[];
+  guesses: {[key: string]: bigint};
   handSize: number;
   maxPlayers: number;
   targetScore: number;
@@ -23,7 +21,7 @@ export class Room implements IRoom {
   constructor(adminId: string) {
     this.players = [];
     this.gamePhase = 'lobby';
-    this.storyCardId = '';
+    this.storyCardId = BigInt(0);
     this.storyDescriptor = '';
     this.kickedPlayers = [];
     this.submittedCards = [];
@@ -209,15 +207,15 @@ export class Room implements IRoom {
 
    
   // submits the story card and descriptor hint
-  submitStoryCard(uuid: string, card: Card, descriptor: string) {
+  submitStoryCard(uuid: string, card: GameCard, descriptor: string) {
     if (this.gamePhase !== 'storyTellerPick' || !this.isStoryteller(uuid)) { 
       return false;
     }
-    this.players[this.playerTurn].playCard(card.cardId);
+    this.players[this.playerTurn].playCard(card.id);
     // adds playerId to the submitted object
     card.submitter = uuid;
     this.submittedCards.push(card);
-    this.storyCardId = card.cardId;
+    this.storyCardId = card.id;
     this.storyDescriptor = descriptor;
     this.lastModified = Date.now();
     this.advanceGamePhase();
@@ -225,15 +223,15 @@ export class Room implements IRoom {
   }
    
   // submits other players cards
-  submitOtherCard(uuid: string, card: Card) {
-    if (!(this.isOtherCardSubmittable(uuid, card.cardId))) {
+  submitOtherCard(uuid: string, card: GameCard) {
+    if (!(this.isOtherCardSubmittable(uuid, card.id))) {
       return false;
     }
     // adds playerId to the submitted object
     card.submitter = uuid;
     this.submittedCards.push(card);
     // remove card from player hand
-    this.players.find(p => p.playerId === uuid)?.playCard(card.cardId);
+    this.players.find(p => p.playerId === uuid)?.playCard(card.id);
     if (this.submittedCards.length === this.expectedSubmitCount) {
       this.advanceGamePhase();
     }
@@ -250,7 +248,7 @@ export class Room implements IRoom {
   }
 
   // checks whether a card submission from uuid is able to proceed, returns true if so, false if not
-  isOtherCardSubmittable(uuid: string, cardId: string) {
+  isOtherCardSubmittable(uuid: string, cardId: bigint) {
     if (!this.isCurrentPlayer(uuid) || this.gamePhase !== 'otherPlayersPick') {
       return false;
     }
@@ -274,7 +272,7 @@ export class Room implements IRoom {
     return true;
   }
    
-  makeGuess(uuid: string, cardId: string) {
+  makeGuess(uuid: string, cardId: bigint) {
     if (!(this.canMakeGuess(uuid))) {
       return false;
     }
@@ -323,7 +321,7 @@ export class Room implements IRoom {
     // console.log('Distributing points for fooling other players');
     const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCardId);
     for (const fakeId of successfulFakes) {
-      const fakerId = this.submittedCards.find(c => c.cardId === fakeId)?.submitter;
+      const fakerId = this.submittedCards.find(c => c.id === fakeId)?.submitter;
       if (fakerId === undefined) return;
       this.getPlayer(fakerId)?.incrementScore(1);
     }
@@ -381,7 +379,6 @@ export class Room implements IRoom {
       return;
     }
     // console.log("starting next round");
-    destroyCards(this.submittedCards.map(c => c.cardId));
     this.resetRoundValues();
     this.gamePhase = 'storyTellerPick';
   }
@@ -399,9 +396,8 @@ export class Room implements IRoom {
 
   resetToLobby() {
     this.gamePhase = 'lobby';
-    this.storyCardId = '';
+    this.storyCardId = BigInt(0);
     this.storyDescriptor = '';
-    destroyCards(this.submittedCards.map(c => c.cardId));
     this.submittedCards = [];
     this.guesses = {};
     this.playerTurn = 0;
@@ -410,15 +406,6 @@ export class Room implements IRoom {
       p.resetAll();
     }
   }
-
-  // removes all relevant cards from Cards cache
-  teardownCards() {
-    destroyCards(this.submittedCards.map(c => c.cardId));
-    for (const p of this.players) {
-      p.destroyHand();
-    }
-  }
-
 }
 
 
@@ -426,7 +413,7 @@ export class Player implements IPlayer {
   playerId: string;
   playerName: string;
   score: number;
-  hand: Card[];
+  hand: GameCard[];
   scoredThisRound: number;
 
   constructor(playerId: string, playerName: string) {
@@ -438,18 +425,15 @@ export class Player implements IPlayer {
   }
   
   async populateHand(size: number) {
-    for (let i = this.hand.length; i < size; i++) {
-      const freshCard = await newCard();
-      this.hand.push(freshCard);
-    }
+    this.hand.push(...(await drawCards(size)));
   }
   
-  playCard(cardId: string) {
-    this.hand = this.hand.filter(card => card.cardId !== cardId);
+  playCard(cardId: bigint) {
+    this.hand = this.hand.filter(card => card.id !== cardId);
   }
 
-  isCardInHand(cardId: string) {
-    return this.hand.map(c => c.cardId).includes(cardId);
+  isCardInHand(cardId: bigint) {
+    return this.hand.map(c => c.id).includes(cardId);
   }
 
   incrementScore(points: number) {
@@ -461,60 +445,11 @@ export class Player implements IPlayer {
     this.scoredThisRound = 0;
   }
 
-  destroyHand() {
-    destroyCards(this.hand.map(c => c.cardId));
-    this.hand = [];
-  }
-
   // clears all game-specific values for a player
   resetAll() {
     this.score = 0;
     this.scoredThisRound = 0;
-    this.destroyHand();
+    this.hand = [];
   }
 
 }
-
-// function to remove played cards from cache
-const destroyCards = (cardIds: string[]) => {
-  for (const cardId of cardIds){
-    delete cardCache[cardId];
-  }
-};
-
-const cardCache: { [key: string]: Card } = {};
-
-// returns the info for a card with passed-in id 
-export function retrieveCardInfo(cardId: string) {
-  return cardCache[cardId];
-}
-
-const newCard = async () => {
-  const cardId = generateUuid();
-  const info = await getNewCardInfo();
-  // console.log(`cardInfo: ${JSON.stringify(info)}`);
-  cardCache[cardId] = info;
-  const locator = cardCache[cardId].locator;
-  return { cardId, locator };
-};
-
-const getNewCardInfo = async () => {
-  return axios.get('https://frinkiac.com/api/random')
-    .then(response => {
-      if (response.status == 200) {
-        // console.log(response.data);
-        const filtered_data = filterFrinkiac(response.data);
-        // console.log(`filtered: ${filtered_data}`);
-        return filtered_data;
-      }
-      else {
-        // console.log("received unexpected response");
-        throw new Error(`Received response code ${response.status} from frinkiac api`);
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      return err;
-    });
-};
-

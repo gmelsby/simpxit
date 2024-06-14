@@ -1,6 +1,6 @@
 import { generateRoomCode } from './utilities/generateUtils.js';
-import { Room, retrieveCardInfo } from './gameClasses.js';
-import socketHandler from './models/sockets.js';
+import { Room } from './gameClasses.js';
+import socketHandler from './controllers/sockets.js';
 import { roomCleaner } from './utilities/roomCleaner.js';
 import express from 'express';
 import helmet from 'helmet';
@@ -8,6 +8,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import path from 'node:path';
+import { retrieveCardInfo } from './models/cardModel.js';
 
 
 const PORT = process.env.PORT || 3000;
@@ -43,10 +44,29 @@ roomCleaner(rooms, '*/30 * * * *', 30);
 socketHandler(io, rooms);
 
 // allows users to get the card info for a card
-app.get('/api/cardinfo/:cardId', (req, res) => {
-  const { cardId } = req.params;
-  console.log(`received request for card info for card ${cardId}`);
-  res.send(retrieveCardInfo(cardId));
+app.get('/api/cardinfo/:cardIdString', async (req, res) => {
+  const { cardIdString } = req.params;
+
+  console.log(`received request for card info for card ${cardIdString}`);
+
+  // check that cardIdString is parsable as bigint
+  let cardId = BigInt(0);
+  try {
+    cardId = BigInt(cardIdString);
+  } catch (err) {
+    res.status(400);
+    res.send('query param was unable to be parsed as a bigint');
+    return;
+  }
+
+  const cardInfo = await retrieveCardInfo(cardId);
+
+  if (cardInfo === null) {
+    res.status(404).send('card not found');
+    return;
+  }
+
+  res.send(cardInfo);
 });
 
 // allows users to create a new room

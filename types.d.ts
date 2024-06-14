@@ -8,8 +8,8 @@ export interface CardInfo {
   locator: string;
 }
 
-export interface Card extends Partial<CardInfo> {
-  cardId: string;
+export interface GameCard extends Partial<CardInfo> {
+  id: bigint;
   locator: string;
   submitter?: string;
 }
@@ -29,11 +29,11 @@ export interface Options {
 export interface Room {
   players: Player[];
   gamePhase: 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlayersGuess' | 'scoring';
-  storyCardId: string;
+  storyCardId: bigint;
   storyDescriptor: string;
   kickedPlayers: string[];
   submittedCards: Card[];
-  guesses: {[key: string]: string};
+  guesses: {[key: string]: bigint};
   handSize: number;
   maxPlayers: number;
   targetScore: number;

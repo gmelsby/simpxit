@@ -19,7 +19,6 @@ export function roomCleaner(rooms: {[key: string]: Room}, cronString: string, ti
     for (const room of Object.keys(rooms).filter(k => isExpired(rooms[k], timeoutInterval, currentTime))) {
       console.log(`room ${room} is expired: ${(currentTime - rooms[room].lastModified) / 60000} minutes old`);
 
-      rooms[room].teardownCards();
       delete rooms[room];
 
       console.log(`deleted room ${room}`);
