@@ -2,24 +2,26 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "serverbuild/index.js",
+  "main": "serverbuild/app.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsc && node serverbuild/index.js",
-    "devstart": "npx tsc && nodemon serverbuild/index.js",
+    "start": "npx tsc && node serverbuild/app.js",
+    "devstart": "npx tsc && nodemon serverbuild/app.js",
     "build-client": "cd client && npm i && npm run build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^5.15.0",
     "@types/express": "^4.17.13",
     "@types/node": "^18.7.13",
     "axios": "^1.4.0",
     "express": "^4.18.1",
     "helmet": "^6.0.0",
     "node-cron": "^3.0.2",
+    "prisma-extension-random": "^0.2.2",
     "socket.io": "^4.5.1",
     "uuid": "^8.3.2"
   },
@@ -30,6 +32,7 @@
     "@typescript-eslint/parser": "^6.2.0",
     "eslint": "^8.45.0",
     "eslint-plugin-react": "^7.33.0",
+    "prisma": "^5.15.0",
     "typescript": "^5.1.6"
   }
 }

@@ -43,3 +43,13 @@ packages/react-devtools-timeline/dist
 dist
 App.css
 App.css.map
+
+data/*
+!data/downloader.py
+!data/card_deleter.py
+!data/possible_credits_to_md.py
+!data/credits_filter.py
+!data/s3_uploader.py
+!data/s3_filecount.py
+!data/requirements.txt
+supabase/

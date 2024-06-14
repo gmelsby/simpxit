@@ -1,15 +1,19 @@
 export interface CardInfo {
-  episode: string;
+  episode_key: string;
+  season: number;
+  episode: number;
   title: string;
   director: string;
   writer: string;
   airdate: string;
   subtitles: string[];
   locator: string;
+  timestamp: number;
+  frinkiacLink: string?;
 }
 
-export interface Card extends Partial<CardInfo> {
-  cardId: string;
+export interface GameCard extends Partial<CardInfo> {
+  id: string;
   locator: string;
   submitter?: string;
 }
@@ -18,7 +22,7 @@ export interface Player {
   playerId: string;
   playerName: string;
   score: number;
-  hand: Card[];
+  hand: GameCard[];
   scoredThisRound: number;
 }
 
@@ -32,7 +36,7 @@ export interface Room {
   storyCardId: string;
   storyDescriptor: string;
   kickedPlayers: string[];
-  submittedCards: Card[];
+  submittedCards: GameCard[];
   guesses: {[key: string]: string};
   handSize: number;
   maxPlayers: number;

@@ -1,24 +1,23 @@
 import React from 'react';
 import { useState, useCallback, useEffect } from 'react';
 import CardInfoText from './CardInfoText';
-import { Card } from '../../../types';
  
-export default function CardInfoWrapper({card}: {card: Card}) {
+export default function CardInfoWrapper({cardId}: {cardId: string}) {
 
   const [cardInfo, setCardInfo] = useState(undefined);
 
   const loadCardInfo = useCallback(async () => {
-    const response = await fetch(`/api/cardinfo/${card.cardId}`);
+    const response = await fetch(`/api/cardinfo/${cardId}`);
     const data = await response.json();
     setCardInfo(data);
-  }, [card]);
+  }, [cardId]);
     
   // only try to get card info if we don't already have it
   useEffect(() => {
-    if (card && !cardInfo) {
+    if (!cardInfo) {
       loadCardInfo();
     }
-  }, [card, cardInfo, loadCardInfo]);
+  }, [cardId, cardInfo, loadCardInfo]);
 
   return (<CardInfoText cardInfo={cardInfo} />);
 }

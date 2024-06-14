@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Carousel } from 'react-bootstrap';
 import ScoringCard from './ScoringCard';
-import { Card, Player } from '../../../types';
+import { GameCard, Player } from '../../../types';
 import CarouselController from './CarouselController';
 
 export default function ScoringCardHand({storyTeller,
@@ -11,7 +11,7 @@ export default function ScoringCardHand({storyTeller,
 }:
                                         {storyTeller: Player,
                                          players: Player[],
-                                         submittedCards: Card[],
+                                         submittedCards: GameCard[],
                                          guesses: {[key: string]: string}
                                         }) {
 
@@ -30,18 +30,18 @@ export default function ScoringCardHand({storyTeller,
     <>
       <Row md={Math.min(3, Object.values(submittedCards).length)} className="g-2 mx-auto my-3 d-none d-md-flex justify-content-center">
         {submittedCards.map(c => 
-          <ScoringCard key={c.cardId} player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
-            guessedPlayers={playersWhoGuessed(c.cardId)} 
+          <ScoringCard key={c.id} player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
+            guessedPlayers={playersWhoGuessed(c.id)} 
             isStoryTeller={c.submitter === storyTeller.playerId} />
         )}
       </Row>
 
       <Carousel className="d-xs-flex d-md-none" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
         {submittedCards.map(c => 
-          <Carousel.Item key={c.cardId}> 
+          <Carousel.Item key={c.id}> 
             <Container>
               <ScoringCard player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
-                guessedPlayers={playersWhoGuessed(c.cardId)} 
+                guessedPlayers={playersWhoGuessed(c.id)} 
                 isStoryTeller={c.submitter === storyTeller.playerId} />
             </Container>
           </Carousel.Item>

@@ -11,7 +11,7 @@ import useSessionStorage from './hooks/useSessionStorage';
 
 function App() {
 
-  const [userId, setUserId] = useSessionStorage('image-app', '');
+  const [userId, setUserId] = useSessionStorage('simpxit', '');
 
   const generateUuid = useCallback(() => {
     setUserId(v4());

@@ -1,14 +1,14 @@
 import React from 'react';
 import {Container, Row, Col, Button } from 'react-bootstrap';
 import { BsCaretLeftFill, BsCaretRightFill } from 'react-icons/bs';
-import { Card } from '../../../types';
+import { GameCard } from '../../../types';
 
 export default function CarouselController({hand, activeIndex, updateActiveIndex, handleSelectCard}:
   {
-    hand: Card[],
+    hand: GameCard[],
     activeIndex: number,
     updateActiveIndex: (newIndex: number) => void,
-    handleSelectCard?: (selectedCard: Card) => void
+    handleSelectCard?: (selectedCard: GameCard) => void
   }) {
 
   return (

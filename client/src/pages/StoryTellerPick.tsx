@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Spinner } from 'react-bootstrap';
 import Hand from '../components/Hand';
 import StoryModal from '../components/StoryModal';
-import { Card, Player } from '../../../types';
+import { GameCard, Player } from '../../../types';
 import { Socket } from 'socket.io-client';
 
 export default function StoryTellerPick({ 
@@ -25,7 +25,7 @@ export default function StoryTellerPick({
     window.scrollTo(0, 0);
   }, []);
 
-  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [selectedCard, setSelectedCard] = useState<GameCard | null>(null);
   const [descriptor, setDescriptor] = useState('');
 
   if (storyTeller.hand.length < handSize) {
