@@ -51,7 +51,8 @@ export default function StoryTellerPick({
           setDescriptor={setDescriptor} handleSubmit={handleSubmit} />
         <Container className="d-flex flex-column justify-content-evenly text-center align-items-center pt-5 h-100 m-auto">
           <Row>
-            <h2>You are the storyteller! Pick an image and come up with a description.</h2>
+            <h1>You are the storyteller!</h1>
+            <h2>Pick an image and come up with a description.</h2>
           </Row>
           <Row>
             <Hand hand={storyTeller.hand} setSelectedCard={setSelectedCard} />
