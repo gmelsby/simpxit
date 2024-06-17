@@ -38,7 +38,7 @@ export default function Lobby({ players,
 
  
   return (
-    <Container className="h-100 d-flex flex-column justify-content-between text-center pt-5">
+    <Container className="h-75 d-flex flex-column justify-content-between text-center pt-5">
       <Container>
         <h5>Share this code (or the page&apos;s url <CopyIcon text={window.location.href} descriptor="Room URL"/>) to let players join this room!</h5>
         <h1>Room Code: <b>{roomId}</b> <CopyIcon text={roomId} descriptor='Room Code'/></h1>

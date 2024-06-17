@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container, Row, Spinner } from 'react-bootstrap';
 import Hand from '../components/Hand';
 import StoryModal from '../components/StoryModal';
 import { GameCard, Player } from '../../../types';
@@ -49,17 +49,23 @@ export default function StoryTellerPick({
       <>
         <StoryModal selectedCard={selectedCard} setSelectedCard={setSelectedCard} descriptor={descriptor} 
           setDescriptor={setDescriptor} handleSubmit={handleSubmit} />
-        <Container className="text-center pt-5">
-          <h3>You are the storyteller! Pick an image and come up with a description.</h3>
-          <Hand hand={storyTeller.hand} setSelectedCard={setSelectedCard} />
+        <Container className="d-flex flex-column justify-content-evenly text-center align-items-center pt-5 h-100 m-auto">
+          <Row>
+            <h2>You are the storyteller! Pick an image and come up with a description.</h2>
+          </Row>
+          <Row>
+            <Hand hand={storyTeller.hand} setSelectedCard={setSelectedCard} />
+          </Row>
         </Container>
       </>
     );
   }
 
   return (
-    <Container className="text-center pt-5">
-      <h3 className="mt-2">{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h3>
+    <Container className="d-flex h-75 justify-content-center align-items-center text-center pt-5">
+      <Row>
+        <h2 className="mt-2">{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h2>
+      </Row>
     </Container>
   );
 }
