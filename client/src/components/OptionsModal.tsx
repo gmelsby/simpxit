@@ -11,16 +11,15 @@ export default function OptionsModal({ currentOptions, changeOptions }:{ current
     setNewOptions(currentOptions.targetScore);
   }, [currentOptions.targetScore]);
 
-  const handleCloseOptions = () => setShowOptions(false);
+  const handleCloseOptions = () => {
+    setShowOptions(false);
+    if (currentOptions.targetScore !== newOptions) {
+      changeOptions(newOptions);
+    }
+  };
   const handleShowOptions = () => {
     setShowOptions(true);
     setNewOptions(currentOptions.targetScore);
-  };
-  
-  const changeOptionsToNew = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    changeOptions(newOptions);
-    handleCloseOptions();
   };
   
   return (
@@ -61,11 +60,6 @@ export default function OptionsModal({ currentOptions, changeOptions }:{ current
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer className="justify-content-center">
-          <Button onClick={changeOptionsToNew}>
-            Submit
-          </Button>
-        </Modal.Footer>
       </Modal>
     </>
   );
