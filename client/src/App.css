@@ -1,4 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto");
+@import url('https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Walter+Turncoat&display=swap');
+
 #root {
   height: 100%;
 }
@@ -7,7 +10,19 @@ body {
   padding: 0;
   margin: 0;
   height: 100vh;
-  font-family: "Roboto", sans-serif;
+  font-family: "Walter Turncoat", cursive, sans-serif;
+}
+
+.rock-salt-regular {
+  font-family: "Rock Salt", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.walter-turncoat-regular {
+  font-family: "Walter Turncoat", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .btn:hover {
