@@ -38,27 +38,25 @@ export default function Lobby({ players,
 
  
   return (
-    <>
-      <Container className="h-100 d-flex flex-column text-center pt-5">
-        <Container>
-          <h5>Share this code (or the page&apos;s url <CopyIcon text={window.location.href} descriptor="Room URL"/>) to let players join this room!</h5>
-          <h1>Room Code: {roomId} <CopyIcon text={roomId} descriptor='Room Code'/></h1>
-        </Container>
-        <Container className="my-0 my-md-4">
+    <Container className="h-100 d-flex flex-column justify-content-between text-center pt-5">
+      <Container>
+        <h5>Share this code (or the page&apos;s url <CopyIcon text={window.location.href} descriptor="Room URL"/>) to let players join this room!</h5>
+        <h1>Room Code: <b>{roomId}</b> <CopyIcon text={roomId} descriptor='Room Code'/></h1>
+        <Row className="mt-5">
           <NameForm players={players} roomId={roomId} userId={userId} socket={socket}/>
-        </Container>
-        <Container>
-          <h3>Player List</h3>
+        </Row>
+        <Container className="my-5">
+          <h3 className="mb-3">Player List</h3>
           <PlayerList players={players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
         </Container>
-        <Container className="my-0 my-md-4">
-          <Button className="m-2" onClick={handleLeave} variant="danger">Leave Room</Button>
-          {isAdmin && players.length > 2 && <Button className="m-2" onClick={handleStartGame}>Start Game</Button>}
-          {isAdmin && players.length <= 2 && <Button className="m-2" disabled>Start Game</Button>}
-          {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
-        </Container>
       </Container>
-    </>
+      <Container className="my-5">
+        <Button className="m-2" onClick={handleLeave} variant="danger">Leave Room</Button>
+        {isAdmin && players.length > 2 && <Button className="m-2" onClick={handleStartGame}>Start Game</Button>}
+        {isAdmin && players.length <= 2 && <Button className="m-2" disabled>Start Game</Button>}
+        {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
+      </Container>
+    </Container>
   );
 }
 

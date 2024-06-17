@@ -61,6 +61,10 @@ body {
   border-width: 0px 0px 2px 2px;
 }
 
+.options:hover {
+  transform: scale(1);
+}
+
 .selectable:focus {
   transform: scale(0.95);
   transition: transform 200ms ease-in-out;

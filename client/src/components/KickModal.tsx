@@ -26,15 +26,15 @@ export default function KickModal({ kickUserId, setKickUserId, kickPlayer, playe
         <Modal.Body>
           <h5>Are you sure you want to kick {playerName}?</h5>
           <p>
-              Player will not be able to rejoin the room from the same tab.
+              They will not be able to rejoin the room.
           </p>
         </Modal.Body>
         <Modal.Footer>
           <div className="col text-center">
-            <Button variant="secondary" onClick={handleCloseKick}>
+            <Button className="mx-2" variant="outline-secondary" onClick={handleCloseKick}>
               Close
             </Button>
-            <Button variant="danger" onClick={handleKickButton}>
+            <Button className="mx-2" variant="danger" onClick={handleKickButton}>
               Kick
             </Button>
           </div>
