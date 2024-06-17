@@ -59,7 +59,7 @@ export default function HomePage( { userId }: { userId: string}) {
   return (
     <>
       <Sidebar />
-      <Container className="d-flex flex-column justify-content-evenly text-center align-items-center pt-5 h-100 mx-2">
+      <Container className="d-flex flex-column justify-content-evenly text-center align-items-center pt-5 h-100 m-auto">
         <Row className='mb-5'>
           <h1 className='rock-salt-regular'>Simpxit</h1>
           <h4>A Simpsons/Dixit Fan Game!</h4>
