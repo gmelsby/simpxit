@@ -71,7 +71,8 @@ export default function OtherPlayersPick({
         storyDescriptor={storyDescriptor} handleSubmit={handleSubmit} />
 
       <Container className="text-center pt-5">
-        <h3>The storyteller submitted the descriptor <b>{storyDescriptor}</b></h3>
+        <h2>The storyteller submitted the descriptor</h2>
+        <h1><b>{storyDescriptor}</b></h1>
         <h5>Pick a {players.length === 3 && expectedCards - playerSubmittedCards.length == 1 && 'second '} 
         card from your hand to fool the other players!</h5>
         <Hand hand={userHand} setSelectedCard={setSelectedCard} />
