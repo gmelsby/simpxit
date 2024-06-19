@@ -28,15 +28,6 @@ export default function StoryTellerPick({
   const [selectedCard, setSelectedCard] = useState<GameCard | null>(null);
   const [descriptor, setDescriptor] = useState('');
 
-  if (storyTeller.hand.length < handSize) {
-    return (
-      <Container className="text-center align-items-center pt-5">
-        <Spinner className="mx-auto mt-5" animation="border" variant="primary" />
-        <h5>Generating cards...</h5>
-      </Container>
-    );
-  }
-
   if (userId === storyTeller.playerId) {
     const handleSubmit = () => {
       if (selectedCard && socket !== null) {
@@ -44,6 +35,14 @@ export default function StoryTellerPick({
       }
     };
 
+    if (storyTeller.hand.length < handSize) {
+      return (
+        <Container className="d-flex flex-column justify-content-center text-center pt-5 h-75">
+          <h1>Drawing cards...</h1>
+          <Spinner className="mx-auto mt-5" animation="border" variant="primary" />
+        </Container>
+      );
+    }
 
     return (
       <>
