@@ -48,7 +48,7 @@ export default function OptionsModal({ currentOptions, changeOptions }:{ current
                       step={5}
                       onChange={e => setNewOptions(Number(e.target.value))} />
                   </Col>
-                  <Col xs={3}>
+                  <Col xs={4} sm={3}>
                     <Form.Control type="number" required name="new-target-score"
                       value={newOptions}
                       max={100}

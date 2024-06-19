@@ -162,7 +162,7 @@ export class Room implements IRoom {
 
   // returns true if name is in use, false otherwise
   isNameInUse(newName: string) {
-    if(this.players.map(player => player.playerName).includes(newName)) {
+    if(this.players.map(player => player.playerName.toLowerCase()).includes(newName.toLowerCase())) {
       return true;
     }
 

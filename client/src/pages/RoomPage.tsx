@@ -99,12 +99,12 @@ export default function RoomPage({ userId }: {userId: string}) {
 
   if (errorMessage) {
     return(
-      <>
+      <Container className="h-100 d-flex flex-column text-center justify-content-center">
         <Alert variant="warning">Error: {errorMessage}</Alert>
-        <Container className="text-center">
-          <Button onClick={() => {setLeaveAttempt(true);}}>Return to homepage</Button>
+        <Container className="text-center mt-5">
+          <Button onClick={() => {setLeaveAttempt(true);}}>← Return to homepage</Button>
         </Container>
-      </>
+      </Container>
     );
   }
 

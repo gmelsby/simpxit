@@ -26,9 +26,17 @@ export default function ScoringCardHand({storyTeller,
     return players.filter(p => guesses[p.playerId] === cardId);
   };                                          
 
+  // maps from length of hand to length of row
+  const lengthMap = new Map([
+    [7, 4],
+    [8, 4],
+  ]);
+
   return (
     <>
-      <Row md={Math.min(3, Object.values(submittedCards).length)} className="g-2 mx-auto my-3 d-none d-md-flex justify-content-center">
+      <Row 
+        xs={lengthMap.has(submittedCards.length) ? lengthMap.get(submittedCards.length) : 3}
+        className="g-2 mx-auto my-3 d-none d-md-flex justify-content-center">
         {submittedCards.map(c => 
           <ScoringCard key={c.id} player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
             guessedPlayers={playersWhoGuessed(c.id)} 
@@ -36,18 +44,21 @@ export default function ScoringCardHand({storyTeller,
         )}
       </Row>
 
-      <Carousel className="d-xs-flex d-md-none" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
-        {submittedCards.map(c => 
-          <Carousel.Item key={c.id}> 
-            <Container>
-              <ScoringCard player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
-                guessedPlayers={playersWhoGuessed(c.id)} 
-                isStoryTeller={c.submitter === storyTeller.playerId} />
-            </Container>
-          </Carousel.Item>
-        )}
-      </Carousel>
-      <CarouselController hand={submittedCards} {...{activeIndex, updateActiveIndex}} />
+
+      <Container className="d-xs-flex d-md-none">
+        <Carousel className="" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
+          {submittedCards.map(c => 
+            <Carousel.Item key={c.id}> 
+              <Container>
+                <ScoringCard player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
+                  guessedPlayers={playersWhoGuessed(c.id)} 
+                  isStoryTeller={c.submitter === storyTeller.playerId} />
+              </Container>
+            </Carousel.Item>
+          )}
+        </Carousel>
+        <CarouselController hand={submittedCards} {...{activeIndex, updateActiveIndex}} />
+      </Container>
     </>
   );
 
