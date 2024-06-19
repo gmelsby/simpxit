@@ -94,13 +94,13 @@ export default function HomePage( { userId }: { userId: string}) {
             <h4 className="mt-5">Join Existing Room</h4>
             <Form onSubmit={roomCodeSubmit}>
               <Form.Group>
-                <Row className="justify-content-center">
-                  <Col xs={3} sm={2} className='justify-content-center align-items-center text-end px-0 mx-1'>
+                <Row className="justify-content-center mb-1">
+                  <Col xs={4} sm={2} className='justify-content-center align-items-center text-end px-0 mx-1'>
                     <div className="align-self-center">
                       <Form.Label className='my-0 self-center' htmlFor="input-room-code">Room Code:</Form.Label>
                     </div>
                   </Col>
-                  <Col xs={4} sm={3} className='align-items-left p-0 mx-1'>
+                  <Col xs="auto" className='align-items-left p-0 mx-1'>
                     <Form.Control className="text-center px-1 w-50" type="text" name="input-room-code" 
                       required maxLength={4} placeholder="XYZW" pattern="[A-Z]{4}"
                       value={enteredRoomId}

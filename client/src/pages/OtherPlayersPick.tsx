@@ -71,7 +71,7 @@ export default function OtherPlayersPick({
         storyDescriptor={storyDescriptor} handleSubmit={handleSubmit} />
 
       <Container className="h-100 d-flex flex-column justify-content-evenly text-center p-0"> 
-        <Container className="mt-4 mt-sm-0">
+        <Container className="mt-5 mt-md-0">
           <h2>The storyteller submitted the descriptor</h2>
           <h1><b>{storyDescriptor}</b></h1>
           <h5>Pick a {players.length === 3 && expectedCards - playerSubmittedCards.length == 1 && 'second '} 
