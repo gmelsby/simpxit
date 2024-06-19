@@ -34,16 +34,18 @@ export default function Hand( { hand, setSelectedCard, isGallery }: {hand: GameC
             <GameImage card={card} handleSelectCard={handleSelectCard} selectablecard={selectablecard}/>
           </Col>)}
       </Row>
-      <Carousel className="d-xs-flex d-md-none" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
-        {hand.map(c => 
-          <Carousel.Item key={c.id}> 
-            <Container>
-              <GameImage className="mb-5" card={c} selectablecard={selectablecard}></GameImage>
-            </Container>
-          </Carousel.Item>
-        )}
-      </Carousel>
-      <CarouselController {...{hand, activeIndex, updateActiveIndex}} handleSelectCard={isGallery ? undefined : handleSelectCard}/>
+      <Container className="d-xs-flex d-md-none">
+        <Carousel className="" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
+          {hand.map(c => 
+            <Carousel.Item key={c.id}> 
+              <Container>
+                <GameImage className="mb-5" card={c} selectablecard={selectablecard}></GameImage>
+              </Container>
+            </Carousel.Item>
+          )}
+        </Carousel>
+        <CarouselController {...{hand, activeIndex, updateActiveIndex}} handleSelectCard={isGallery ? undefined : handleSelectCard}/>
+      </Container>
     </>
   );
 }

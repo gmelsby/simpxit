@@ -12,7 +12,7 @@ export default function CarouselController({hand, activeIndex, updateActiveIndex
   }) {
 
   return (
-    <Container className="d-xs-flex d-md-none mt-3">
+    <Container className="mt-3">
       <Row>
         <Col>
           <Button onClick={() => updateActiveIndex((((activeIndex - 1) % hand.length) + hand.length) % hand.length)} className="px-3">
