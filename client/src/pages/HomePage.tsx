@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Col, Container, Row, Form } from 'react-bootstrap';
+import { Container, Button, Col, Row, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import ButtonTimer from '../components/ButtonTimer';
 import Sidebar from '../components/Sidebar';
@@ -59,27 +59,58 @@ export default function HomePage( { userId }: { userId: string}) {
   return (
     <>
       <Sidebar />
-      <Container className="d-flex flex-column justify-content-start text-center align-items-center pt-5 h-100">
-        <Container>
-          <h1>Simpxit: A Simpsons/Dixit Fan Game!</h1>
-          <h5>Mashup of the board game <a href="https://boardgamegeek.com/boardgame/39856/dixit" target="_blank" rel="noopener noreferrer">Dixit</a> with screencaps of <a href="https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x" target="_blank" rel="noopener noreferrer">The Simpsons</a> via <a href="https://frinkiac.com/" target="_blank" rel="noopener noreferrer">Frinkiac</a>.</h5>
-          <h5>To play, create a room or join an already existing room.</h5>
-          <ButtonTimer className="my-3" onClick={handleCreateRoom}>Create Room</ButtonTimer>
-        </Container>
-        <Row className="justify-content-center">
-          <h4 className="mt-5">Join Existing Room</h4>
-          <Col xs={5} sm={3}>
+      <Container className="d-flex flex-column justify-content-evenly text-center align-items-center pt-5 h-100 m-auto">
+        <Row className='mb-5'>
+          <h1 className='rock-salt-regular'>Simpxit</h1>
+          <h4>A Simpsons/Dixit Fan Game!</h4>
+          <h5>Mashup of the board game 
+            <a href="https://boardgamegeek.com/boardgame/39856/dixit" 
+              target="_blank" rel="noopener noreferrer">
+              &nbsp;Dixit
+            </a> 
+            &nbsp;with screencaps of 
+            <a href="https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x" 
+              target="_blank" 
+              rel="noopener noreferrer">
+              &nbsp;The Simpsons
+            </a> 
+            &nbsp;via 
+            <a href="https://frinkiac.com/" 
+              target="_blank" 
+              rel="noopener noreferrer">
+              &nbsp;Frinkiac
+            </a>
+            .
+          </h5>
+        </Row>
+        <Row className='justify-content-center'>
+          <Row>
+            <h5>To play, create a room or join an already existing room.</h5>
+            <Col>
+              <ButtonTimer className="my-3" onClick={handleCreateRoom}>Create Room</ButtonTimer>
+            </Col>
+          </Row>
+          <Row className="justify-content-center">
+            <h4 className="mt-5">Join Existing Room</h4>
             <Form onSubmit={roomCodeSubmit}>
-              <Form.Group className="justify-content-center">
-                <Form.Label htmlFor="input-room-code">Room Code:</Form.Label>
-                <Form.Control className="text-center" type="text" name="input-room-code" 
-                  required maxLength={4} placeholder="XYZW" pattern="[A-Z]{4}"
-                  value={enteredRoomId}
-                  onChange={e => setEnteredRoomId(e.target.value.toUpperCase())} />
+              <Form.Group>
+                <Row className="justify-content-center mb-1">
+                  <Col xs={4} sm={2} className='justify-content-center align-items-center text-end px-0 mx-1'>
+                    <div className="align-self-center">
+                      <Form.Label className='my-0 self-center' htmlFor="input-room-code">Room Code:</Form.Label>
+                    </div>
+                  </Col>
+                  <Col xs="auto" className='align-items-left p-0 mx-1'>
+                    <Form.Control className="text-center px-1 w-50" type="text" name="input-room-code" 
+                      required maxLength={4} placeholder="XYZW" pattern="[A-Z]{4}"
+                      value={enteredRoomId}
+                      onChange={e => setEnteredRoomId(e.target.value.toUpperCase())} />
+                  </Col>
+                </Row>
                 <Button className="my-2" type="submit" disabled={enteredRoomId.length !== 4}>Join!</Button>
               </Form.Group>
             </Form>
-          </Col>
+          </Row>
         </Row>
       </Container>
     </>

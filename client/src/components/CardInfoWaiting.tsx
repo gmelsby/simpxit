@@ -14,17 +14,23 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
 {
 
   const phraseMap = {
-    storyTeller : ['You submitted the descriptor', 'for this image:'],
-    deceive : ['For the descriptor', 'you submitted this image:'],
-    guess : ['For the descriptor', 'you guessed this image:']
+    storyTeller : ['You submitted the descriptor', 'for this card'],
+    deceive : ['For the descriptor', 'you submitted this card'],
+    guess : ['For the descriptor', 'you guessed this card']
   };
 
   return (
     <>
       {cards.map(card => 
         <Container className="text-center pt-5 mb-4" key={card.id}>
+          <h3 className="">
+            {phraseMap[use][0]}
+          </h3>
+          <h2>
+            <b>{storyDescriptor}</b> 
+          </h2>
           <h3 className="mb-4">
-            {phraseMap[use][0]} <b>{storyDescriptor}</b> {phraseMap[use][1]}
+            {phraseMap[use][1]}
           </h3>
           <Row xs={1} md={2}>
             <Col><Image src={card.locator} className="card-img" fluid /></Col>

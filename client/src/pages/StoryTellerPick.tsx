@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container, Row, Spinner } from 'react-bootstrap';
 import Hand from '../components/Hand';
 import StoryModal from '../components/StoryModal';
 import { GameCard, Player } from '../../../types';
@@ -28,15 +28,6 @@ export default function StoryTellerPick({
   const [selectedCard, setSelectedCard] = useState<GameCard | null>(null);
   const [descriptor, setDescriptor] = useState('');
 
-  if (storyTeller.hand.length < handSize) {
-    return (
-      <Container className="text-center align-items-center pt-5">
-        <Spinner className="mx-auto mt-5" animation="border" variant="primary" />
-        <h5>Generating cards...</h5>
-      </Container>
-    );
-  }
-
   if (userId === storyTeller.playerId) {
     const handleSubmit = () => {
       if (selectedCard && socket !== null) {
@@ -44,22 +35,37 @@ export default function StoryTellerPick({
       }
     };
 
+    if (storyTeller.hand.length < handSize) {
+      return (
+        <Container className="d-flex flex-column justify-content-center text-center pt-5 h-75">
+          <h1>Drawing cards...</h1>
+          <Spinner className="mx-auto mt-5" animation="border" variant="primary" />
+        </Container>
+      );
+    }
 
     return (
       <>
         <StoryModal selectedCard={selectedCard} setSelectedCard={setSelectedCard} descriptor={descriptor} 
           setDescriptor={setDescriptor} handleSubmit={handleSubmit} />
-        <Container className="text-center pt-5">
-          <h3>You are the storyteller! Pick an image and come up with a description.</h3>
-          <Hand hand={storyTeller.hand} setSelectedCard={setSelectedCard} />
+        <Container className="d-flex flex-column justify-content-evenly text-center align-items-center pt-5 h-100 m-auto">
+          <Row>
+            <h1>You are the storyteller!</h1>
+            <h2>Pick an image and come up with a description.</h2>
+          </Row>
+          <Row>
+            <Hand hand={storyTeller.hand} setSelectedCard={setSelectedCard} />
+          </Row>
         </Container>
       </>
     );
   }
 
   return (
-    <Container className="text-center pt-5">
-      <h3 className="mt-2">{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h3>
+    <Container className="d-flex h-75 justify-content-center align-items-center text-center pt-5">
+      <Row>
+        <h2 className="mt-2">{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h2>
+      </Row>
     </Container>
   );
 }

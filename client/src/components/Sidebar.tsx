@@ -48,7 +48,7 @@ export default function Sidebar({ players, userId, currentName, changeName, targ
 
   return (
     <>
-      <Button variant="light" className="sidebar position-absolute top-0 start-0 btn-outline-dark" onClick={handleShow}>
+      <Button variant="secondary" className="sidebar position-absolute top-0 start-0 btn-outline-dark" onClick={handleShow}>
         <BiMenu />
       </Button>
 
