@@ -1,11 +1,10 @@
 import React from 'react';
-import { Accordion, Card as BootstrapCard, Col, ListGroup, ListGroupItem } from 'react-bootstrap';
-import CardInfoWrapper from './CardInfoWrapper';
+import { Card as BootstrapCard, Col, } from 'react-bootstrap';
 import { Player, GameCard } from '../../../types';
 
-export default function ScoringCard({ player, card, guessedPlayers, isStoryTeller }:
+export default function ScoringCard({ player, card, /*guessedPlayers,*/ isStoryTeller }:
   {player: Player, card: GameCard, guessedPlayers: Player[], isStoryTeller: boolean}) {
-  const GuessedInfo = () => {
+  /*const GuessedInfo = () => {
     return (
       <>
         {guessedPlayers.map(p => 
@@ -13,7 +12,7 @@ export default function ScoringCard({ player, card, guessedPlayers, isStoryTelle
         )}
       </>
     );
-  };
+  };*/
 
   return (
     <Col>
