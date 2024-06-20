@@ -28,7 +28,7 @@ export function CopyIcon({ text, descriptor }: { text: string, descriptor: strin
 
   return (
     <>
-      <div className={clicked ? 'position-absolute d-flex justify-content-center start-0 w-100 align-items-center' : 'd-none'}>
+      <div className={clicked ? 'z-1 position-absolute d-flex justify-content-center top-0 start-0 w-100 mt-5 align-items-center' : 'd-none'}>
         <Alert variant="success" className="">
           <Alert.Heading>Copy {isSuccessful ? 'Successful': 'Error'}</Alert.Heading>
           <p>
