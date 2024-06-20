@@ -31,6 +31,7 @@ export default function Rules() {
       <p>If no other players guess the storyteller&apos;s card, the storyteller gets 0 points and all other players get 2 points.</p>
       <p>If at least one player but not every player guesses the storyteller&apos;s card, the storyteller and players who guessed correctly get 3 points.</p>
       <p>If a non-storyteller fools another player into guessing their card, they get an additional point per player fooled.</p>
+      <p>The game ends when a player&apos;s score is greater than or equal to the target score.</p>
     </>
   );
 }
