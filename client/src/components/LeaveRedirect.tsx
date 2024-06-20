@@ -15,7 +15,7 @@ export default function LeaveRedirect({ kick, immediate }: {kick?: boolean, imme
   }, []);
 
   return(
-    <Container className="h-100 d-flex flex-column text-center justify-content-center">
+    <Container className="h-75 d-flex flex-column text-center justify-content-center">
       <Alert variant="danger" className="my-0">You have {kick ? 'been kicked from' : 'left'} the room. Taking you back to the homepage...</Alert>
     </Container>
  
