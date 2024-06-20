@@ -169,7 +169,10 @@ export default function RoomPage({ userId }: {userId: string}) {
       <Sidebar players={roomState.players} targetScore={roomState.targetScore} {...{userId, currentName, changeName}}/>
       {isAdmin && roomState.gamePhase == 'lobby' && <OptionsModal currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} />}
       {!isConnected && 
-        <Alert variant="danger" className="my-0">Connection with server interrupted. Attempting to reconnect...</Alert>
+        <div className="fluid position-absolute flex-column d-flex m-auto h-100 w-100 justify-content-center align-items-center text-center">
+          <Alert variant="danger" className="my-0">Connection with server interrupted. Attempting to reconnect...</Alert>
+          <Container></Container>
+        </div>
       }
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
     

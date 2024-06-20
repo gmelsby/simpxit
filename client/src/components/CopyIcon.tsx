@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BiCopy, BiCheck } from 'react-icons/bi';
-import { Alert, Container } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 
 // icon that when clicked copies text to browser clipboard
 export function CopyIcon({ text, descriptor }: { text: string, descriptor: string}) {
@@ -28,19 +28,18 @@ export function CopyIcon({ text, descriptor }: { text: string, descriptor: strin
 
   return (
     <>
-      <Container className={`${clicked ? 'position-absolute top-0 start-50 translate-middle pt-5 mt-5' :  'd-none'}`}>
-        <Alert variant="success" className="mt-5">
+      <div className={clicked ? 'position-absolute d-flex justify-content-center start-0 w-100 align-items-center' : 'd-none'}>
+        <Alert variant="success" className="">
           <Alert.Heading>Copy {isSuccessful ? 'Successful': 'Error'}</Alert.Heading>
           <p>
             {isSuccessful ? `Copied ${descriptor} to clipboard` : 'Error copying to clipboard'}
           </p>
         </Alert>
-      </Container>
+      </div>
       {clicked ? 
         <BiCheck className='text-success copying'/> : 
         <BiCopy className='selectable' onClick={putTextInClipboard}/>
       }
     </>
-    
   );
 }
