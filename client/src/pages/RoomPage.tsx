@@ -99,7 +99,7 @@ export default function RoomPage({ userId }: {userId: string}) {
 
   if (errorMessage) {
     return(
-      <Container className="h-100 d-flex flex-column text-center justify-content-center">
+      <Container className="h-75 d-flex flex-column text-center justify-content-center">
         <Alert variant="warning">Error: {errorMessage}</Alert>
         <Container className="text-center mt-5">
           <Button onClick={() => {setLeaveAttempt(true);}}>← Return to homepage</Button>
@@ -169,7 +169,7 @@ export default function RoomPage({ userId }: {userId: string}) {
       <Sidebar players={roomState.players} targetScore={roomState.targetScore} {...{userId, currentName, changeName}}/>
       {isAdmin && roomState.gamePhase == 'lobby' && <OptionsModal currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} />}
       {!isConnected && 
-        <div className="z-2 fluid position-absolute flex-column d-flex m-auto h-100 align-items-center text-center">
+        <div className="z-2 fluid position-absolute flex-column d-flex m-auto w-100 h-100 align-items-center text-center">
           <Alert variant="danger" className="mt-5 mx-2">Connection with server interrupted. Attempting to reconnect...</Alert>
           <Container></Container>
         </div>
