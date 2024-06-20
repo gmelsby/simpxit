@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import RoomPage from './pages/RoomPage';
 import useSessionStorage from './hooks/useSessionStorage';
+import FourOhFour from './pages/FourOhFour';
 
 
 
@@ -30,9 +31,9 @@ function App() {
           <Route path="/" element={<HomePage userId={userId} />} />
           <Route path="/room">
             <Route path=":roomId" element={<RoomPage userId={userId} />} />
-            <Route path="/room" element={<p>Page not found.</p>}/>
+            <Route path="/room" element={<FourOhFour />}/>
           </Route>
-          <Route path="*" element={<p>Page not found.</p>}/>
+          <Route path="*" element={<FourOhFour />}/>
         </Routes>
       </BrowserRouter>
     </>

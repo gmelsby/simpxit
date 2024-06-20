@@ -40,13 +40,15 @@ export default function Lobby({ players,
   return (
     <Container className="h-100 d-flex flex-column justify-content-evenly text-center">
       <Container className="mt-5 mt-md-0">
-        <h5>Share this code (or the page&apos;s url <CopyIcon text={window.location.href} descriptor="Room URL"/>) to let players join this room!</h5>
         <h1>Room Code: <b>{roomId}</b> <CopyIcon text={roomId} descriptor='Room Code'/></h1>
-        <Row className="mt-1 mt-5-md">
-          <NameForm players={players} roomId={roomId} userId={userId} socket={socket}/>
-        </Row>
+        <h5 className="my-0">Share this code</h5> 
+        <h4 className="my-0">(or the page&apos;s url <CopyIcon text={window.location.href} descriptor="Room URL"/>)</h4>
+        <h6>to let players join this room!</h6>
       </Container>
       <Container className="my-1">
+        <Row className="mb-1 mb-md-5">
+          <NameForm players={players} roomId={roomId} userId={userId} socket={socket}/>
+        </Row>
         <h3 className="mb-3 mb-md-4">Player List</h3>
         <PlayerList players={players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
       </Container>

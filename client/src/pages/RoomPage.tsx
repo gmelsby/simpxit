@@ -99,7 +99,7 @@ export default function RoomPage({ userId }: {userId: string}) {
 
   if (errorMessage) {
     return(
-      <Container className="h-100 d-flex flex-column text-center justify-content-center">
+      <Container className="h-75 d-flex flex-column text-center justify-content-center">
         <Alert variant="warning">Error: {errorMessage}</Alert>
         <Container className="text-center mt-5">
           <Button onClick={() => {setLeaveAttempt(true);}}>← Return to homepage</Button>
@@ -125,9 +125,9 @@ export default function RoomPage({ userId }: {userId: string}) {
   // loading screen
   if (roomState.players[0].playerId === 'placeholder') {
     return (
-      <Container className="text-center my-5">
-        <Spinner animation="border" variant="primary" />
-        <h5>Attempting to connect to room...</h5>
+      <Container className="d-flex flex-column justify-content-center text-center pt-5 h-75">
+        <h1>Attempting to connect to room...</h1>
+        <Spinner className="mx-auto mt-5" animation="border" variant="primary" />
       </Container>
     );
   }
@@ -169,7 +169,10 @@ export default function RoomPage({ userId }: {userId: string}) {
       <Sidebar players={roomState.players} targetScore={roomState.targetScore} {...{userId, currentName, changeName}}/>
       {isAdmin && roomState.gamePhase == 'lobby' && <OptionsModal currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} />}
       {!isConnected && 
-        <Alert variant="danger" className="my-0">Connection with server interrupted. Attempting to reconnect...</Alert>
+        <div className="z-2 fluid position-absolute flex-column d-flex m-auto w-100 h-100 align-items-center text-center">
+          <Alert variant="danger" className="mt-5 mx-2">Connection with server interrupted. Attempting to reconnect...</Alert>
+          <Container></Container>
+        </div>
       }
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
     
