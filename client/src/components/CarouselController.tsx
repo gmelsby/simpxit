@@ -12,19 +12,20 @@ export default function CarouselController({hand, activeIndex, updateActiveIndex
   }) {
 
   return (
-    <Container className="mt-3">
+    <Container className="mt-3 text-center">
       <Row>
         <Col>
           <Button onClick={() => updateActiveIndex((((activeIndex - 1) % hand.length) + hand.length) % hand.length)} className="px-3">
             <BsCaretLeftFill />
           </Button>
         </Col>
-        { handleSelectCard !== undefined && <Col>
+        <Col>
+          { handleSelectCard !== undefined && 
           <Button
             onClick={() => handleSelectCard(hand[activeIndex])}>
           Submit
-          </Button>
-        </Col>}
+          </Button>}
+        </Col>
         <Col>
           <Button onClick={() => updateActiveIndex((activeIndex + 1) % hand.length)} className="px-3">
             <BsCaretRightFill />

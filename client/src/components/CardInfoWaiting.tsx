@@ -1,8 +1,8 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import WaitingOn from './WaitingOn';
 import { Player, GameCard } from '../../../types';
-import InfoCard from './InfoCard';
+import Hand from './Hand';
 
 
 
@@ -20,27 +20,23 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
   };
 
   return (
-    <>
-      {cards.map(card => 
-        <Container className="text-center pt-5 mb-4" key={card.id}>
-          <h3 className="">
-            {phraseMap[use][0]}
-          </h3>
-          <h2>
-            <b>{storyDescriptor}</b> 
-          </h2>
-          <h3 className="mb-4">
-            {phraseMap[use][1]}
-          </h3>
-          <Row className="d-flex justify-content-center">
-            <Col xs={12} lg={6}>
-              <InfoCard card={card} />
-            </Col>
-          </Row>
-        </Container>)}
+    <Container>
+      <Container className="text-center mt-5">
+        <h3 className="">
+          {phraseMap[use][0]}
+        </h3>
+        <h2>
+          <b>{storyDescriptor}</b> 
+        </h2>
+        <h3 className="mb-4">
+          {phraseMap[use][1]}
+        </h3>
+      </Container>
+ 
+      <Hand hand={cards} isInfo/>
       <Container className="text-center mt-4 pb-5">
         <WaitingOn waitingOn={waitingOn} />
       </Container>
-    </>
+    </Container>
   );
 }
