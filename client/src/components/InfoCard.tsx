@@ -6,14 +6,10 @@ import CardInfoWrapper from './CardInfoWrapper';
 export default function InfoCard({ card }: { card: GameCard}) {
 
   return (
-    <Container>
-      <Row className="d-flex justify-content-center">
-        <Col xs={12} lg={6}>
-          <Front locator={card.locator} />
-          <Back cardId={card.id} />
-        </Col>
-      </Row>
-    </Container>
+    <>
+      <Front locator={card.locator} />
+      <Back cardId={card.id} />
+    </>
   );
 }
 

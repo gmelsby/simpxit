@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import WaitingOn from './WaitingOn';
 import { Player, GameCard } from '../../../types';
 import InfoCard from './InfoCard';
@@ -32,7 +32,11 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
           <h3 className="mb-4">
             {phraseMap[use][1]}
           </h3>
-          <InfoCard card={card} />
+          <Row className="d-flex justify-content-center">
+            <Col xs={12} lg={6}>
+              <InfoCard card={card} />
+            </Col>
+          </Row>
         </Container>)}
       <Container className="text-center mt-4 pb-5">
         <WaitingOn waitingOn={waitingOn} />
