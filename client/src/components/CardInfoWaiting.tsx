@@ -1,8 +1,8 @@
 import React from 'react';
-import { Container, Row, Col, Image } from 'react-bootstrap';
-import CardInfoWrapper from './CardInfoWrapper';
+import { Container } from 'react-bootstrap';
 import WaitingOn from './WaitingOn';
 import { Player, GameCard } from '../../../types';
+import Hand from './Hand';
 
 
 
@@ -13,33 +13,34 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
   }) 
 {
 
+  const demonstrative = cards.length > 1 ? 'these' : 'this';
+  const directObject = `card${cards.length > 1 ? 's' : ''}`;
+  const phrase = `${demonstrative} ${directObject}`;
+
   const phraseMap = {
-    storyTeller : ['You submitted the descriptor', 'for this card'],
-    deceive : ['For the descriptor', 'you submitted this card'],
-    guess : ['For the descriptor', 'you guessed this card']
+    storyTeller : ['You submitted the descriptor', `for ${phrase}`],
+    deceive : ['For the descriptor', `you submitted ${phrase}`],
+    guess : ['For the descriptor', `you guessed ${phrase}`]
   };
 
   return (
-    <>
-      {cards.map(card => 
-        <Container className="text-center pt-5 mb-4" key={card.id}>
-          <h3 className="">
-            {phraseMap[use][0]}
-          </h3>
-          <h2>
-            <b>{storyDescriptor}</b> 
-          </h2>
-          <h3 className="mb-4">
-            {phraseMap[use][1]}
-          </h3>
-          <Row xs={1} md={2}>
-            <Col><Image src={card.locator} className="card-img" fluid /></Col>
-            <Col className="my-auto"><CardInfoWrapper cardId={card.id} /></Col>
-          </Row>
-        </Container>)}
-      <Container className="text-center mt-4 pb-5">
+    <Container className="h-100 d-flex flex-column justify-content-evenly">
+      <Container className="text-center mt-5">
+        <h3 className="">
+          {phraseMap[use][0]}
+        </h3>
+        <h2>
+          <b>{storyDescriptor}</b> 
+        </h2>
+        <h3>
+          {phraseMap[use][1]}
+        </h3>
+      </Container>
+ 
+      <Hand hand={cards} isInfo/>
+      <Container className="text-center my-2">
         <WaitingOn waitingOn={waitingOn} />
       </Container>
-    </>
+    </Container>
   );
 }

@@ -3,8 +3,15 @@ import { Col, Row, Carousel, Container } from 'react-bootstrap';
 import GameImage from './GameImage';
 import { GameCard } from '../../../types';
 import CarouselController from './CarouselController';
+import InfoCard from './InfoCard';
 
-export default function Hand( { hand, setSelectedCard, isGallery }: {hand: GameCard[], setSelectedCard?: React.Dispatch<React.SetStateAction<GameCard | null>>, isGallery?: boolean}) {
+export default function Hand( { hand, setSelectedCard, isGallery, isInfo }: 
+  {
+    hand: GameCard[], 
+    setSelectedCard?: React.Dispatch<React.SetStateAction<GameCard | null>>, 
+    isGallery?: boolean,
+    isInfo?: boolean
+  }) {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -35,24 +42,45 @@ export default function Hand( { hand, setSelectedCard, isGallery }: {hand: GameC
   return(
     <>
       <Row 
-        xs={lengthMap.has(hand.length) ? lengthMap.get(hand.length) : 3} 
+        xs={lengthMap.has(hand.length) ? lengthMap.get(hand.length) : Math.min(Math.max(hand.length, 2), 3)} 
         className="justify-content-center g-2 my-3 mx-3 d-none d-md-flex">
         {hand.map(card =>
           <Col key={card.id} className="d-flex flex-column justify-content-center">
-            <GameImage card={card} handleSelectCard={handleSelectCard} selectablecard={selectablecard}/>
+            {isInfo ?
+              <InfoCard card={card} />
+              :
+              <GameImage card={card} handleSelectCard={handleSelectCard} selectablecard={selectablecard}/>
+            }
           </Col>)}
       </Row>
-      <Container className="d-xs-flex d-md-none">
-        <Carousel className="" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
-          {hand.map(c => 
-            <Carousel.Item key={c.id}> 
-              <Container>
-                <GameImage className="mb-5" card={c} selectablecard={selectablecard}></GameImage>
-              </Container>
-            </Carousel.Item>
-          )}
-        </Carousel>
-        <CarouselController {...{hand, activeIndex, updateActiveIndex}} handleSelectCard={isGallery ? undefined : handleSelectCard}/>
+      <Container className="d-xs-flex d-md-none justify-content-center">
+        {hand.length > 1 && 
+          <>
+            <Carousel className="" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
+              {hand.map(c => 
+                <Carousel.Item key={c.id}> 
+                  <div className={`${isInfo ? 'py-5' : ''}`}>
+                    {isInfo ?
+                      <InfoCard card={c} />
+                      :
+                      <GameImage className="mb-5" card={c} selectablecard={selectablecard} />
+                    }
+                  </div>
+                </Carousel.Item>
+              )}
+            </Carousel>
+            <CarouselController {...{hand, activeIndex, updateActiveIndex}} handleSelectCard={isGallery || isInfo ? undefined : handleSelectCard}/>
+          </>
+        }
+        {hand.length === 1 &&
+          <div>
+            {isInfo ?
+              <InfoCard card={hand[0]} />
+              :
+              <GameImage card={hand[0]} selectablecard={selectablecard} />
+            }
+          </div>
+        }
       </Container>
     </>
   );
