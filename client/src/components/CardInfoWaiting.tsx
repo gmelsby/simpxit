@@ -13,10 +13,14 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
   }) 
 {
 
+  const demonstrative = cards.length > 1 ? 'these' : 'this';
+  const directObject = `card${cards.length > 1 ? 's' : ''}`;
+  const phrase = `${demonstrative} ${directObject}`;
+
   const phraseMap = {
-    storyTeller : ['You submitted the descriptor', 'for this card'],
-    deceive : ['For the descriptor', 'you submitted this card'],
-    guess : ['For the descriptor', 'you guessed this card']
+    storyTeller : ['You submitted the descriptor', `for ${phrase}`],
+    deceive : ['For the descriptor', `you submitted ${phrase}`],
+    guess : ['For the descriptor', `you guessed ${phrase}`]
   };
 
   return (
