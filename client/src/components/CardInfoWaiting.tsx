@@ -20,7 +20,7 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
   };
 
   return (
-    <Container>
+    <Container className="h-100 d-flex flex-column justify-content-around">
       <Container className="text-center mt-5">
         <h3 className="">
           {phraseMap[use][0]}
@@ -34,7 +34,7 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
       </Container>
  
       <Hand hand={cards} isInfo/>
-      <Container className="text-center mt-4 pb-5">
+      <Container className="text-center my-2">
         <WaitingOn waitingOn={waitingOn} />
       </Container>
     </Container>
