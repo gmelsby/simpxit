@@ -30,8 +30,8 @@ function Back({ cardId }: { cardId: string }) {
   return (
     <Container className='d-flex flex-column bg-body overflow-auto flipcard-back card-img'
       // allows overflow scrolling from top
-      style={{justifyContent: 'center safe'}}>
-      <Container className='pt-3'>
+      style={{justifyContent: 'safe center'}}>
+      <Container className='pt-4 pt-md-0'>
         <CardInfoWrapper cardId={cardId}/>
       </Container>
     </Container>
