@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { GameCard } from '../../../types';
 import { Container, Image } from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
+import GameImage from './GameImage';
 
 export default function InfoCard({ card }: { card: GameCard}) {
   const [isFlipped, setIsFlipped] = useState(false);
   return (
     <div className="flipcard selectable-no-grow" onClick={() => setIsFlipped(current => !current)}>
       <div className={`flipcard-inner ${isFlipped ? 'flipped' : ''}`}>
-        <Front locator={card.locator} />
+        <Front card={card} />
         <Back cardId={card.id} />
         <div>
           <Image src='/image-placeholder.svg' fluid/>
@@ -18,10 +19,10 @@ export default function InfoCard({ card }: { card: GameCard}) {
   );
 }
 
-function Front({ locator }: { locator: string }) {
+function Front({ card }: { card: GameCard }) {
   return (
     <div className='flipcard-front'>
-      <Image src={locator} className="card-img" fluid />
+      <GameImage card={card} />
     </div>
   );
 }
