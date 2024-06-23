@@ -6,28 +6,34 @@ import CardInfoWrapper from './CardInfoWrapper';
 export default function InfoCard({ card }: { card: GameCard}) {
   const [isFlipped, setIsFlipped] = useState(false);
   return (
-    <div className="flipcard" onClick={() => setIsFlipped(current => !current)}>
+    <Container className="flipcard" onClick={() => setIsFlipped(current => !current)}>
       <div className={`flipcard-inner ${isFlipped ? 'flipped' : ''}`}>
         <Front locator={card.locator} />
         <Back cardId={card.id} />
-        <Image src='/image-placeholder.svg' fluid/>
+        <div>
+          <Image src='/image-placeholder.svg' fluid/>
+        </div>
       </div>
-    </div>
+    </Container>
   );
 }
 
 function Front({ locator }: { locator: string }) {
   return (
-    <Container className='flipcard-front'>
+    <div className='flipcard-front'>
       <Image src={locator} className="card-img" fluid />
-    </Container>
+    </div>
   );
 }
 
 function Back({ cardId }: { cardId: string }) {
   return (
-    <Container className='bg-body flipcard-back'>
-      <CardInfoWrapper cardId={cardId}/>
+    <Container className='d-flex flex-column bg-body overflow-auto flipcard-back card-img'
+      // allows overflow scrolling from top
+      style={{justifyContent: 'center safe'}}>
+      <Container className='pt-3'>
+        <CardInfoWrapper cardId={cardId}/>
+      </Container>
     </Container>
   );
 }

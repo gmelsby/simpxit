@@ -151,12 +151,10 @@ body {
 
 .flipcard-front {
   transform: rotateY(0deg);
-  z-index: 2;
 }
 
 .flipcard-back {
   transform: rotateY(180deg);
-  z-index: 1;
 }
 
 /*# sourceMappingURL=App.css.map */
