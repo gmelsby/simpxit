@@ -86,6 +86,24 @@ body {
   }
 }
 
+.shimmer {
+  background: #000000;
+  background-image: linear-gradient(to right, #1a1a15 0%, #5b5b57 20%, #1a1a15 40%, #55554b 70%, #0f100e 90%, #1a1a15 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+  height: 100%;
+  width: 100%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 /* Buttons no longer have hover effects for touch only devices */
 /* Quick fix, if theming is applied will use sass */
 @media (hover: none) {
