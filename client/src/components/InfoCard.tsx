@@ -6,7 +6,7 @@ import CardInfoWrapper from './CardInfoWrapper';
 export default function InfoCard({ card }: { card: GameCard}) {
   const [isFlipped, setIsFlipped] = useState(false);
   return (
-    <Container className="flipcard" onClick={() => setIsFlipped(current => !current)}>
+    <div className="flipcard selectable-no-grow" onClick={() => setIsFlipped(current => !current)}>
       <div className={`flipcard-inner ${isFlipped ? 'flipped' : ''}`}>
         <Front locator={card.locator} />
         <Back cardId={card.id} />
@@ -14,7 +14,7 @@ export default function InfoCard({ card }: { card: GameCard}) {
           <Image src='/image-placeholder.svg' fluid/>
         </div>
       </div>
-    </Container>
+    </div>
   );
 }
 
@@ -28,12 +28,12 @@ function Front({ locator }: { locator: string }) {
 
 function Back({ cardId }: { cardId: string }) {
   return (
-    <Container className='d-flex flex-column bg-body overflow-auto flipcard-back card-img'
+    <div className='d-flex flex-column bg-body overflow-auto flipcard-back card-img'
       // allows overflow scrolling from top
       style={{justifyContent: 'safe center'}}>
       <Container className='py-4'>
         <CardInfoWrapper cardId={cardId}/>
       </Container>
-    </Container>
+    </div>
   );
 }

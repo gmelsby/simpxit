@@ -59,7 +59,7 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
             <Carousel className="" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
               {hand.map(c => 
                 <Carousel.Item key={c.id}> 
-                  <div className="py-5">
+                  <div className={`${isInfo ? 'py-5' : ''}`}>
                     {isInfo ?
                       <InfoCard card={c} />
                       :
@@ -77,7 +77,7 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
             {isInfo ?
               <InfoCard card={hand[0]} />
               :
-              <GameImage className="mb-5" card={hand[0]} selectablecard={selectablecard} />
+              <GameImage card={hand[0]} selectablecard={selectablecard} />
             }
           </div>
         }

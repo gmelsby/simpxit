@@ -77,7 +77,7 @@ export default function OtherPlayersPick({
           <h5>Pick a {players.length === 3 && expectedCards - playerSubmittedCards.length == 1 && 'second '} 
           card from your hand to fool the other players!</h5>
         </Container>
-        <Container className="pb-5 mb-5">
+        <Container className="mb-5">
           <Hand hand={userHand} setSelectedCard={setSelectedCard} />
         </Container>
       </Container>

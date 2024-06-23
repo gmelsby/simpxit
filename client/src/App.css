@@ -81,6 +81,9 @@ body {
     box-shadow: 0 0 1rem yellow;
     border-color: yellow;
   }
+  .selectable-no-grow:hover {
+    cursor: pointer;
+  }
 }
 
 /* Buttons no longer have hover effects for touch only devices */
