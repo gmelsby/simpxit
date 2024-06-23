@@ -1,8 +1,8 @@
 import React from 'react';
-import { Container, Row, Col, Image } from 'react-bootstrap';
-import CardInfoWrapper from './CardInfoWrapper';
+import { Container } from 'react-bootstrap';
 import WaitingOn from './WaitingOn';
 import { Player, GameCard } from '../../../types';
+import InfoCard from './InfoCard';
 
 
 
@@ -32,10 +32,7 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
           <h3 className="mb-4">
             {phraseMap[use][1]}
           </h3>
-          <Row xs={1} md={2}>
-            <Col><Image src={card.locator} className="card-img" fluid /></Col>
-            <Col className="my-auto"><CardInfoWrapper cardId={card.id} /></Col>
-          </Row>
+          <InfoCard card={card} />
         </Container>)}
       <Container className="text-center mt-4 pb-5">
         <WaitingOn waitingOn={waitingOn} />
