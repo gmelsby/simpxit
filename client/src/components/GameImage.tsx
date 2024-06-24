@@ -7,9 +7,14 @@ export default function GameImage({ card, handleSelectCard, selectablecard, clas
   const [loaded, setLoaded]  = useState(false);
 
   return (
-    <Image src={card.locator} className={`${loaded ? `card-img ${selectablecard}` : ''} ${className}`} 
-      onClick={() => handleSelectCard ? handleSelectCard(card) : {}} fluid
-      onLoad={() => setLoaded(true)} 
-    />
+    <>
+      {!loaded &&
+        <Image className={'card-img shimmer'} src='/image-placeholder.svg' />
+      }
+      <Image className={loaded ? `card-img ${selectablecard} ${className}` : 'd-none'} src={card.locator} 
+        onClick={() => handleSelectCard ? handleSelectCard(card) : {}} fluid
+        onLoad={() => setLoaded(true)} 
+      />
+    </>
   );
 }
