@@ -63,7 +63,7 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
                     {isInfo ?
                       <InfoCard card={c} />
                       :
-                      <GameImage className="mb-5" card={c} selectablecard={selectablecard} />
+                      <GameImage className="mb-5" card={c} />
                     }
                   </div>
                 </Carousel.Item>

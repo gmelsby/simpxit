@@ -35,9 +35,10 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
         <h3>
           {phraseMap[use][1]}
         </h3>
+
+        <Hand hand={cards} isInfo/>
       </Container>
  
-      <Hand hand={cards} isInfo/>
       <Container className="text-center my-2">
         <WaitingOn waitingOn={waitingOn} />
       </Container>
