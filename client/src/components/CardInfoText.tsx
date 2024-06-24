@@ -28,8 +28,10 @@ export default function CardInfoText({ cardInfo }: { cardInfo: CardInfo | undefi
   return (
     <>
       <p><b>Title:</b> {cardInfo.title}</p>
-      <p><b>Season:</b> {cardInfo.season}</p>
-      <p><b>Episode:</b> {cardInfo.episode}</p>
+      <p>
+        <b>Season:</b> {cardInfo.season}
+        <b> Episode:</b> {cardInfo.episode}
+      </p>
       <p><b>Subtitles:</b></p>
       <SubtitleDisplay subtitles={cardInfo.subtitles} />
       <p><b>Writer:</b> {cardInfo.writer}</p>
