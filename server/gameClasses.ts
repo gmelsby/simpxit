@@ -74,11 +74,7 @@ export class Room implements IRoom {
   
   // adds a player with the passed-in id
   addPlayer(uuid: string) {
-    let playerNumber = 1;
-    while(this.players.map(p => p.playerName).includes(`Player ${playerNumber}`)) {
-      playerNumber++;
-    }
-    this.players.push(new Player(uuid, `Player ${playerNumber}`));
+    this.players.push(new Player(uuid, ''));
     this.lastModified = Date.now();
   }
   
@@ -295,7 +291,6 @@ export class Room implements IRoom {
     if (Object.keys(this.guesses).includes(uuid)) {
       return false;
     }
-    this.lastModified = Date.now();
     return true;
   }
 
