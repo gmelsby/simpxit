@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Col, Row, Container } from 'react-bootstrap';
+import { Button, Col, Row, Container, Placeholder } from 'react-bootstrap';
 import { Player } from '../../../types';
 
 export default function PlayerList({ players, setKickUserId, userId, isAdmin, isScoreboard }:
@@ -8,18 +8,19 @@ export default function PlayerList({ players, setKickUserId, userId, isAdmin, is
   const playerList = isScoreboard ? players.sort((p1, p2) => p2.score - p1.score) : players;
   return (
     <Container>
-      {playerList.map((player) => <PlayerEntry player={player} 
+      {playerList.map((player, idx) => <PlayerEntry player={player} 
         setKickUserId={setKickUserId} 
         userId={userId} 
         isAdmin={isAdmin} 
         isScoreboard={isScoreboard}
+        index={idx}
         key={player.playerId} />)}
     </Container>
   );
 }
 
-function PlayerEntry({ player, setKickUserId, userId, isAdmin, isScoreboard }:
-  {player: Player, setKickUserId?: (value: React.SetStateAction<string>) => void, userId: string, isAdmin?: boolean, isScoreboard?: boolean}) {
+function PlayerEntry({ player, setKickUserId, userId, isAdmin, isScoreboard, index }:
+  {player: Player, setKickUserId?: (value: React.SetStateAction<string>) => void, userId: string, isAdmin?: boolean, isScoreboard?: boolean, index: number}) {
   const handleKickThisPlayer = () => {
     if (setKickUserId !== undefined) {
       setKickUserId(player.playerId);
@@ -29,9 +30,17 @@ function PlayerEntry({ player, setKickUserId, userId, isAdmin, isScoreboard }:
   if (isScoreboard) {
     return (
       <Row>
-        <Col xs="auto">
-          {player.playerId === userId && <p><b>{player.playerName}</b></p>}
-          {player.playerId !== userId && <p>{player.playerName}</p>}
+        <Col xs={10}>
+          {player.playerName === '' ? 
+            <Placeholder as="p" animation='wave'>
+              <Placeholder xs={index % 2 ? 5 : 4} bg='info' />
+            </Placeholder>
+            :
+            <>
+              {player.playerId === userId && <p><b>{player.playerName}</b></p>}
+              {player.playerId !== userId && <p>{player.playerName}</p>}
+            </>
+          }
         </Col>
         <Col xs={1}>
           <p>{player.score}</p>
@@ -44,8 +53,15 @@ function PlayerEntry({ player, setKickUserId, userId, isAdmin, isScoreboard }:
     <Row className="my-0 my-md-2 justify-content-center">
       <Col></Col>
       <Col>
-        {player.playerId === userId && <p><b>{player.playerName}</b></p>}
-        {player.playerId !== userId && <p>{player.playerName}</p>}
+        {player.playerName === '' ? 
+          <Placeholder as="p" animation='wave'>
+            <Placeholder bg='info' xs={index % 2 ? 7 : 6} md={index % 2 ? 4 : 3} />
+          </Placeholder> :
+          <>
+            {player.playerId === userId && <p><b>{player.playerName}</b></p>}
+            {player.playerId !== userId && <p>{player.playerName}</p>}
+          </>
+        }
       </Col>
       <Col className="d-flex flex-direction-row justify-content-start">
         {isAdmin && player.playerId !== userId && 

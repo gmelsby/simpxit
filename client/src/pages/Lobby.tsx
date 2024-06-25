@@ -54,9 +54,9 @@ export default function Lobby({ players,
       </Container>
       <Container className="my-1 mb-md-5">
         <Button className="m-2" onClick={handleLeave} variant="danger">Leave Room</Button>
-        {isAdmin && players.length > 2 && <Button className="m-2" onClick={handleStartGame}>Start Game</Button>}
-        {isAdmin && players.length <= 2 && <Button className="m-2" disabled>Start Game</Button>}
-        {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
+        {isAdmin && <Button className="m-2" disabled={players.length <= 2 || players.filter(p => p.playerName === '').length > 0} onClick={handleStartGame}>Start Game</Button>}
+        {players.filter(p => p.playerName === '').length > 0 && players.length > 2 && <p>All players must have names before the game can start.</p>}
+        {players.length <= 2 && <p>At least 3 players must be in the room before the game can start.</p>}
       </Container>
     </Container>
   );
@@ -82,6 +82,13 @@ function NameForm({ players, roomId, userId, socket }:
     }
   }, [roomId, userId, newName, socket, currentName]);
 
+  // if current name is empty '' automatically goes into editing name mode
+  useEffect(() => {
+    if (currentName === '' && newName === '') {
+      setIsEditingName(true);
+    }
+  }, [currentName, setIsEditingName]);
+
   // updates name if updated elsewhere
   useEffect(() => {
     if (currentName !== undefined) setNewName(currentName);
@@ -89,17 +96,21 @@ function NameForm({ players, roomId, userId, socket }:
 
   // automatically selects text box
   useEffect(() => {
-    if (isEditingName && nameFormRef !== null && nameFormRef.current !== null) {
+    if (isEditingName && nameFormRef.current !== null) {
       nameFormRef.current.focus();
-      nameFormRef.current.select();
+      if (currentName !== '') {
+        nameFormRef.current.select();
+      }
     }
-  }, [isEditingName]);
+  }, [isEditingName, currentName, nameFormRef.current]);
 
   // check if click outside of text box, if so cancels update
   useEffect(() => {
     const clickHandler = (e: MouseEvent) => {
       if(nameFormRef.current && !nameFormRef.current.contains(e.target as Node) && undoRef.current && !undoRef.current.contains(e.target as Node)) {
-        handleNameChange(e);
+        if (newName !== '') {
+          handleNameChange(e);
+        }
       }
     };
 
@@ -107,7 +118,7 @@ function NameForm({ players, roomId, userId, socket }:
     return () => {
       document.removeEventListener('mousedown', clickHandler);
     };
-  }, [nameFormRef, undoRef, handleNameChange]);
+  }, [nameFormRef, undoRef, handleNameChange, newName]);
 
   // allows for in-line editing of name
   if (isEditingName) {
@@ -120,9 +131,10 @@ function NameForm({ players, roomId, userId, socket }:
             </Col>
             <Col xs="auto">
               <Form.Control className="px-1 mx-0" type="text" required name="new-name"
-                maxLength={20} placeholder="New Name"
+                maxLength={20} 
                 value={newName}
                 onChange={e => setNewName(e.target.value.trimStart())}
+                autoFocus={true}
                 ref={nameFormRef} />
             </Col>
             <Col xs="auto" className="d-none d-md-flex" ref={undoRef}>
