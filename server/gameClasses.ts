@@ -147,19 +147,17 @@ export class Room implements IRoom {
   changeName(uuid: string, newName: string) {
     // check that target player is a player
     const playerIndex = this.getPlayerIndex(uuid);
-    if (playerIndex === -1 ) {
+    if (playerIndex === -1 || this.isNameInUse(newName) || newName.length === 0) {
       return { changedName: '', ...{playerIndex}};
     }
 
     
     const player = this.getPlayer(uuid);
-
-    if (player !== undefined && !(this.isNameInUse(newName) || newName.length === 0)) {
+    if (player !== undefined) {
       player.playerName = newName;
       this.lastModified = Date.now();
     }
-
-    // send new name, send old name if change unsuccessful
+    // send new name
     return { changedName: player?.playerName, playerIndex};
   }
 

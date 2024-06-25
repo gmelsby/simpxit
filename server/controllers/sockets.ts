@@ -142,7 +142,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       // attempts to change name
       const { changedName, playerIndex } = rooms[roomId].changeName(userId, trimmedNewName);
       if (playerIndex === -1) {
-        console.log(`player ${userId} is not in room ${roomId}`);
+        console.log(`player ${userId} could not succesfully change name`);
         return;
       }
       io.to(roomId).emit('receiveRoomPatch', [
