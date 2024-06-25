@@ -54,9 +54,9 @@ export default function Lobby({ players,
       </Container>
       <Container className="my-1 mb-md-5">
         <Button className="m-2" onClick={handleLeave} variant="danger">Leave Room</Button>
-        {isAdmin && players.length > 2 && <Button className="m-2" onClick={handleStartGame}>Start Game</Button>}
-        {isAdmin && players.length <= 2 && <Button className="m-2" disabled>Start Game</Button>}
-        {players.length <= 2 && <p>At least 3 players must be in the room to start a game.</p>}
+        {isAdmin && <Button className="m-2" disabled={players.length <= 2 || players.filter(p => p.playerName === '').length > 0} onClick={handleStartGame}>Start Game</Button>}
+        {players.filter(p => p.playerName === '').length > 0 && players.length > 2 && <p>All players must have names before the game can start.</p>}
+        {players.length <= 2 && <p>At least 3 players must be in the room before the game can start.</p>}
       </Container>
     </Container>
   );
