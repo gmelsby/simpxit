@@ -143,21 +143,24 @@ export class Room implements IRoom {
     return this.kickedPlayers.includes(uuid);
   }
    
-  // returns true if name change is successful, false otherwise
+  // returns { changedName, playerIndex } if name change is successful
   changeName(uuid: string, newName: string) {
     // check that target player is a player
-    if (!(this.isCurrentPlayer(uuid)) || this.isNameInUse(newName) || newName.length === 0) {
-      return false;
+    const playerIndex = this.getPlayerIndex(uuid);
+    if (playerIndex === -1 ) {
+      return { changedName: '', ...{playerIndex}};
     }
+
     
-    // renames player
     const player = this.getPlayer(uuid);
-    if (player !== undefined) {
+
+    if (player !== undefined && !(this.isNameInUse(newName) || newName.length === 0)) {
       player.playerName = newName;
       this.lastModified = Date.now();
-      return true;
     }
-    return false;
+
+    // send new name, send old name if change unsuccessful
+    return { changedName: player?.playerName, playerIndex};
   }
 
   // returns true if name is in use, false otherwise

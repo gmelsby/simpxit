@@ -135,18 +135,30 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       const { roomId, userId, newName } = request;
       const trimmedNewName = newName.trim();
       console.log(`player ${userId} attempting to change name to ${trimmedNewName}`);
-      // changes name
-      if (rooms[roomId] && rooms[roomId].changeName(userId, trimmedNewName)) {
-        console.log('name changed');
-        io.to(roomId).emit('receiveRoomState', rooms[roomId]);
+      if (!rooms[roomId]) {
+        return;
       }
-      else {
-        console.log('unable to change name');
+
+      // attempts to change name
+      const { changedName, playerIndex } = rooms[roomId].changeName(userId, trimmedNewName);
+      if (playerIndex === -1) {
+        console.log(`player ${userId} is not in room ${roomId}`);
+        return;
       }
+      io.to(roomId).emit('receiveRoomPatch', [
+        {
+          'op': 'replace',
+          'path': `/players/${playerIndex}/playerName`,
+          'value': changedName,
+        }
+      ]);
     });
 
     socket.on('changeOptions', request => {
       const { roomId, userId, newOptions } = request;
+      if (!rooms[roomId]) {
+        return;
+      }
       console.log(`player ${userId} attempting to change options to ${newOptions}`);
       // successful change
       if (rooms[roomId] && rooms[roomId].changeOptions(userId, newOptions)) {
