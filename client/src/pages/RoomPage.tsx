@@ -70,6 +70,7 @@ export default function RoomPage({ userId }: {userId: string}) {
       setRoomState(room => {
         // try and see if patch is valid
         try {
+          console.log(JSON.stringify(immutableJSONPatch(room, operations)));
           return immutableJSONPatch(room, operations);
         } 
         // if not request whole room state

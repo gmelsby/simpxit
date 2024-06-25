@@ -59,7 +59,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         
       // adds player to room
       console.log(`adding ${userId} to player list`);
-      const [newPlayer, idx] = rooms[roomId].addPlayer(userId);
+      const {newPlayer, index} = rooms[roomId].addPlayer(userId);
 
       // send joining player entire room state
       io.to(socket.id).emit('receiveRoomState', rooms[roomId]);
@@ -67,7 +67,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       io.to(roomId).emit('receiveRoomPatch', [
         {
           'op': 'add',
-          'path': `/players/${idx}`,
+          'path': `/players/${index}`,
           'value': newPlayer,
         }
       ]);
