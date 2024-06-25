@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { immutableJSONPatch } from 'immutable-json-patch';
 import { useParams } from 'react-router-dom';
 import { Alert, Button, Spinner, Container } from 'react-bootstrap';
 import KickModal from '../components/KickModal';
@@ -64,6 +65,21 @@ export default function RoomPage({ userId }: {userId: string}) {
     newSocket.on('receiveRoomState', data => {
       setRoomState(data);
     });
+
+    newSocket.on('receiveRoomPatch', operations => {
+      setRoomState(room => {
+        // try and see if patch is valid
+        try {
+          return immutableJSONPatch(room, operations);
+        } 
+        // if not request whole room state
+        catch {
+          console.log('Unable to gracefully update room state: falling back on full request');
+          newSocket.emit('requestRoomState', {roomId, userId});
+          return room;
+        }
+      });
+    });
    
     setSocket(newSocket);
 
@@ -71,7 +87,7 @@ export default function RoomPage({ userId }: {userId: string}) {
       newSocket.close();
     };
 
-  }, [userId, roomId]);
+  }, [userId, roomId, setRoomState, setSocket]);
 
   // queries for up-to-date room info
   useEffect(() => {

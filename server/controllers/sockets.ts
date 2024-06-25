@@ -5,6 +5,26 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
   io.on('connection', socket => {
     console.log(`connection made: ${socket.id}`);
 
+    // when client realizes something is wrong and needs to get the full room state
+    socket.on('requestRoomState', (request, callback) => {
+      const { roomId, userId } = request;
+
+      console.log(`request from user ${userId} for state of room ${roomId}`);
+
+      // case where room does not exist
+      if (!(roomId in rooms)) {
+        console.log('room does not exist');
+        return callback('Room not found');
+      }
+
+      if(!rooms[roomId].isCurrentPlayer(userId)) {
+        console.log(`user ${userId} is not a current member of room ${roomId}`);
+        return callback('Something went wrong. Please try joining the room again.');
+      }
+
+      io.to(socket.id).emit('receiveRoomState', rooms[roomId]);
+    });
+
     socket.on('joinRoom', (request, callback) => {
       const { roomId, userId } = request;
       console.log(`attempt to join room: roomId: ${roomId}, userId: ${userId}`);
@@ -31,24 +51,33 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         return;
       }
       
-      else {
-        // if room is full sends error
-        if (!rooms[roomId].isJoinable()) {
-          console.log(`${userId} could not join room: room is full`);
-          return callback('Room is full');
-        }
-        
-        // adds player to room
-        console.log(`adding ${userId} to player list`);
-        rooms[roomId].addPlayer(userId);
-        socket.join(roomId);
+      // if room is full sends error
+      if (!rooms[roomId].isJoinable()) {
+        console.log(`${userId} could not join room: room is full`);
+        return callback('Room is full');
       }
+        
+      // adds player to room
+      console.log(`adding ${userId} to player list`);
+      const [newPlayer, idx] = rooms[roomId].addPlayer(userId);
+
+      // send joining player entire room state
+      io.to(socket.id).emit('receiveRoomState', rooms[roomId]);
+      // send players already in room a patch with new player
+      io.to(roomId).emit('receiveRoomPatch', [
+        {
+          'op': 'add',
+          'path': `/players/${idx}`,
+          'value': newPlayer,
+        }
+      ]);
+
+      // add new player to room socket
+      socket.join(roomId);
       
       console.log(`playerId ${userId} has joined room ${roomId}`);
-      
       console.log(`player list = ${JSON.stringify(rooms[roomId].players)}`);
 
-      io.to(roomId).emit('receiveRoomState', rooms[roomId]);
       callback();
     });
     

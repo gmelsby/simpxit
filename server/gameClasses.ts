@@ -74,8 +74,10 @@ export class Room implements IRoom {
   
   // adds a player with the passed-in id
   addPlayer(uuid: string) {
-    this.players.push(new Player(uuid, ''));
+    const newPlayer = new Player(uuid, '');
+    this.players.push(newPlayer);
     this.lastModified = Date.now();
+    return [this.players.indexOf(newPlayer), newPlayer];
   }
   
   // removes the player with the passed-in id
