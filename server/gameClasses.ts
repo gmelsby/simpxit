@@ -148,7 +148,7 @@ export class Room implements IRoom {
     // check that target player is a player
     const playerIndex = this.getPlayerIndex(uuid);
     if (playerIndex === -1 || this.isNameInUse(newName) || newName.length === 0) {
-      return { changedName: '', ...{playerIndex}};
+      return { changedName: '', playerIndex: -1};
     }
 
     
@@ -166,7 +166,7 @@ export class Room implements IRoom {
     if(this.players.map(player => player.playerName.toLowerCase()).includes(newName.toLowerCase())) {
       return true;
     }
-
+    console.log('name is not in use');
     return false;
   }
 

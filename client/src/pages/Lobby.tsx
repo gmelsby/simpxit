@@ -84,15 +84,20 @@ function NameForm({ players, roomId, userId, socket }:
 
   // if current name is empty '' automatically goes into editing name mode
   useEffect(() => {
-    if (currentName === '' && newName === '') {
+    if (currentName === '') {
       setIsEditingName(true);
     }
   }, [currentName, setIsEditingName]);
 
   // updates name if updated elsewhere
   useEffect(() => {
-    if (currentName !== undefined) setNewName(currentName);
-  }, [setNewName, currentName]);
+    if (currentName === undefined || currentName === '') return;
+    setNewName(currentName);
+    if (nameFormRef.current) {
+      nameFormRef.current.blur();
+    }
+
+  }, [setNewName, currentName, nameFormRef.current]);
 
   // automatically selects text box
   useEffect(() => {
