@@ -81,17 +81,15 @@ export class Room implements IRoom {
   }
   
   // removes the player with the passed-in id
+  // returns -1 if player not found, otherwise returns player's index
   removePlayer(uuid: string) {
-    if (!(this.isCurrentPlayer(uuid))) {
-      return false;
+    const playerIndex = this.getPlayerIndex(uuid);
+    if (playerIndex < 0) {
+      return playerIndex;
     }
-    const initialPlayerCount = this.playerCount;
     this.players = this.players.filter(player => player.playerId !== uuid);
-    if (this.playerCount < initialPlayerCount) {
-      this.lastModified = Date.now();
-      return true;
-    }
-    return false;
+    this.lastModified = Date.now();
+    return playerIndex;
   }
    
   // returns true if the uuid is the admin, otherwise false
@@ -120,20 +118,24 @@ export class Room implements IRoom {
     }
     return this.players.find(player => player.playerId === uuid);
   }
+
+  // returns the index of the player with the specified id
+  // returns -1 if no match is found
+  getPlayerIndex(uuid: string) {
+    return this.players.findIndex(p => p.playerId === uuid);
+  }
    
   // removes player with kickId if adminId is admin
+  // returns the index of the kicked player if successful, otherwise returns undefined
   kickPlayer(adminId: string, kickId: string) {
-    // check that both players are current players
-    if (!(this.isCurrentPlayer(adminId)) || !(this.isCurrentPlayer(kickId))) {
-      return false;
+    // check that both players are current players and kicker is admin
+    if (!(this.isCurrentPlayer(kickId)) || !this.isAdmin(adminId)) {
+      return undefined;
     }
-    // check that player attempting to kick is admin
-    if (this.isAdmin(adminId)) {
-      this.kickedPlayers.push(kickId);
-      this.lastModified = Date.now();
-      return this.removePlayer(kickId);
-    }
-    return false;
+
+    this.kickedPlayers.push(kickId);
+    this.lastModified = Date.now();
+    return this.removePlayer(kickId);
   }
   
   // checks if player has been kicked from the game

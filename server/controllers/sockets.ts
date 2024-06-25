@@ -84,9 +84,23 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     socket.on('kickPlayer', request => {
       const { roomId, userId, kickUserId } = request;
       // successful kick
-      if (rooms[roomId] && rooms[roomId].kickPlayer(userId, kickUserId)) {
+      if (!rooms[roomId]) {
+        return;
+      } 
+      const kickedPlayerIndex = rooms[roomId].kickPlayer(userId, kickUserId);
+      if (kickedPlayerIndex !== -1) {
         console.log(`kicked player ${kickUserId}`);
-        io.to(roomId).emit('receiveRoomState', rooms[roomId]);
+        io.to(roomId).emit('receiveRoomPatch', [
+          {
+            'op': 'add',
+            'path': '/kickedPlayers/-',
+            'value': `${kickUserId}`,
+          },
+          {
+            'op': 'remove',
+            'path': `/players/${kickedPlayerIndex}`
+          },
+        ]);
       }
       else {
         console.log(`could not kick player ${kickUserId}`);
