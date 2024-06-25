@@ -170,16 +170,16 @@ export class Room implements IRoom {
     return false;
   }
 
-  // return true if options change is successful, false otherwise
+  // return new options if options change is successful, undefined otherwise
   changeOptions(uuid: string, newOptions: number) {
     // check that requesting player is admin
     if (!(this.isAdmin(uuid)) || newOptions < 5 || newOptions > 100) {
-      return false;
+      return undefined;
     }
     
     this.targetScore = newOptions;
     this.lastModified = Date.now();
-    return true;
+    return this.targetScore;
   }
 
   // game phase moves forward by one

@@ -160,14 +160,27 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         return;
       }
       console.log(`player ${userId} attempting to change options to ${newOptions}`);
-      // successful change
-      if (rooms[roomId] && rooms[roomId].changeOptions(userId, newOptions)) {
-        console.log('options changed');
-        io.to(roomId).emit('receiveRoomState', rooms[roomId]);
+
+      if (!rooms[roomId]) {
+        console.log('room does not exist');
+        return;
       }
-      else {
-        console.log('unable to change options');
+
+      const changedOptions = rooms[roomId].changeOptions(userId, newOptions);
+      if (changedOptions === undefined) {
+        console.log('could not change options');
+        return;
       }
+
+      console.log('options changed');
+      io.to(roomId).emit('receiveRoomPatch', [
+        {
+          'op': 'replace',
+          'path': '/targetScore',
+          'value': changedOptions,
+        }
+      ]);
+
     });
     
     socket.on('startGame', request => {

@@ -73,10 +73,19 @@ function NameForm({ players, roomId, userId, socket }:
 
   const handleNameChange = useCallback((e: MouseEvent | React.SyntheticEvent) => {
     e.preventDefault();
-    setIsEditingName(false);
-    if (newName === currentName) {
+    // check if player has not changed name
+    if (currentName === newName) {
+      setIsEditingName(false);
       return;
     }
+
+    //check if another player already has that name
+    if (players.some(p => p.playerName === newName)) {
+      return;
+    }
+
+    setIsEditingName(false);
+
     if (socket !== null) {
       socket.emit('changeName', { roomId, userId, newName });
     }
