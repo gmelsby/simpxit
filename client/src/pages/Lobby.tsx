@@ -98,9 +98,11 @@ function NameForm({ players, roomId, userId, socket }:
   useEffect(() => {
     if (isEditingName && nameFormRef.current !== null) {
       nameFormRef.current.focus();
-      nameFormRef.current.select();
+      if (currentName !== '') {
+        nameFormRef.current.select();
+      }
     }
-  }, [isEditingName, nameFormRef.current]);
+  }, [isEditingName, currentName, nameFormRef.current]);
 
   // check if click outside of text box, if so cancels update
   useEffect(() => {
