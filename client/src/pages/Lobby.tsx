@@ -82,6 +82,19 @@ function NameForm({ players, roomId, userId, socket }:
     }
   }, [roomId, userId, newName, socket, currentName]);
 
+  useEffect(() => {
+    if (nameFormRef !== null && nameFormRef.current !== null) {
+      console.log(nameFormRef.current.value);
+    }
+  }, [currentName]);
+
+  // if current name is empty '' automatically goes into editing name mode
+  useEffect(() => {
+    if (currentName === '' && newName === '') {
+      setIsEditingName(true);
+    }
+  }, [currentName, isEditingName]);
+
   // updates name if updated elsewhere
   useEffect(() => {
     if (currentName !== undefined) setNewName(currentName);
@@ -120,7 +133,7 @@ function NameForm({ players, roomId, userId, socket }:
             </Col>
             <Col xs="auto">
               <Form.Control className="px-1 mx-0" type="text" required name="new-name"
-                maxLength={20} placeholder="New Name"
+                maxLength={20} 
                 value={newName}
                 onChange={e => setNewName(e.target.value.trimStart())}
                 ref={nameFormRef} />
