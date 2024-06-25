@@ -115,10 +115,16 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         console.log('left room does not exist');
         return callback('Room does not exist');
       }
+      const playerIndex = rooms[roomId].removePlayer(userId);
       // successful exit
-      if (rooms[roomId].removePlayer(userId)) {
+      if (playerIndex !== -1) {
         console.log('player removed successfully');
-        io.to(roomId).emit('receiveRoomState', rooms[roomId]);
+        io.to(roomId).emit('receiveRoomPatch', [
+          {
+            'op': 'remove',
+            'path': `/players/${playerIndex}`
+          }
+        ]);
       }
       else {
         console.log('unable to remove player');
