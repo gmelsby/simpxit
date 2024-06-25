@@ -12,7 +12,7 @@ import FourOhFour from './pages/FourOhFour';
 
 function App() {
 
-  const [userId, setUserId] = useSessionStorage('simpxit', '');
+  const [userId, setUserId] = useSessionStorage('userId', '');
 
   const generateUuid = useCallback(() => {
     setUserId(v4());
