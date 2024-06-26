@@ -223,17 +223,42 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     });
     
     socket.on('submitStoryCard', request => {
-      const { roomId, userId, selectedCard, descriptor } = request;
+      const { roomId, userId, selectedCardId, descriptor } = request;
       // check that user is able to submit card
-      if (rooms[roomId] && rooms[roomId].submitStoryCard(userId, selectedCard, descriptor.trim())) {
-        console.log(`Story card ${selectedCard.id} submitted by ${userId}`);
-        io.to(roomId).emit('receiveRoomState', rooms[roomId]);
+      if (!rooms[roomId]) return;
+      const { card, playerIndex, handIndex, storyDescriptor, gamePhase } = rooms[roomId].submitStoryCard(userId, selectedCardId, descriptor.trim()); 
+      if (card === undefined || playerIndex === -1 || handIndex === -1) {
+        console.log('unable to submit card');
+        return;
       }
-      
-      else {
-        console.log('unable to submit story card');
-      }
-      
+
+      console.log(`Story card ${selectedCardId} submitted by ${userId}`);
+      io.to(roomId).emit('receiveRoomPatch', [
+        {
+          'op': 'replace',
+          'path': '/storyCardId',
+          'value': card.id
+        },
+        {
+          'op': 'add',
+          'path': '/submittedCards/-',
+          'value': card
+        },
+        {
+          'op': 'replace',
+          'path': '/storyDescriptor',
+          'value': storyDescriptor
+        },
+        {
+          'op': 'replace',
+          'path': '/gamePhase',
+          'value': gamePhase
+        },
+        {
+          'op': 'remove',
+          'path': `/players/${playerIndex}/hand/${handIndex}`
+        }
+      ]);
     });
 
     socket.on('submitOtherCard', request => {

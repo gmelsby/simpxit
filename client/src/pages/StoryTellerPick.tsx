@@ -31,7 +31,8 @@ export default function StoryTellerPick({
   if (userId === storyTeller.playerId) {
     const handleSubmit = () => {
       if (selectedCard && socket !== null) {
-        socket.emit('submitStoryCard', {roomId, userId, selectedCard, descriptor} );
+        const selectedCardId = selectedCard.id;
+        socket.emit('submitStoryCard', {roomId, userId, selectedCardId, descriptor} );
       }
     };
 

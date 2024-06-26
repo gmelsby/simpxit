@@ -185,6 +185,7 @@ export class Room implements IRoom {
   // game phase moves forward by one
   advanceGamePhase() {
     this.gamePhase = Room.gamePhaseDict[this.gamePhase];
+    return this.gamePhase;
   }
    
   // starts the game if gamePhase is lobby, 3 or more players are in, and requesting player is admin
@@ -208,19 +209,20 @@ export class Room implements IRoom {
 
    
   // submits the story card and descriptor hint
-  submitStoryCard(uuid: string, card: GameCard, descriptor: string) {
-    if (this.gamePhase !== 'storyTellerPick' || !this.isStoryteller(uuid)) { 
-      return false;
+  submitStoryCard(uuid: string, cardId: string, descriptor: string) {
+    const playerIndex = this.getPlayerIndex(uuid);
+    if (this.gamePhase !== 'storyTellerPick' || playerIndex === -1 || !this.isStoryteller(uuid)) { 
+      return { card: undefined, playerIndex: -1, handIndex: -1, storyDescriptor: '', gamePhase: '' };
     }
-    this.players[this.playerTurn].playCard(card.id);
+    const {handIndex, card} = this.players[this.playerTurn].playCard(cardId);
     // adds playerId to the submitted object
     card.submitter = uuid;
     this.submittedCards.push(card);
     this.storyCardId = card.id;
     this.storyDescriptor = descriptor;
     this.lastModified = Date.now();
-    this.advanceGamePhase();
-    return true;
+    const gamePhase = this.advanceGamePhase();
+    return { ...{card, playerIndex, handIndex, gamePhase}, storyDescriptor: this.storyDescriptor, };
   }
    
   // submits other players cards
@@ -428,8 +430,12 @@ export class Player implements IPlayer {
     this.hand.push(...(await drawCards(size - this.hand.length)));
   }
   
+  // removes card from hand and returns the former index of the card
   playCard(cardId: string) {
+    const handIndex = this.hand.findIndex(card => card.id === cardId);
+    const card = this.hand[handIndex];
     this.hand = this.hand.filter(card => card.id !== cardId);
+    return { handIndex, card };
   }
 
   isCardInHand(cardId: string) {
