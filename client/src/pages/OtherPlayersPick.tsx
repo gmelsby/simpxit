@@ -60,7 +60,8 @@ export default function OtherPlayersPick({
   
   const handleSubmit = () => {
     if (selectedCard && socket !== null) {
-      socket.emit('submitOtherCard', {roomId, userId, selectedCard} );
+      const selectedCardId = selectedCard.id;
+      socket.emit('submitOtherCard', {roomId, userId, selectedCardId} );
     }
   };
 

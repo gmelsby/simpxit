@@ -215,6 +215,10 @@ export class Room implements IRoom {
       return { card: undefined, playerIndex: -1, handIndex: -1, storyDescriptor: '', gamePhase: '' };
     }
     const {handIndex, card} = this.players[this.playerTurn].playCard(cardId);
+    if (handIndex === -1 || card === undefined) {
+      return { card: undefined, playerIndex: -1, handIndex: -1, storyDescriptor: '', gamePhase: '' };
+    }
+
     // adds playerId to the submitted object
     card.submitter = uuid;
     this.submittedCards.push(card);
@@ -226,20 +230,28 @@ export class Room implements IRoom {
   }
    
   // submits other players cards
-  submitOtherCard(uuid: string, card: GameCard) {
-    if (!(this.isOtherCardSubmittable(uuid, card.id))) {
-      return false;
+  submitOtherCard(uuid: string, cardId: string) {
+    const playerIndex = this.getPlayerIndex(uuid);
+    if (!(this.isOtherCardSubmittable(uuid, cardId)) || playerIndex === -1) {
+      return { card: undefined, playerIndex: -1, handIndex: -1, gamePhase: undefined};
     }
+
+    const player = this.players[playerIndex];
+    const { handIndex, card } = player.playCard(cardId);
+    if (handIndex === -1 || card === undefined) {
+      return { card: undefined, playerIndex: -1, handIndex: -1, gamePhase: undefined};
+    }
+
+    let gamePhase: undefined | IGamePhase = undefined;
     // adds playerId to the submitted object
     card.submitter = uuid;
     this.submittedCards.push(card);
-    // remove card from player hand
-    this.players.find(p => p.playerId === uuid)?.playCard(card.id);
     if (this.submittedCards.length === this.expectedSubmitCount) {
       this.advanceGamePhase();
+      gamePhase = this.gamePhase;
     }
     this.lastModified = Date.now();
-    return true;
+    return { card, playerIndex, handIndex, gamePhase };
   }
 
   // returns number of cards expected to be submitted during a round
@@ -257,7 +269,7 @@ export class Room implements IRoom {
     }
 
     // check that card is in player's hand
-    if (!this.players.find(p => p.playerId === uuid)?.isCardInHand(cardId)) {
+    if (!this.getPlayer(uuid)?.isCardInHand(cardId)) {
       return false;
     }
 

@@ -225,7 +225,9 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     socket.on('submitStoryCard', request => {
       const { roomId, userId, selectedCardId, descriptor } = request;
       // check that user is able to submit card
-      if (!rooms[roomId]) return;
+      if (!rooms[roomId]) {
+        return;
+      }
       const { card, playerIndex, handIndex, storyDescriptor, gamePhase } = rooms[roomId].submitStoryCard(userId, selectedCardId, descriptor.trim()); 
       if (card === undefined || playerIndex === -1 || handIndex === -1) {
         console.log('unable to submit card');
@@ -262,16 +264,39 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     });
 
     socket.on('submitOtherCard', request => {
-      const { roomId, userId, selectedCard} = request;
+      const { roomId, userId, selectedCardId} = request;
+      if (!rooms[roomId]) {
+        return; 
+      }
       // check that user is able to submit other card
-      if (rooms[roomId] && rooms[roomId].submitOtherCard(userId, selectedCard)) {
-        console.log(`Other card ${selectedCard.id} submitted by ${userId}`);
-        io.to(roomId).emit('receiveRoomState', rooms[roomId]);
+      const { card, playerIndex, handIndex, gamePhase } = rooms[roomId].submitOtherCard(userId, selectedCardId);
+      if (card === undefined || playerIndex === -1 || handIndex === -1) {
+        console.log('could not submit other card');
+        return;
       }
-      
-      else {
-        console.log('unable to submit other card');
+      console.log(`Other card ${selectedCardId} submitted by ${userId}`);
+      const ops: JSONPatchOperation[] = [
+        {
+          'op': 'add',
+          'path': '/submittedCards/-',
+          'value': card
+        },
+        {
+          'op': 'remove',
+          'path': `/players/${playerIndex}/hand/${handIndex}`
+        },
+      ];
+
+      // only include gamePhase update if it is defined
+      if (gamePhase !== undefined) {
+        ops.push({
+          'op': 'replace',
+          'path': '/gamePhase',
+          'value': gamePhase
+        });
       }
+
+      io.to(roomId).emit('receiveRoomPatch', ops);
     });
     
     socket.on('guess', request => {

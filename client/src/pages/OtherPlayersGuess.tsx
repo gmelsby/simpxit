@@ -61,7 +61,8 @@ export default function OtherPlayersGuess({
   if (userId !== storyTeller.playerId) {
     const handleSubmit = () => {
       if (selectedCard && socket !== null) {
-        socket.emit('guess', {roomId, userId, selectedCard} );
+        const selectedCardId = selectedCard.id;
+        socket.emit('guess', {roomId, userId, selectedCardId} );
       }
     };
     
