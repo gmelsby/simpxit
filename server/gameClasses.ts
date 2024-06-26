@@ -201,10 +201,11 @@ export class Room implements IRoom {
 
   // draws cards
   async populateHands() {
+    const newCardsPerPlayer: {card: GameCard, handIndex: number}[][] = [];
     for (const player of this.players) {
-      await player.populateHand(this.handSize);
+      newCardsPerPlayer.push(await player.populateHand(this.handSize));
     }
-    return true;
+    return newCardsPerPlayer;
   }
 
    
@@ -298,7 +299,7 @@ export class Room implements IRoom {
       this.advanceGamePhase();
       scoringInfo = {
         gamePhase: this.gamePhase,
-        scoreList: this.players.map(p => p.score),
+        scoreList: this.players.map(p => [p.score, p.scoredThisRound]),
       };
       console.log('advancing game phase');
     }
@@ -361,16 +362,18 @@ export class Room implements IRoom {
    
   // ends the Scoring phase and starts a new Round if no victory
   endScoring(uuid: string) {
+    let gamePhase = undefined;
     if (!(this.isAbleToEndScoring(uuid))) {
-      return false;
+      return { successful: false, ...{ gamePhase }};
     }
     this.readyForNextRound.push(uuid);
     // if everyone is ready, advance to next round
     if (this.readyForNextRound.length === this.playerCount) {
       this.startNextRound();
+      gamePhase = this.gamePhase;
     }
     this.lastModified = Date.now();
-    return true;
+    return { successful: true, ...{gamePhase}};
   }
 
   // returns true if uuid is able to end the scoring phase, false if not
@@ -395,6 +398,7 @@ export class Room implements IRoom {
   startNextRound() {
     if (this.isGameWon()) {
       this.resetToLobby();
+      console.log('resetting to lobby');
       return;
     }
     // console.log("starting next round");
@@ -444,7 +448,10 @@ export class Player implements IPlayer {
   }
   
   async populateHand(size: number) {
-    this.hand.push(...(await drawCards(size - this.hand.length)));
+    const initialIndex = this.hand.length;
+    const newCards = await drawCards(size - initialIndex);
+    this.hand.push(...newCards);
+    return newCards.map((card, i) => {return {card: card, handIndex: initialIndex + i};});
   }
   
   // removes card from hand and returns the former index of the card

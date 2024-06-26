@@ -44,6 +44,4 @@ export interface Room {
   playerTurn: number;
   readyForNextRound: string[];
   lastModified: number;
-  playerCount?: number;
-  storyTeller?: Player;
 }

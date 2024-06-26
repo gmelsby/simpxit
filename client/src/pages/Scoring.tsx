@@ -43,7 +43,7 @@ export default function Scoring({
   };
 
   // list of players whose scores are higher than target score
-  const aboveThreshold = players.filter(p => p.score >= targetScore).sort((p1, p2) => p2.score - p1.score);
+  const aboveThreshold = players.filter(p => p.score >= targetScore).toSorted((p1, p2) => p2.score - p1.score);
   const winners = aboveThreshold.filter(p => p.score === aboveThreshold[0].score);
 
   const isReady = readyPlayers.includes(userId);

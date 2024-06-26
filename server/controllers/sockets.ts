@@ -192,8 +192,8 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         console.log('game started. populating hands...');
         // populate hands returns a promise
         rooms[roomId].populateHands() 
-          .then(bool => {
-            if (bool) {
+          .then(newCardsPerPlayer => {
+            if (newCardsPerPlayer) {
               console.log('hands populated');
               const ops: JSONPatchOperation[] = [];
               rooms[roomId].players.forEach((player, playerIdx) => {
@@ -320,17 +320,23 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         }
       ];
 
+      // add in scoringInfo information if exists, otherwise send patch without it
       if (scoringInfo) {
         ops.push({
           'op': 'replace',
           'path': '/gamePhase',
           'value': scoringInfo.gamePhase
         });
-        scoringInfo.scoreList.forEach((score, idx) => {
+        scoringInfo.scoreList.forEach(([score, scoredThisRound], idx) => {
           ops.push({
             'op': 'replace',
             'path': `/players/${idx}/score`,
             'value': score
+          });
+          ops.push({
+            'op': 'replace',
+            'path': `/players/${idx}/scoredThisRound`,
+            'value': scoredThisRound
           });
         });
       }
@@ -341,22 +347,52 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     socket.on('endScoring', request => {
       console.log('received end scoring request');
       const {roomId, userId} = request;
+      if (!rooms[roomId]) {
+        return;
+      }
+      const ops: JSONPatchOperation[] = [];
       // signal that user is ready to move on to next phase
-      if (rooms[roomId] && rooms[roomId].endScoring(userId)) {
+      const { successful, gamePhase } = rooms[roomId].endScoring(userId);
+      if (!successful) {
+        return;
+      }
+
+      // still waiting on other players
+      if (gamePhase === undefined) {
+        ops.push({
+          'op': 'add',
+          'path': '/readyForNextRound/-',
+          'value': userId,
+        });
+        io.to(roomId).emit('receiveRoomPatch', ops);
+        return;
+      }
+      // going into next round
+      else if (gamePhase === 'storyTellerPick') {
+        console.log('going into next round');
         rooms[roomId].populateHands()
-          .then(bool => {
-            if (bool) {
-              console.log('request accepted');
-              io.to(roomId).emit('receiveRoomState', rooms[roomId]);
-            }
-            else {
-              console.log('unable to end scoring');
+          .then(newCardsPerPlayer => {
+            if (newCardsPerPlayer) {
+              console.log('populated hands for next round');
+              newCardsPerPlayer.forEach((cardDetails, playerIndex) => {
+                cardDetails.forEach(element => {
+                  const {handIndex, card} = element;
+                  ops.push({
+                    'op': 'add',
+                    'path': `/players/${playerIndex}/hand/${handIndex}`,
+                    'value': card,
+                  });
+                });
+              });
+              io.to(roomId).emit('receiveRoomPatch', ops);
+              io.to(roomId).emit('resetRoundValues');
             }
           });
-        io.to(roomId).emit('receiveRoomState', rooms[roomId]);
       }
-    });  
-
+      else if (gamePhase === 'lobby') {
+        console.log('resetting to lobby');
+        io.to(roomId).emit('resetToLobby');
+      }
+    });
   });
-
 }

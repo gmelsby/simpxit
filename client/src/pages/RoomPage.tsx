@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { immutableJSONPatch } from 'immutable-json-patch';
+import { produce } from 'immer';
 import { useParams } from 'react-router-dom';
 import { Alert, Button, Spinner, Container } from 'react-bootstrap';
 import KickModal from '../components/KickModal';
@@ -38,7 +39,7 @@ export default function RoomPage({ userId }: {userId: string}) {
     storyCardId: '',
     guesses: {},
     readyForNextRound:  [],
-    lastModified: 0
+    lastModified: 0,
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [kickUserId, setKickUserId] = useState('');
@@ -62,16 +63,18 @@ export default function RoomPage({ userId }: {userId: string}) {
       setIsConnected(false);
     });
 
+    // general purpose receive all room data
     newSocket.on('receiveRoomState', data => {
       setRoomState(data);
     });
 
+    // general purpose modify room data with json patch
     newSocket.on('receiveRoomPatch', operations => {
-      setRoomState(room => {
+      setRoomState(produce(room => {
         // try and see if patch is valid
         try {
-          console.log(JSON.stringify(operations));
-          console.log(JSON.stringify(immutableJSONPatch(room, operations)));
+          // console.log(JSON.stringify(operations));
+          // console.log(JSON.stringify(immutableJSONPatch(room, operations)));
           return immutableJSONPatch(room, operations);
         } 
         // if not request whole room state
@@ -80,7 +83,45 @@ export default function RoomPage({ userId }: {userId: string}) {
           newSocket.emit('requestRoomState', {roomId, userId});
           return room;
         }
-      });
+      }));
+    });
+
+    // to be invoked when round is over
+    newSocket.on('resetRoundValues', () => {
+      // console.log('resetting round values');
+      setRoomState(produce(room => {
+        room.gamePhase = 'storyTellerPick';
+        room.playerTurn += 1;
+        room.playerTurn %= room.players.length;
+        room.readyForNextRound = [];
+        room.submittedCards = [];
+        room.guesses = {};
+        for (const player of room.players) {
+          player.scoredThisRound = 0;
+        }
+        // console.log(JSON.stringify(room));
+      }));
+    });
+
+    // to be invoked when game is won and players return to lobby
+    newSocket.on('resetToLobby', () => {
+      // console.log('resetting to lobby');
+      setRoomState(produce(room => {
+        room.players = [...room.players];
+        room.gamePhase = 'lobby';
+        room.storyCardId = '';
+        room.storyDescriptor = '';
+        room.submittedCards = [];
+        room.guesses = {};
+        room.playerTurn = 0;
+        room.readyForNextRound = [];
+        for (const p of room.players) {
+          p.score = 0;
+          p.scoredThisRound = 0;
+          p.hand = [];
+        }
+        // console.log(JSON.stringify(room));
+      }));
     });
    
     setSocket(newSocket);
