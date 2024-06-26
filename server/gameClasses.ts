@@ -289,16 +289,21 @@ export class Room implements IRoom {
    
   makeGuess(uuid: string, cardId: string) {
     if (!(this.canMakeGuess(uuid))) {
-      return false;
+      return { isSuccessful: false, scoringInfo: undefined };
     }
     this.guesses[uuid] = cardId;
+    let scoringInfo = undefined;
     if (Object.keys(this.guesses).length === this.playerCount - 1) {
       this.scoreRound();
       this.advanceGamePhase();
-      // console.log("advancing game phase")
+      scoringInfo = {
+        gamePhase: this.gamePhase,
+        scoreList: this.players.map(p => p.score),
+      };
+      console.log('advancing game phase');
     }
     this.lastModified = Date.now();
-    return true;
+    return { isSuccessful: true, ...{scoringInfo} };
   }
    
   // returns true if player can make a guess, false othewise

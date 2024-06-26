@@ -301,12 +301,41 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     
     socket.on('guess', request => {
       console.log('received guess');
-      const {roomId, userId, selectedCard} = request;
+      const {roomId, userId, selectedCardId} = request;
       // check that user is able to make guess
-      if (rooms[roomId] && rooms[roomId].makeGuess(userId, selectedCard.id)) {
-        console.log(`${userId} made guess`);
-        io.to(roomId).emit('receiveRoomState', rooms[roomId]);
+      if (!rooms[roomId]) {
+        console.log('room does not exist');
+        return;
       }
+      const {isSuccessful, scoringInfo} = rooms[roomId].makeGuess(userId, selectedCardId);
+      if (!isSuccessful) {
+        console.log('could not submit guess');
+      }
+      console.log(`${userId} made guess`);
+      const ops: JSONPatchOperation[] = [
+        {
+          'op': 'add',
+          'path': `/guesses/${userId}`,
+          'value': selectedCardId,
+        }
+      ];
+
+      if (scoringInfo) {
+        ops.push({
+          'op': 'replace',
+          'path': '/gamePhase',
+          'value': scoringInfo.gamePhase
+        });
+        scoringInfo.scoreList.forEach((score, idx) => {
+          ops.push({
+            'op': 'replace',
+            'path': `/players/${idx}/score`,
+            'value': score
+          });
+        });
+      }
+
+      io.to(roomId).emit('receiveRoomPatch', ops);
     });
     
     socket.on('endScoring', request => {
