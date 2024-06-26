@@ -75,7 +75,7 @@ export default function RoomPage({ userId }: {userId: string}) {
         } 
         // if not request whole room state
         catch {
-          console.log('Unable to gracefully update room state: falling back on full request');
+          console.error('Unable to gracefully update room state: falling back on full request');
           newSocket.emit('requestRoomState', {roomId, userId});
           return room;
         }

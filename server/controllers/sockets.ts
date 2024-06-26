@@ -1,3 +1,4 @@
+import { JSONPatchOperation } from 'immutable-json-patch';
 import { Room } from '../gameClasses.js';
 import { Server } from 'socket.io';
 
@@ -194,7 +195,20 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
           .then(bool => {
             if (bool) {
               console.log('hands populated');
-              io.to(roomId).emit('receiveRoomState', rooms[roomId]);
+              const ops: JSONPatchOperation[] = [];
+              rooms[roomId].players.forEach((player, playerIdx) => {
+                player.hand.forEach((card, cardIdx) => {
+                  ops.push(
+                    {
+                      'op': 'add',
+                      'path': `/players/${playerIdx}/hand/${cardIdx}`,
+                      'value': card,
+                    }
+                  );
+                });
+              });
+              
+              io.to(roomId).emit('receiveRoomPatch', ops);
             }
             else {
               console.log('unable to start game');
