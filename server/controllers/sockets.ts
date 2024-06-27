@@ -10,6 +10,11 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     socket.on('requestRoomState', (request, callback) => {
       const { roomId, userId } = request;
 
+      if (typeof roomId !== 'string' || typeof userId !== 'string') {
+        console.log('invalid request');
+        return;
+      }
+
       console.log(`request from user ${userId} for state of room ${roomId}`);
 
       // case where room does not exist
@@ -28,6 +33,12 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
 
     socket.on('joinRoom', (request, callback) => {
       const { roomId, userId } = request;
+      if (typeof roomId !== 'string' || typeof userId !== 'string') {
+        console.log('invalid request');
+        return;
+      }
+
+
       console.log(`attempt to join room: roomId: ${roomId}, userId: ${userId}`);
 
       // case where room does not exist
@@ -84,6 +95,12 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     
     socket.on('kickPlayer', request => {
       const { roomId, userId, kickUserId } = request;
+      if ([roomId, userId, kickUserId].some(val => typeof val !== 'string') ) {
+        console.log('invalid request');
+        return;
+      }
+
+
       // successful kick
       if (!rooms[roomId]) {
         return;
@@ -110,6 +127,12 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
 
     socket.on('leaveRoom', (request, callback) => {
       const { roomId, userId } = request;
+
+      if (typeof roomId !== 'string' || typeof userId !== 'string') {
+        console.log('invalid request');
+        return;
+      }
+
       console.log(`player ${userId} attempting to leave room ${roomId}`);
       // check for existence of room
       if (rooms[roomId] === undefined) {
@@ -134,6 +157,12 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     
     socket.on('changeName', request => {
       const { roomId, userId, newName } = request;
+
+      if ([roomId, userId, newName].some(val => typeof val !== 'string') ) {
+        console.log('invalid request');
+        return;
+      }
+
       const trimmedNewName = newName.trim();
       console.log(`player ${userId} attempting to change name to ${trimmedNewName}`);
       if (!rooms[roomId]) {
@@ -157,6 +186,13 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
 
     socket.on('changeOptions', request => {
       const { roomId, userId, newOptions } = request;
+
+      if (typeof roomId !== 'string' || typeof userId !== 'string' || typeof newOptions !== 'number') {
+        console.log('invalid request');
+        return;
+      }
+
+ 
       if (!rooms[roomId]) {
         return;
       }
@@ -186,6 +222,13 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     
     socket.on('startGame', request => {
       const { roomId, userId } = request;
+
+      if (typeof roomId !== 'string' || typeof userId !== 'string') {
+        console.log('invalid request');
+        return;
+      }
+
+
       console.log(`player ${userId} attempting to start game in room ${roomId}`);
       if (rooms[roomId] && rooms[roomId].startGame(userId)) {
         io.to(roomId).emit('receiveRoomState', rooms[roomId]);
@@ -224,6 +267,12 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     
     socket.on('submitStoryCard', request => {
       const { roomId, userId, selectedCardId, descriptor } = request;
+      
+      if ([roomId, userId, selectedCardId, descriptor].some(val => typeof val !== 'string') ) {
+        console.log('invalid request');
+        return;
+      }
+
       // check that user is able to submit card
       if (!rooms[roomId]) {
         return;
@@ -265,6 +314,12 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
 
     socket.on('submitOtherCard', request => {
       const { roomId, userId, selectedCardId} = request;
+
+      if ([roomId, userId, selectedCardId].some(val => typeof val !== 'string') ) {
+        console.log('invalid request');
+        return;
+      }
+
       if (!rooms[roomId]) {
         return; 
       }
@@ -300,13 +355,20 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     });
     
     socket.on('guess', request => {
-      console.log('received guess');
       const {roomId, userId, selectedCardId} = request;
-      // check that user is able to make guess
+
+      if ([roomId, userId, selectedCardId].some(val => typeof val !== 'string') ) {
+        console.log('invalid request');
+        return;
+      }
+
+      console.log('received guess');
       if (!rooms[roomId]) {
         console.log('room does not exist');
         return;
       }
+
+      // check that user is able to make guess
       const {isSuccessful, scoringInfo} = rooms[roomId].makeGuess(userId, selectedCardId);
       if (!isSuccessful) {
         console.log('could not submit guess');
@@ -347,6 +409,13 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
     socket.on('endScoring', request => {
       console.log('received end scoring request');
       const {roomId, userId} = request;
+
+      if (typeof roomId !== 'string' || typeof userId !== 'string') {
+        console.log('invalid request');
+        return;
+      }
+
+
       if (!rooms[roomId]) {
         return;
       }
@@ -390,7 +459,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
           });
       }
       else if (gamePhase === 'lobby') {
-        console.log('resetting to lobby');
+        console.log('reset to lobby');
         io.to(roomId).emit('resetToLobby');
       }
     });
