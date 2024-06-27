@@ -5,7 +5,7 @@ import { Player } from '../../../types';
 export default function PlayerList({ players, setKickUserId, userId, isAdmin, isScoreboard }:
   {players: Player[], setKickUserId?: (value: React.SetStateAction<string>) => void, userId: string, isAdmin?: boolean, isScoreboard?: boolean}) {
   // descending sort
-  const playerList = isScoreboard ? players.sort((p1, p2) => p2.score - p1.score) : players;
+  const playerList = isScoreboard ? players.toSorted((p1, p2) => p2.score - p1.score) : players;
   return (
     <Container>
       {playerList.map((player, idx) => <PlayerEntry player={player} 

@@ -17,6 +17,7 @@ export class Room implements IRoom {
   playerTurn: number;
   readyForNextRound: string[];
   lastModified: number;
+  updateCount: number;
 
   constructor(adminId: string) {
     this.players = [];
@@ -33,6 +34,7 @@ export class Room implements IRoom {
     this.readyForNextRound = [];
     this.lastModified = Date.now();
     this.addPlayer(adminId);
+    this.updateCount = 0;
   }
 
 
@@ -51,6 +53,12 @@ export class Room implements IRoom {
   // returns Player object of storyteller
   get storyTeller() {
     return this.players[this.playerTurn];
+  }
+
+  // increments updateCount and returns updated count
+  incrementUpdateCount() {
+    this.updateCount += 1;
+    return this.updateCount;
   }
   
   // returns true if the current player count is less than the max player count
@@ -74,22 +82,22 @@ export class Room implements IRoom {
   
   // adds a player with the passed-in id
   addPlayer(uuid: string) {
-    this.players.push(new Player(uuid, ''));
+    const newPlayer = new Player(uuid, '');
+    this.players.push(newPlayer);
     this.lastModified = Date.now();
+    return {...{newPlayer}, index: this.players.indexOf(newPlayer)};
   }
   
   // removes the player with the passed-in id
+  // returns -1 if player not found, otherwise returns player's index
   removePlayer(uuid: string) {
-    if (!(this.isCurrentPlayer(uuid))) {
-      return false;
+    const playerIndex = this.getPlayerIndex(uuid);
+    if (playerIndex < 0) {
+      return playerIndex;
     }
-    const initialPlayerCount = this.playerCount;
     this.players = this.players.filter(player => player.playerId !== uuid);
-    if (this.playerCount < initialPlayerCount) {
-      this.lastModified = Date.now();
-      return true;
-    }
-    return false;
+    this.lastModified = Date.now();
+    return playerIndex;
   }
    
   // returns true if the uuid is the admin, otherwise false
@@ -118,20 +126,24 @@ export class Room implements IRoom {
     }
     return this.players.find(player => player.playerId === uuid);
   }
+
+  // returns the index of the player with the specified id
+  // returns -1 if no match is found
+  getPlayerIndex(uuid: string) {
+    return this.players.findIndex(p => p.playerId === uuid);
+  }
    
   // removes player with kickId if adminId is admin
+  // returns the index of the kicked player if successful, otherwise returns undefined
   kickPlayer(adminId: string, kickId: string) {
-    // check that both players are current players
-    if (!(this.isCurrentPlayer(adminId)) || !(this.isCurrentPlayer(kickId))) {
-      return false;
+    // check that both players are current players and kicker is admin
+    if (!(this.isCurrentPlayer(kickId)) || !this.isAdmin(adminId)) {
+      return undefined;
     }
-    // check that player attempting to kick is admin
-    if (this.isAdmin(adminId)) {
-      this.kickedPlayers.push(kickId);
-      this.lastModified = Date.now();
-      return this.removePlayer(kickId);
-    }
-    return false;
+
+    this.kickedPlayers.push(kickId);
+    this.lastModified = Date.now();
+    return this.removePlayer(kickId);
   }
   
   // checks if player has been kicked from the game
@@ -139,21 +151,22 @@ export class Room implements IRoom {
     return this.kickedPlayers.includes(uuid);
   }
    
-  // returns true if name change is successful, false otherwise
+  // returns { changedName, playerIndex } if name change is successful
   changeName(uuid: string, newName: string) {
     // check that target player is a player
-    if (!(this.isCurrentPlayer(uuid)) || this.isNameInUse(newName) || newName.length === 0) {
-      return false;
+    const playerIndex = this.getPlayerIndex(uuid);
+    if (playerIndex === -1 || this.isNameInUse(newName) || newName.length === 0) {
+      return { changedName: '', playerIndex: -1};
     }
+
     
-    // renames player
     const player = this.getPlayer(uuid);
     if (player !== undefined) {
       player.playerName = newName;
       this.lastModified = Date.now();
-      return true;
     }
-    return false;
+    // send new name
+    return { changedName: player?.playerName, playerIndex};
   }
 
   // returns true if name is in use, false otherwise
@@ -161,25 +174,26 @@ export class Room implements IRoom {
     if(this.players.map(player => player.playerName.toLowerCase()).includes(newName.toLowerCase())) {
       return true;
     }
-
+    console.log('name is not in use');
     return false;
   }
 
-  // return true if options change is successful, false otherwise
+  // return new options if options change is successful, undefined otherwise
   changeOptions(uuid: string, newOptions: number) {
     // check that requesting player is admin
     if (!(this.isAdmin(uuid)) || newOptions < 5 || newOptions > 100) {
-      return false;
+      return undefined;
     }
     
     this.targetScore = newOptions;
     this.lastModified = Date.now();
-    return true;
+    return this.targetScore;
   }
 
   // game phase moves forward by one
   advanceGamePhase() {
     this.gamePhase = Room.gamePhaseDict[this.gamePhase];
+    return this.gamePhase;
   }
    
   // starts the game if gamePhase is lobby, 3 or more players are in, and requesting player is admin
@@ -195,44 +209,58 @@ export class Room implements IRoom {
 
   // draws cards
   async populateHands() {
+    const newCardsPerPlayer: {card: GameCard, handIndex: number}[][] = [];
     for (const player of this.players) {
-      await player.populateHand(this.handSize);
+      newCardsPerPlayer.push(await player.populateHand(this.handSize));
     }
-    return true;
+    return newCardsPerPlayer;
   }
 
    
   // submits the story card and descriptor hint
-  submitStoryCard(uuid: string, card: GameCard, descriptor: string) {
-    if (this.gamePhase !== 'storyTellerPick' || !this.isStoryteller(uuid)) { 
-      return false;
+  submitStoryCard(uuid: string, cardId: string, descriptor: string) {
+    const playerIndex = this.getPlayerIndex(uuid);
+    if (this.gamePhase !== 'storyTellerPick' || playerIndex === -1 || !this.isStoryteller(uuid)) { 
+      return { card: undefined, playerIndex: -1, handIndex: -1, storyDescriptor: '', gamePhase: '' };
     }
-    this.players[this.playerTurn].playCard(card.id);
+    const {handIndex, card} = this.players[this.playerTurn].playCard(cardId);
+    if (handIndex === -1 || card === undefined) {
+      return { card: undefined, playerIndex: -1, handIndex: -1, storyDescriptor: '', gamePhase: '' };
+    }
+
     // adds playerId to the submitted object
     card.submitter = uuid;
     this.submittedCards.push(card);
     this.storyCardId = card.id;
     this.storyDescriptor = descriptor;
     this.lastModified = Date.now();
-    this.advanceGamePhase();
-    return true;
+    const gamePhase = this.advanceGamePhase();
+    return { ...{card, playerIndex, handIndex, gamePhase}, storyDescriptor: this.storyDescriptor, };
   }
    
   // submits other players cards
-  submitOtherCard(uuid: string, card: GameCard) {
-    if (!(this.isOtherCardSubmittable(uuid, card.id))) {
-      return false;
+  submitOtherCard(uuid: string, cardId: string) {
+    const playerIndex = this.getPlayerIndex(uuid);
+    if (!(this.isOtherCardSubmittable(uuid, cardId)) || playerIndex === -1) {
+      return { card: undefined, playerIndex: -1, handIndex: -1, gamePhase: undefined};
     }
+
+    const player = this.players[playerIndex];
+    const { handIndex, card } = player.playCard(cardId);
+    if (handIndex === -1 || card === undefined) {
+      return { card: undefined, playerIndex: -1, handIndex: -1, gamePhase: undefined};
+    }
+
+    let gamePhase: undefined | IGamePhase = undefined;
     // adds playerId to the submitted object
     card.submitter = uuid;
     this.submittedCards.push(card);
-    // remove card from player hand
-    this.players.find(p => p.playerId === uuid)?.playCard(card.id);
     if (this.submittedCards.length === this.expectedSubmitCount) {
       this.advanceGamePhase();
+      gamePhase = this.gamePhase;
     }
     this.lastModified = Date.now();
-    return true;
+    return { card, playerIndex, handIndex, gamePhase };
   }
 
   // returns number of cards expected to be submitted during a round
@@ -250,7 +278,7 @@ export class Room implements IRoom {
     }
 
     // check that card is in player's hand
-    if (!this.players.find(p => p.playerId === uuid)?.isCardInHand(cardId)) {
+    if (!this.getPlayer(uuid)?.isCardInHand(cardId)) {
       return false;
     }
 
@@ -270,16 +298,21 @@ export class Room implements IRoom {
    
   makeGuess(uuid: string, cardId: string) {
     if (!(this.canMakeGuess(uuid))) {
-      return false;
+      return { isSuccessful: false, scoringInfo: undefined };
     }
     this.guesses[uuid] = cardId;
+    let scoringInfo = undefined;
     if (Object.keys(this.guesses).length === this.playerCount - 1) {
       this.scoreRound();
       this.advanceGamePhase();
-      // console.log("advancing game phase")
+      scoringInfo = {
+        gamePhase: this.gamePhase,
+        scoreList: this.players.map(p => [p.score, p.scoredThisRound]),
+      };
+      console.log('advancing game phase');
     }
     this.lastModified = Date.now();
-    return true;
+    return { isSuccessful: true, ...{scoringInfo} };
   }
    
   // returns true if player can make a guess, false othewise
@@ -337,16 +370,18 @@ export class Room implements IRoom {
    
   // ends the Scoring phase and starts a new Round if no victory
   endScoring(uuid: string) {
+    let gamePhase = undefined;
     if (!(this.isAbleToEndScoring(uuid))) {
-      return false;
+      return { successful: false, ...{ gamePhase }};
     }
     this.readyForNextRound.push(uuid);
     // if everyone is ready, advance to next round
     if (this.readyForNextRound.length === this.playerCount) {
       this.startNextRound();
+      gamePhase = this.gamePhase;
     }
     this.lastModified = Date.now();
-    return true;
+    return { successful: true, ...{gamePhase}};
   }
 
   // returns true if uuid is able to end the scoring phase, false if not
@@ -371,6 +406,7 @@ export class Room implements IRoom {
   startNextRound() {
     if (this.isGameWon()) {
       this.resetToLobby();
+      console.log('resetting to lobby');
       return;
     }
     // console.log("starting next round");
@@ -420,11 +456,18 @@ export class Player implements IPlayer {
   }
   
   async populateHand(size: number) {
-    this.hand.push(...(await drawCards(size - this.hand.length)));
+    const initialIndex = this.hand.length;
+    const newCards = await drawCards(size - initialIndex);
+    this.hand.push(...newCards);
+    return newCards.map((card, i) => {return {card: card, handIndex: initialIndex + i};});
   }
   
+  // removes card from hand and returns the former index of the card
   playCard(cardId: string) {
+    const handIndex = this.hand.findIndex(card => card.id === cardId);
+    const card = this.hand[handIndex];
     this.hand = this.hand.filter(card => card.id !== cardId);
+    return { handIndex, card };
   }
 
   isCardInHand(cardId: string) {

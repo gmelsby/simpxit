@@ -73,10 +73,19 @@ function NameForm({ players, roomId, userId, socket }:
 
   const handleNameChange = useCallback((e: MouseEvent | React.SyntheticEvent) => {
     e.preventDefault();
-    setIsEditingName(false);
-    if (newName === currentName) {
+    // check if player has not changed name
+    if (currentName === newName) {
+      setIsEditingName(false);
       return;
     }
+
+    //check if another player already has that name
+    if (players.some(p => p.playerName === newName)) {
+      return;
+    }
+
+    setIsEditingName(false);
+
     if (socket !== null) {
       socket.emit('changeName', { roomId, userId, newName });
     }
@@ -84,15 +93,20 @@ function NameForm({ players, roomId, userId, socket }:
 
   // if current name is empty '' automatically goes into editing name mode
   useEffect(() => {
-    if (currentName === '' && newName === '') {
+    if (currentName === '') {
       setIsEditingName(true);
     }
   }, [currentName, setIsEditingName]);
 
   // updates name if updated elsewhere
   useEffect(() => {
-    if (currentName !== undefined) setNewName(currentName);
-  }, [setNewName, currentName]);
+    if (currentName === undefined || currentName === '') return;
+    setNewName(currentName);
+    if (nameFormRef.current) {
+      nameFormRef.current.blur();
+    }
+
+  }, [setNewName, currentName, nameFormRef.current]);
 
   // automatically selects text box
   useEffect(() => {

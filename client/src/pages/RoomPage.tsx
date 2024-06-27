@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { immutableJSONPatch } from 'immutable-json-patch';
+import { produce } from 'immer';
 import { useParams } from 'react-router-dom';
 import { Alert, Button, Spinner, Container } from 'react-bootstrap';
 import KickModal from '../components/KickModal';
@@ -10,7 +12,7 @@ import OtherPlayersPick from './OtherPlayersPick';
 import OtherPlayersGuess from './OtherPlayersGuess';
 import Scoring from './Scoring';
 import { io } from 'socket.io-client';
-import { Room } from '../../../types';
+import { ClientToServerEvents, Room, ServerToClientEvents } from '../../../types';
 import { Socket } from 'socket.io-client'; 
 import Sidebar from '../components/Sidebar';
 
@@ -37,7 +39,8 @@ export default function RoomPage({ userId }: {userId: string}) {
     storyCardId: '',
     guesses: {},
     readyForNextRound:  [],
-    lastModified: 0
+    lastModified: 0,
+    updateCount: 0,
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [kickUserId, setKickUserId] = useState('');
@@ -49,9 +52,9 @@ export default function RoomPage({ userId }: {userId: string}) {
       return;
     }
 
-    const newSocket = io('/', {
-    });
-
+    const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io('/', {});
+    // closure to keep track of update count / let socket know if it has missed an update
+    let socketUpdateCount = 0;
 
     newSocket.on('connect', () => {
       setIsConnected(true);
@@ -61,8 +64,77 @@ export default function RoomPage({ userId }: {userId: string}) {
       setIsConnected(false);
     });
 
-    newSocket.on('receiveRoomState', data => {
-      setRoomState(data);
+    // general purpose receive all room data
+    newSocket.on('receiveRoomState', room => {
+      socketUpdateCount = room.updateCount;
+      setRoomState(room);
+    });
+
+    // general purpose modify room data with json patch
+    newSocket.on('receiveRoomPatch', ({operations, updateCount}) => {
+      // if an update has been skipped
+      if (updateCount !== socketUpdateCount + 1) {
+        console.error('Unable to gracefully update room state: falling back on full request');
+        if (roomId !== undefined) {
+          newSocket.emit('requestRoomState', {roomId, userId});
+        }
+        return;
+      }
+      setRoomState(produce(room => {
+        // try and see if patch is valid
+        try {
+          const newRoomState: Room = immutableJSONPatch(room, operations);
+          newRoomState.updateCount = updateCount;
+          socketUpdateCount = updateCount;
+          return newRoomState;
+        } 
+        // if not request whole room state
+        catch {
+          console.error('Unable to gracefully update room state: falling back on full request');
+          if (roomId !== undefined) {
+            newSocket.emit('requestRoomState', {roomId, userId});
+          }
+          return room;
+        }
+      }));
+    });
+
+    // to be invoked when round is over
+    newSocket.on('resetRoundValues', () => {
+      // console.log('resetting round values');
+      setRoomState(produce(room => {
+        room.gamePhase = 'storyTellerPick';
+        room.playerTurn += 1;
+        room.playerTurn %= room.players.length;
+        room.readyForNextRound = [];
+        room.submittedCards = [];
+        room.guesses = {};
+        for (const player of room.players) {
+          player.scoredThisRound = 0;
+        }
+        // console.log(JSON.stringify(room));
+      }));
+    });
+
+    // to be invoked when game is won and players return to lobby
+    newSocket.on('resetToLobby', () => {
+      // console.log('resetting to lobby');
+      setRoomState(produce(room => {
+        room.players = [...room.players];
+        room.gamePhase = 'lobby';
+        room.storyCardId = '';
+        room.storyDescriptor = '';
+        room.submittedCards = [];
+        room.guesses = {};
+        room.playerTurn = 0;
+        room.readyForNextRound = [];
+        for (const p of room.players) {
+          p.score = 0;
+          p.scoredThisRound = 0;
+          p.hand = [];
+        }
+        // console.log(JSON.stringify(room));
+      }));
     });
    
     setSocket(newSocket);
@@ -71,7 +143,7 @@ export default function RoomPage({ userId }: {userId: string}) {
       newSocket.close();
     };
 
-  }, [userId, roomId]);
+  }, [userId, roomId, setRoomState, setSocket]);
 
   // queries for up-to-date room info
   useEffect(() => {
