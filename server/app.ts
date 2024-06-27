@@ -9,7 +9,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import path from 'node:path';
 import { retrieveCardInfo } from './models/cardModel.js';
-import { GameCard } from '../types.js';
+import { GameCard, ClientToServerEvents, ServerToClientEvents } from '../types.js';
 
 
 const PORT = process.env.PORT || 3000;
@@ -31,7 +31,7 @@ app.use(cors());
 app.use(express.static(path.resolve(path.dirname(''), './client/dist')));
 
 const server = createServer(app);
-const io = new Server(server, {
+const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
   pingTimeout:5000,
   pingInterval:6000,
 }

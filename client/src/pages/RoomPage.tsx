@@ -12,7 +12,7 @@ import OtherPlayersPick from './OtherPlayersPick';
 import OtherPlayersGuess from './OtherPlayersGuess';
 import Scoring from './Scoring';
 import { io } from 'socket.io-client';
-import { Room } from '../../../types';
+import { ClientToServerEvents, Room, ServerToClientEvents } from '../../../types';
 import { Socket } from 'socket.io-client'; 
 import Sidebar from '../components/Sidebar';
 
@@ -40,6 +40,7 @@ export default function RoomPage({ userId }: {userId: string}) {
     guesses: {},
     readyForNextRound:  [],
     lastModified: 0,
+    updateCount: 0,
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [kickUserId, setKickUserId] = useState('');
@@ -51,9 +52,9 @@ export default function RoomPage({ userId }: {userId: string}) {
       return;
     }
 
-    const newSocket = io('/', {
-    });
-
+    const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io('/', {});
+    // closure to keep track of update count / let socket know if it has missed an update
+    let socketUpdateCount = 0;
 
     newSocket.on('connect', () => {
       setIsConnected(true);
@@ -64,23 +65,35 @@ export default function RoomPage({ userId }: {userId: string}) {
     });
 
     // general purpose receive all room data
-    newSocket.on('receiveRoomState', data => {
-      setRoomState(data);
+    newSocket.on('receiveRoomState', room => {
+      socketUpdateCount = room.updateCount;
+      setRoomState(room);
     });
 
     // general purpose modify room data with json patch
-    newSocket.on('receiveRoomPatch', operations => {
+    newSocket.on('receiveRoomPatch', ({operations, updateCount}) => {
+      // if an update has been skipped
+      if (updateCount !== socketUpdateCount + 1) {
+        console.error('Unable to gracefully update room state: falling back on full request');
+        if (roomId !== undefined) {
+          newSocket.emit('requestRoomState', {roomId, userId});
+        }
+        return;
+      }
       setRoomState(produce(room => {
         // try and see if patch is valid
         try {
-          // console.log(JSON.stringify(operations));
-          // console.log(JSON.stringify(immutableJSONPatch(room, operations)));
-          return immutableJSONPatch(room, operations);
+          const newRoomState: Room = immutableJSONPatch(room, operations);
+          newRoomState.updateCount = updateCount;
+          socketUpdateCount = updateCount;
+          return newRoomState;
         } 
         // if not request whole room state
         catch {
           console.error('Unable to gracefully update room state: falling back on full request');
-          newSocket.emit('requestRoomState', {roomId, userId});
+          if (roomId !== undefined) {
+            newSocket.emit('requestRoomState', {roomId, userId});
+          }
           return room;
         }
       }));

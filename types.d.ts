@@ -54,11 +54,11 @@ export interface ServerToClientEvents {
   receiveRoomState: (room: Room) => void;
   receiveRoomPatch: ({operations, updateCount}: {operations: JSONPatchOperation[], updateCount: number}) => void;
   resetRoundValues: (updateCount: number) => void;
-  resetRoundValues: (updateCount: number) => void;
+  resetToLobby: (updateCount: number) => void;
 }
 
 export interface ClientToServerEvents {
-  requestRoomState: ({roomId, userId}: {roomId: string, userId: string}, callback: (e: string) => void) => void;
+  requestRoomState: ({roomId, userId}: {roomId: string, userId: string}) => void;
   joinRoom: ({roomId, userId}: {roomId: string, userId: string}, callback: (e: string) => void) => void;
   kickPlayer: ({roomId, userId, kickUserId}: {roomId: string, userId: string, kickUserId: string}) => void;
   leaveRoom: ({roomId, userId}: {roomId: string, userId: string}, callback: (e: string) => void) => void;

@@ -17,6 +17,7 @@ export class Room implements IRoom {
   playerTurn: number;
   readyForNextRound: string[];
   lastModified: number;
+  updateCount: number;
 
   constructor(adminId: string) {
     this.players = [];
@@ -33,6 +34,7 @@ export class Room implements IRoom {
     this.readyForNextRound = [];
     this.lastModified = Date.now();
     this.addPlayer(adminId);
+    this.updateCount = 0;
   }
 
 
@@ -51,6 +53,12 @@ export class Room implements IRoom {
   // returns Player object of storyteller
   get storyTeller() {
     return this.players[this.playerTurn];
+  }
+
+  // increments updateCount and returns updated count
+  incrementUpdateCount() {
+    this.updateCount += 1;
+    return this.updateCount;
   }
   
   // returns true if the current player count is less than the max player count

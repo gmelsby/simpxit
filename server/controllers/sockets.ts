@@ -1,13 +1,14 @@
 import { JSONPatchOperation } from 'immutable-json-patch';
 import { Room } from '../gameClasses.js';
 import { Server } from 'socket.io';
+import { ClientToServerEvents, ServerToClientEvents } from '../../types.js';
 
-export default function socketHandler(io: Server, rooms: {[key: string]: Room}) {
+export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>, rooms: {[key: string]: Room}) {
   io.on('connection', socket => {
     console.log(`connection made: ${socket.id}`);
 
     // when client realizes something is wrong and needs to get the full room state
-    socket.on('requestRoomState', (request, callback) => {
+    socket.on('requestRoomState', (request) => {
       const { roomId, userId } = request;
 
       if (typeof roomId !== 'string' || typeof userId !== 'string') {
@@ -20,12 +21,12 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       // case where room does not exist
       if (!(roomId in rooms)) {
         console.log('room does not exist');
-        return callback('Room not found');
+        return;
       }
 
       if(!rooms[roomId].isCurrentPlayer(userId)) {
         console.log(`user ${userId} is not a current member of room ${roomId}`);
-        return callback('Something went wrong. Please try joining the room again.');
+        return;
       }
 
       io.to(socket.id).emit('receiveRoomState', rooms[roomId]);
@@ -73,24 +74,28 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       console.log(`adding ${userId} to player list`);
       const {newPlayer, index} = rooms[roomId].addPlayer(userId);
 
+      // record that we have updated the room
+      const updateCount = rooms[roomId].incrementUpdateCount();
+
       // send joining player entire room state
       io.to(socket.id).emit('receiveRoomState', rooms[roomId]);
       // send players already in room a patch with new player
-      io.to(roomId).emit('receiveRoomPatch', [
-        {
-          'op': 'add',
-          'path': `/players/${index}`,
-          'value': newPlayer,
-        }
-      ]);
+      io.to(roomId).emit('receiveRoomPatch', {
+        operations: [
+          {
+            'op': 'add',
+            'path': `/players/${index}`,
+            'value': newPlayer,
+          }
+        ],
+        updateCount: updateCount
+      });
 
       // add new player to room socket
       socket.join(roomId);
       
       console.log(`playerId ${userId} has joined room ${roomId}`);
       console.log(`player list = ${JSON.stringify(rooms[roomId].players)}`);
-
-      callback();
     });
     
     socket.on('kickPlayer', request => {
@@ -108,17 +113,21 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       const kickedPlayerIndex = rooms[roomId].kickPlayer(userId, kickUserId);
       if (kickedPlayerIndex !== -1) {
         console.log(`kicked player ${kickUserId}`);
-        io.to(roomId).emit('receiveRoomPatch', [
-          {
-            'op': 'add',
-            'path': '/kickedPlayers/-',
-            'value': `${kickUserId}`,
-          },
-          {
-            'op': 'remove',
-            'path': `/players/${kickedPlayerIndex}`
-          },
-        ]);
+        const updateCount = rooms[roomId].incrementUpdateCount();
+        io.to(roomId).emit('receiveRoomPatch', {
+          operations: [
+            {
+              'op': 'add',
+              'path': '/kickedPlayers/-',
+              'value': `${kickUserId}`,
+            },
+            {
+              'op': 'remove',
+              'path': `/players/${kickedPlayerIndex}`
+            },
+          ],
+          updateCount: updateCount
+        });
       }
       else {
         console.log(`could not kick player ${kickUserId}`);
@@ -143,12 +152,15 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       // successful exit
       if (playerIndex !== -1) {
         console.log('player removed successfully');
-        io.to(roomId).emit('receiveRoomPatch', [
-          {
-            'op': 'remove',
-            'path': `/players/${playerIndex}`
-          }
-        ]);
+        io.to(roomId).emit('receiveRoomPatch', {
+          operations: [
+            {
+              'op': 'remove',
+              'path': `/players/${playerIndex}`
+            }
+          ],
+          updateCount: rooms[roomId].incrementUpdateCount()
+        });
       }
       else {
         console.log('unable to remove player');
@@ -175,13 +187,16 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         console.log(`player ${userId} could not succesfully change name`);
         return;
       }
-      io.to(roomId).emit('receiveRoomPatch', [
-        {
-          'op': 'replace',
-          'path': `/players/${playerIndex}/playerName`,
-          'value': changedName,
-        }
-      ]);
+      io.to(roomId).emit('receiveRoomPatch', {
+        operations: [
+          {
+            'op': 'replace',
+            'path': `/players/${playerIndex}/playerName`,
+            'value': changedName,
+          }
+        ],
+        updateCount: rooms[roomId].incrementUpdateCount()
+      });
     });
 
     socket.on('changeOptions', request => {
@@ -192,10 +207,6 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         return;
       }
 
- 
-      if (!rooms[roomId]) {
-        return;
-      }
       console.log(`player ${userId} attempting to change options to ${newOptions}`);
 
       if (!rooms[roomId]) {
@@ -210,14 +221,17 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       }
 
       console.log('options changed');
-      io.to(roomId).emit('receiveRoomPatch', [
-        {
-          'op': 'replace',
-          'path': '/targetScore',
-          'value': changedOptions,
-        }
-      ]);
-
+      io.to(roomId).emit('receiveRoomPatch', {
+        operations: 
+        [
+          {
+            'op': 'replace',
+            'path': '/targetScore',
+            'value': changedOptions,
+          }
+        ],
+        updateCount: rooms[roomId].incrementUpdateCount()
+      });
     });
     
     socket.on('startGame', request => {
@@ -238,10 +252,10 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
           .then(newCardsPerPlayer => {
             if (newCardsPerPlayer) {
               console.log('hands populated');
-              const ops: JSONPatchOperation[] = [];
+              const operations: JSONPatchOperation[] = [];
               rooms[roomId].players.forEach((player, playerIdx) => {
                 player.hand.forEach((card, cardIdx) => {
-                  ops.push(
+                  operations.push(
                     {
                       'op': 'add',
                       'path': `/players/${playerIdx}/hand/${cardIdx}`,
@@ -251,7 +265,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
                 });
               });
               
-              io.to(roomId).emit('receiveRoomPatch', ops);
+              io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: rooms[roomId].incrementUpdateCount()});
             }
             else {
               console.log('unable to start game');
@@ -284,32 +298,35 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       }
 
       console.log(`Story card ${selectedCardId} submitted by ${userId}`);
-      io.to(roomId).emit('receiveRoomPatch', [
-        {
-          'op': 'replace',
-          'path': '/storyCardId',
-          'value': card.id
-        },
-        {
-          'op': 'add',
-          'path': '/submittedCards/-',
-          'value': card
-        },
-        {
-          'op': 'replace',
-          'path': '/storyDescriptor',
-          'value': storyDescriptor
-        },
-        {
-          'op': 'replace',
-          'path': '/gamePhase',
-          'value': gamePhase
-        },
-        {
-          'op': 'remove',
-          'path': `/players/${playerIndex}/hand/${handIndex}`
-        }
-      ]);
+      io.to(roomId).emit('receiveRoomPatch', {
+        operations: [
+          {
+            'op': 'replace',
+            'path': '/storyCardId',
+            'value': card.id
+          },
+          {
+            'op': 'add',
+            'path': '/submittedCards/-',
+            'value': card
+          },
+          {
+            'op': 'replace',
+            'path': '/storyDescriptor',
+            'value': storyDescriptor
+          },
+          {
+            'op': 'replace',
+            'path': '/gamePhase',
+            'value': gamePhase
+          },
+          {
+            'op': 'remove',
+            'path': `/players/${playerIndex}/hand/${handIndex}`
+          }
+        ],
+        updateCount: rooms[roomId].incrementUpdateCount()
+      });
     });
 
     socket.on('submitOtherCard', request => {
@@ -330,7 +347,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         return;
       }
       console.log(`Other card ${selectedCardId} submitted by ${userId}`);
-      const ops: JSONPatchOperation[] = [
+      const operations: JSONPatchOperation[] = [
         {
           'op': 'add',
           'path': '/submittedCards/-',
@@ -344,14 +361,14 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
 
       // only include gamePhase update if it is defined
       if (gamePhase !== undefined) {
-        ops.push({
+        operations.push({
           'op': 'replace',
           'path': '/gamePhase',
           'value': gamePhase
         });
       }
 
-      io.to(roomId).emit('receiveRoomPatch', ops);
+      io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: rooms[roomId].incrementUpdateCount()});
     });
     
     socket.on('guess', request => {
@@ -374,7 +391,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         console.log('could not submit guess');
       }
       console.log(`${userId} made guess`);
-      const ops: JSONPatchOperation[] = [
+      const operations: JSONPatchOperation[] = [
         {
           'op': 'add',
           'path': `/guesses/${userId}`,
@@ -384,18 +401,18 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
 
       // add in scoringInfo information if exists, otherwise send patch without it
       if (scoringInfo) {
-        ops.push({
+        operations.push({
           'op': 'replace',
           'path': '/gamePhase',
           'value': scoringInfo.gamePhase
         });
         scoringInfo.scoreList.forEach(([score, scoredThisRound], idx) => {
-          ops.push({
+          operations.push({
             'op': 'replace',
             'path': `/players/${idx}/score`,
             'value': score
           });
-          ops.push({
+          operations.push({
             'op': 'replace',
             'path': `/players/${idx}/scoredThisRound`,
             'value': scoredThisRound
@@ -403,7 +420,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
         });
       }
 
-      io.to(roomId).emit('receiveRoomPatch', ops);
+      io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: rooms[roomId].incrementUpdateCount()});
     });
     
     socket.on('endScoring', request => {
@@ -419,7 +436,7 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
       if (!rooms[roomId]) {
         return;
       }
-      const ops: JSONPatchOperation[] = [];
+      const operations: JSONPatchOperation[] = [];
       // signal that user is ready to move on to next phase
       const { successful, gamePhase } = rooms[roomId].endScoring(userId);
       if (!successful) {
@@ -428,12 +445,12 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
 
       // still waiting on other players
       if (gamePhase === undefined) {
-        ops.push({
+        operations.push({
           'op': 'add',
           'path': '/readyForNextRound/-',
           'value': userId,
         });
-        io.to(roomId).emit('receiveRoomPatch', ops);
+        io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: rooms[roomId].incrementUpdateCount()});
         return;
       }
       // going into next round
@@ -446,21 +463,21 @@ export default function socketHandler(io: Server, rooms: {[key: string]: Room}) 
               newCardsPerPlayer.forEach((cardDetails, playerIndex) => {
                 cardDetails.forEach(element => {
                   const {handIndex, card} = element;
-                  ops.push({
+                  operations.push({
                     'op': 'add',
                     'path': `/players/${playerIndex}/hand/${handIndex}`,
                     'value': card,
                   });
                 });
               });
-              io.to(roomId).emit('receiveRoomPatch', ops);
-              io.to(roomId).emit('resetRoundValues');
+              io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: rooms[roomId].incrementUpdateCount()});
+              io.to(roomId).emit('resetRoundValues', rooms[roomId].incrementUpdateCount());
             }
           });
       }
       else if (gamePhase === 'lobby') {
         console.log('reset to lobby');
-        io.to(roomId).emit('resetToLobby');
+        io.to(roomId).emit('resetToLobby', rooms[roomId].incrementUpdateCount());
       }
     });
   });
