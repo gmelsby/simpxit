@@ -19,6 +19,7 @@ export async function drawCards(count: number): Promise<GameCard[]>  {
   });
 }
 
+// retrieves the card with passed in id if exists, oterwise returns null
 export async function retrieveCardInfo(cardId: bigint): Promise<GameCard | null> {
   const result = await prisma.card.findFirst({
     where: {
