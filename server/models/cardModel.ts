@@ -15,14 +15,16 @@ export async function drawCards(count: number, currentCardIds: string[]): Promis
         WHERE id IN (${Prisma.join(currentCardIds.map(cardId => parseInt(cardId)))})
       )
       ORDER BY episode_id, random()
-      LIMIT ${count};
+      LIMIT ${count}
+      OFFSET floor(random() * ((SELECT COUNT(DISTINCT episode_id) FROM "Card") - ${currentCardIds.length} - ${count} + 1))::int;
     ` 
     :
     // case where therer are no currentCardIds to worry about
     await prisma.$queryRaw<{id: bigint, locator: string}[]>`
       SELECT DISTINCT ON (episode_id) id, locator FROM "Card"
       ORDER BY episode_id, random()
-      LIMIT ${count};
+      LIMIT ${count}
+      OFFSET floor(random() * ((SELECT COUNT(DISTINCT episode_id) FROM "Card") - ${count} + 1))::int;
     `;
 
   return newCards.map(card => {
