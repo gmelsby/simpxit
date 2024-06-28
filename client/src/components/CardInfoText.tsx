@@ -37,6 +37,14 @@ export default function CardInfoText({ cardInfo }: { cardInfo: CardInfo | undefi
       <p><b>Writer:</b> {cardInfo.writer}</p>
       <p><b>Director:</b> {cardInfo.director}</p>
       <p><b>Air Date:</b> {cardInfo.airdate}</p>
+      {cardInfo.frinkiacLink !== null && 
+        <p>
+          <a href={cardInfo.frinkiacLink}
+            target="_blank" rel="noopener noreferrer">
+            View on Frinkiac
+          </a>
+        </p>
+      }
     </>
   );
 }

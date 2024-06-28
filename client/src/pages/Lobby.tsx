@@ -141,7 +141,7 @@ function NameForm({ players, roomId, userId, socket }:
         <Form onSubmit={handleNameChange} className="text-center justify-content-center">
           <Row className='justify-content-center'>
             <Col xs="auto">
-              <h5 className='mx-0'>Your Name: </h5>
+              <h5 className='mx-0'>{currentName == '' && 'Enter '}Your Name: </h5>
             </Col>
             <Col xs="auto">
               <Form.Control className="px-1 mx-0" type="text" required name="new-name"
