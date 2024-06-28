@@ -210,8 +210,11 @@ export class Room implements IRoom {
   // draws cards
   async populateHands() {
     const cardsNeededPerPlayer = this.players.map(p => this.handSize - p.hand.length);
+    const totalCardsNeeded =  cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0);
+    const currentCardIds = this.players.map(p => p.hand.map(c => c.id)).flat();
+    console.log(`currentCardIds: ${JSON.stringify(currentCardIds)}`);
     // get total number of cards needed in one database call
-    const newCards = await drawCards(cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0));
+    const newCards = await drawCards(totalCardsNeeded, currentCardIds);
     console.log(`${cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0)} cards needed, ${newCards.length} cards drawn`);
     const newCardsPerPlayer: {card: GameCard, handIndex: number}[][] = [];
     for (const player of this.players) {
@@ -222,7 +225,7 @@ export class Room implements IRoom {
           player.hand.push(card);
           newCardsForCurrentPlayer.push({card, handIndex});
         } else {
-          console.log('something went wrong - not enough cards drawn');
+          console.error('something went wrong - not enough cards drawn');
         }
       }
       newCardsPerPlayer.push(newCardsForCurrentPlayer);

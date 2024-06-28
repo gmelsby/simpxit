@@ -30,6 +30,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         return;
       }
 
+      console.log(`socketid ${socket.id} requested room state: sending room data`);
       io.to(socket.id).emit('receiveRoomState', room);
     });
 

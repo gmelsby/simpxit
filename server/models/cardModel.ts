@@ -1,16 +1,17 @@
 import { PrismaClient } from '@prisma/client';
 import { GameCard } from '../../types';
-import prismaRandom from 'prisma-extension-random';
 
-const prisma = new PrismaClient().$extends(prismaRandom());
+const prisma = new PrismaClient();
 const imageBucketUrl = process.env.IMAGE_BUCKET;
 
-export async function drawCards(count: number): Promise<GameCard[]>  {
-  const newCards: {id: bigint, locator: string}[] = await prisma.card.findManyRandom(count,
-    {
-      select: { id: true, locator: true}
-    }
-  );
+export async function drawCards(count: number, currentCardIds: string[]): Promise<GameCard[]>  {
+  const newCards = await prisma.$queryRaw<{id: bigint, locator: string}[]>`
+    SELECT id, locator FROM "Card"
+    ORDER BY random()
+    LIMIT ${count};
+  `;
+  console.log(currentCardIds);
+
   return newCards.map(card => {
     return {
       id: card.id.toString(),
