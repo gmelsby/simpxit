@@ -209,9 +209,26 @@ export class Room implements IRoom {
 
   // draws cards
   async populateHands() {
+    const cardsNeededPerPlayer = this.players.map(p => this.handSize - p.hand.length);
+    const totalCardsNeeded =  cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0);
+    const currentCardIds = this.players.map(p => p.hand.map(c => c.id)).flat();
+    console.log(`currentCardIds: ${JSON.stringify(currentCardIds)}`);
+    // get total number of cards needed in one database call
+    const newCards = await drawCards(totalCardsNeeded, currentCardIds);
+    console.log(`${cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0)} cards needed, ${newCards.length} cards drawn`);
     const newCardsPerPlayer: {card: GameCard, handIndex: number}[][] = [];
     for (const player of this.players) {
-      newCardsPerPlayer.push(await player.populateHand(this.handSize));
+      const newCardsForCurrentPlayer: {card: GameCard, handIndex: number}[] = [];
+      for (let handIndex = player.hand.length; handIndex < this.handSize; handIndex += 1) {
+        const card = newCards.pop();
+        if (card !== undefined) {
+          player.hand.push(card);
+          newCardsForCurrentPlayer.push({card, handIndex});
+        } else {
+          console.error('something went wrong - not enough cards drawn');
+        }
+      }
+      newCardsPerPlayer.push(newCardsForCurrentPlayer);
     }
     return newCardsPerPlayer;
   }
@@ -453,13 +470,6 @@ export class Player implements IPlayer {
     this.score = 0;
     this.scoredThisRound = 0;
     this.hand = [];
-  }
-  
-  async populateHand(size: number) {
-    const initialIndex = this.hand.length;
-    const newCards = await drawCards(size - initialIndex);
-    this.hand.push(...newCards);
-    return newCards.map((card, i) => {return {card: card, handIndex: initialIndex + i};});
   }
   
   // removes card from hand and returns the former index of the card
