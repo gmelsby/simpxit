@@ -1,16 +1,29 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { GameCard } from '../../types';
 
 const prisma = new PrismaClient();
 const imageBucketUrl = process.env.IMAGE_BUCKET;
 
 export async function drawCards(count: number, currentCardIds: string[]): Promise<GameCard[]>  {
-  const newCards = await prisma.$queryRaw<{id: bigint, locator: string}[]>`
-    SELECT id, locator FROM "Card"
-    ORDER BY random()
-    LIMIT ${count};
-  `;
-  console.log(currentCardIds);
+  const newCards = currentCardIds.length ? 
+    // case where we have currentCardIds with episodes we want to filter out
+    await prisma.$queryRaw<{id: bigint, locator: string}[]>`
+      SELECT DISTINCT ON (episode_id) id, locator FROM "Card"
+      WHERE episode_id NOT IN 
+      (
+        SELECT episode_id FROM "Card"
+        WHERE id IN (${Prisma.join(currentCardIds.map(cardId => parseInt(cardId)))})
+      )
+      ORDER BY episode_id, random()
+      LIMIT ${count};
+    ` 
+    :
+    // case where therer are no currentCardIds to worry about
+    await prisma.$queryRaw<{id: bigint, locator: string}[]>`
+      SELECT DISTINCT ON (episode_id) id, locator FROM "Card"
+      ORDER BY episode_id, random()
+      LIMIT ${count};
+    `;
 
   return newCards.map(card => {
     return {
