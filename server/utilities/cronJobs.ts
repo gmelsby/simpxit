@@ -1,5 +1,6 @@
 import cron from 'node-cron';
-import { Room  } from '../gameClasses.js';
+import { Room  } from '../models/gameClasses.js';
+import { drawCards } from '../models/cardModel.js';
 
 const isExpired = (room: Room, interval: number, timestamp: number) => {
   return room.lastModified + (interval * 60000) < timestamp || room.playerCount === 0;
@@ -23,5 +24,21 @@ export function roomCleaner(rooms: {[key: string]: Room}, cronString: string, ti
 
       console.log(`deleted room ${room}`);
     }
+  });
+}
+
+/*
+* Sets up a recurring job to keep Supabase project alive
+* cronString: String to set cron job timing
+*/  
+export function supabasePing(cronString: string) {
+  cron.schedule(cronString, () => {
+    drawCards(1, [])
+      .then(cards => {
+        console.log(`keep-alive ping successful, drew card ${cards[0].id}`);
+      })
+      .catch(err => {
+        console.error(`something went wrong with keep-alive ping: ${err}`);
+      });
   });
 }

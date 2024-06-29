@@ -1,7 +1,7 @@
 import { generateRoomCode } from './utilities/generateUtils.js';
-import { Room } from './gameClasses.js';
+import { Room } from './models/gameClasses.js';
 import socketHandler from './controllers/sockets.js';
-import { roomCleaner } from './utilities/roomCleaner.js';
+import { roomCleaner, supabasePing } from './utilities/cronJobs.js';
 import express from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';
@@ -40,6 +40,7 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
 // will probably be changed to a database/redis? at some point
 const rooms: {[key: string]: Room} = {};
 roomCleaner(rooms, '*/30 * * * *', 30);
+supabasePing('0 5 * * *');
 
 // sets up socket connection logic
 socketHandler(io, rooms);

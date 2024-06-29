@@ -1,5 +1,5 @@
-import { Room as IRoom, Player as IPlayer, GameCard } from '../types';
-import { drawCards } from './models/cardModel.js';
+import { Room as IRoom, Player as IPlayer, GameCard } from '../../types.js';
+import { drawCards } from './cardModel.js';
 
 type IGamePhase = 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlayersGuess' | 'scoring';
 
