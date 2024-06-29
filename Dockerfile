@@ -5,7 +5,9 @@ COPY tsconfig.json ./
 COPY types.d.ts ./
 COPY ./server ./server
 COPY ./client ./client
+COPY ./prisma ./prisma
 RUN npm ci
+RUN npx prisma generate
 RUN npx tsc
 WORKDIR /usr/src/app/client
 RUN npm ci
