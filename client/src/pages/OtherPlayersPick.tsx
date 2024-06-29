@@ -72,7 +72,7 @@ export default function OtherPlayersPick({
       <OtherPlayerModal use="deceive" selectedCard={selectedCard} setSelectedCard={setSelectedCard}
         storyDescriptor={storyDescriptor} handleSubmit={handleSubmit} />
 
-      <JustifyEvenlyContainer className="h-100 d-flex flex-column text-center p-0"> 
+      <JustifyEvenlyContainer className="h-100 d-flex flex-column text-center"> 
         <Container className="mt-5 mt-md-0">
           <h2>The storyteller submitted the descriptor</h2>
           <h1><b>{storyDescriptor}</b></h1>

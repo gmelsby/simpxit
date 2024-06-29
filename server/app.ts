@@ -95,6 +95,7 @@ app.post('/api/room', (req, res) => {
   const uuid  = req.body.userId;
   if (!uuid) {
     res.status(403).send({error: 'User does not have UUID. Refresh page and try again.'});
+    return;
   }
   let newRoomCode = 'ABCD';
 

@@ -94,13 +94,13 @@ export default function OtherPlayersGuess({
   }
   
   return (
-    <Container className="h-100 d-flex flex-column justify-content-evenly-visible text-center p-0"> 
+    <JustifyEvenlyContainer className="h-100 d-flex flex-column text-center p-0"> 
       <h3 className="mt-5 mt-sm-0"> Here are all the cards that were submitted</h3>
       <h5>Wait for other players to guess...</h5>
       <Hand hand={Object.values(submittedCards)} isInfo />
       <Container className="mt-4 pb-5">
         <WaitingOn waitingOn={waitingOn} />
       </Container>
-    </Container>
+    </JustifyEvenlyContainer>
   );
 }

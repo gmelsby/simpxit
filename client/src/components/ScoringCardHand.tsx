@@ -36,7 +36,7 @@ export default function ScoringCardHand({storyTeller,
     <>
       <Row 
         xs={lengthMap.has(submittedCards.length) ? lengthMap.get(submittedCards.length) : 3}
-        className="g-2 mx-auto my-3 d-none d-md-flex justify-content-center">
+        className="g-2 mx-auto my-3 d-none d-md-flex maxwidth-67svw justify-content-center">
         {submittedCards.map(c => 
           <ScoringCard key={c.id} player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
             guessedPlayers={playersWhoGuessed(c.id)} 

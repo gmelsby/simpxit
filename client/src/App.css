@@ -185,4 +185,9 @@ body {
   justify-content: safe center;
 }
 
+/* for Hand to not overwhelm medium screen size */
+.maxwidth-67svw {
+  max-width: 67svw;
+}
+
 /*# sourceMappingURL=App.css.map */

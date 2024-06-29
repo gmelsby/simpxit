@@ -43,7 +43,7 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
     <>
       <Row 
         xs={lengthMap.has(hand.length) ? lengthMap.get(hand.length) : Math.min(Math.max(hand.length, 2), 3)} 
-        className="justify-content-center g-2 my-3 mx-3 d-none d-md-flex">
+        className="justify-content-center maxwidth-67svw g-2 my-3 mx-auto d-none d-md-flex">
         {hand.map(card =>
           <Col key={card.id} className="d-flex flex-column justify-content-center">
             {isInfo ?
