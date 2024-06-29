@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Button, Col, Row, Form } from 'react-bootstrap';
+import { Button, Col, Row, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import ButtonTimer from '../components/ButtonTimer';
 import Sidebar from '../components/Sidebar';
+import JustifyEvenlyContainer from '../components/JustifyEvenlyContainer';
 
 
 export default function HomePage( { userId }: { userId: string}) {
@@ -59,8 +60,8 @@ export default function HomePage( { userId }: { userId: string}) {
   return (
     <>
       <Sidebar />
-      <Container className="d-flex flex-column justify-content-evenly text-center align-items-center pt-5 h-100 m-auto">
-        <Row className='mb-5'>
+      <JustifyEvenlyContainer className="d-flex flex-column text-center align-items-center h-100 m-auto">
+        <Row className='m-5'>
           <h1 className='rock-salt-regular'>Simpxit</h1>
           <h4>A Simpsons/Dixit Fan Game!</h4>
           <h5>Mashup of the board game 
@@ -112,7 +113,7 @@ export default function HomePage( { userId }: { userId: string}) {
             </Form>
           </Row>
         </Row>
-      </Container>
+      </JustifyEvenlyContainer>
     </>
   );
 }

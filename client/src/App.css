@@ -11,6 +11,7 @@ body {
   margin: 0;
   height: 100svh;
   font-family: "Walter Turncoat", cursive, sans-serif;
+  overflow: auto;
 }
 
 .rock-salt-regular {
@@ -176,6 +177,12 @@ body {
 
 .flipcard-back {
   transform: rotateY(180deg);
+}
+
+/* fixes for scrolling when flexboxes overflow */
+.justify-content-center-safe {
+  overflow: auto;
+  justify-content: safe center;
 }
 
 /*# sourceMappingURL=App.css.map */

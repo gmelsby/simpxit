@@ -25,7 +25,7 @@ export default function OptionsModal({ currentOptions, changeOptions }:{ current
   return (
     <>
       <Button variant="warning" className="options position-absolute top-0 end-0 btn-outline-dark"  onClick={handleShowOptions}>
-        Advanced Options
+        Options
       </Button>
 
       <Modal show={showOptions} onHide={handleCloseOptions}>

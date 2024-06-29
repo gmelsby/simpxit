@@ -5,6 +5,7 @@ import { CopyIcon } from '../components/CopyIcon';
 import { BiPencil, BiUndo } from 'react-icons/bi';
 import { Socket } from 'socket.io-client';
 import { Player } from '../../../types';
+import JustifyEvenlyContainer from '../components/JustifyEvenlyContainer';
 
 export default function Lobby({ players,
   roomId,
@@ -38,7 +39,7 @@ export default function Lobby({ players,
 
  
   return (
-    <Container className="h-100 d-flex flex-column justify-content-evenly text-center">
+    <JustifyEvenlyContainer className="h-100 d-flex flex-column text-center">
       <Container className="mt-5 mt-md-0">
         <h1>Room Code: <b>{roomId}</b> <CopyIcon text={roomId} descriptor='Room Code'/></h1>
         <h5 className="my-0">Share this code</h5> 
@@ -58,7 +59,7 @@ export default function Lobby({ players,
         {players.filter(p => p.playerName === '').length > 0 && players.length > 2 && <p>All players must have names before the game can start.</p>}
         {players.length <= 2 && <p>At least 3 players must be in the room before the game can start.</p>}
       </Container>
-    </Container>
+    </JustifyEvenlyContainer>
   );
 }
 
@@ -141,7 +142,7 @@ function NameForm({ players, roomId, userId, socket }:
         <Form onSubmit={handleNameChange} className="text-center justify-content-center">
           <Row className='justify-content-center'>
             <Col xs="auto">
-              <h5 className='mx-0'>Your Name: </h5>
+              <h5 className='mx-0'>{currentName == '' && 'Enter '}Your Name: </h5>
             </Col>
             <Col xs="auto">
               <Form.Control className="px-1 mx-0" type="text" required name="new-name"
