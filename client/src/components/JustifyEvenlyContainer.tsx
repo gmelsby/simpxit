@@ -36,8 +36,8 @@ export default function JustifyEvenlyContainer({className, children}: {className
     <Container 
       className=
         {`${overflowing ? 
-          'justify-content-start overflow-auto' : 
-          'justify-content-evenly overflow-hidden'
+          'justify-content-start overflow-visible' : 
+          'justify-content-evenly'
         }
       ${className}`}
       ref={containerElement}
