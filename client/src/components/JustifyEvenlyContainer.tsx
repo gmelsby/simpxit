@@ -19,13 +19,15 @@ export default function JustifyEvenlyContainer({className, children}: {className
     checkOverflowing();
 
     const observer = new ResizeObserver(() => checkOverflowing);
-    observer.observe(document.body);
     // keep updating every time a resize happens
     if (containerElement.current !== null) {
       observer.observe(containerElement.current);
     }
+    // check for window resize too
+    window.addEventListener('resize', checkOverflowing);
     // cleanup
     return (() => {
+      window.removeEventListener('resize', checkOverflowing);
       observer.disconnect();
     });
   }, [containerElement.current]);

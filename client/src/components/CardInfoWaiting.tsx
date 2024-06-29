@@ -24,7 +24,7 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
   };
 
   return (
-    <Container className="h-100 d-flex flex-column justify-content-evenly">
+    <Container className="h-100 d-flex flex-column justify-content-evenly-visible">
       <Container className="text-center mt-5">
         <h3 className="">
           {phraseMap[use][0]}

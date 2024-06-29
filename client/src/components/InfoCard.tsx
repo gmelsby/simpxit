@@ -29,9 +29,7 @@ function Front({ card }: { card: GameCard }) {
 
 function Back({ cardId }: { cardId: string }) {
   return (
-    <div className='d-flex flex-column bg-body overflow-auto flipcard-back card-img'
-      // allows overflow scrolling from top
-      style={{justifyContent: 'safe center'}}>
+    <div className='d-flex flex-column bg-body justify-content-center-safe overflow-auto flipcard-back card-img'>
       <Container className='py-4'>
         <CardInfoWrapper cardId={cardId}/>
       </Container>

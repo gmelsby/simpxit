@@ -6,6 +6,7 @@ import CardInfoWaiting from '../components/CardInfoWaiting';
 import WaitingOn from '../components/WaitingOn';
 import { Socket } from 'socket.io-client';
 import { GameCard, Player } from '../../../types';
+import JustifyEvenlyContainer from '../components/JustifyEvenlyContainer';
 
 export default function OtherPlayersGuess({ 
   userId,
@@ -80,20 +81,20 @@ export default function OtherPlayersGuess({
         <OtherPlayerModal use="guess" selectedCard={selectedCard} 
           setSelectedCard={setSelectedCard} storyDescriptor={storyDescriptor}
           handleSubmit={handleSubmit} />
-        <Container className="h-100 d-flex flex-column justify-content-evenly text-center p-0"> 
+        <JustifyEvenlyContainer className="h-100 d-flex flex-column text-center p-0"> 
           <Container className="mt-4 mt-sm-0">
             <h3>The storyteller submitted the descriptor</h3>
             <h2><b>{storyDescriptor}</b></h2>
             <h5>Guess which card is the storyteller&apos;s!</h5>
           </Container>
           <Hand hand={otherCards} setSelectedCard={setSelectedCard} />
-        </Container>
+        </JustifyEvenlyContainer>
       </>
     );
   }
   
   return (
-    <Container className="h-100 d-flex flex-column justify-content-evenly text-center p-0"> 
+    <Container className="h-100 d-flex flex-column justify-content-evenly-visible text-center p-0"> 
       <h3 className="mt-5 mt-sm-0"> Here are all the cards that were submitted</h3>
       <h5>Wait for other players to guess...</h5>
       <Hand hand={Object.values(submittedCards)} isInfo />
