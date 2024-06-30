@@ -66,7 +66,8 @@ export default function StoryTellerPick({
   return (
     <Container className="d-flex h-75 justify-content-center align-items-center text-center pt-5">
       <Row>
-        <h2 className="mt-2">{storyTeller.playerName} is the Storyteller. Wait for them to pick a card...</h2>
+        <h2 className="mt-2"><b>{storyTeller.playerName}</b> is the Storyteller.</h2>
+        <h2>Wait for them to pick a card...</h2>
       </Row>
     </Container>
   );
