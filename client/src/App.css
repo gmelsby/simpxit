@@ -106,6 +106,7 @@ body {
 }
 
 /* Buttons no longer have hover effects for touch only devices */
+/* Only works for Bootstrap default theming */
 /* Quick fix, if theming is applied will use sass */
 @media (hover: none) {
   .btn-primary:hover {
@@ -126,9 +127,9 @@ body {
     color: #000;
   }
 
-  .btn-light:hover {
+  .btn-secondary:hover {
     transform: scale(1);
-    background-color: #f8f9fa;
+    background-color: #6c757d;
     color: #000;
   }
 

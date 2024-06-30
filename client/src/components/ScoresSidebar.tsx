@@ -40,7 +40,7 @@ export default function ScoresSidebar({ players, userId, targetScore }: { player
 
   return (
     <>
-      <Button variant="warning" className="top-right-button position-absolute top-0 end-0 btn-outline-dark" onClick={handleShow}>
+      <Button variant="secondary" className="top-right-button position-absolute top-0 end-0 btn-outline-dark" onClick={handleShow}>
         Scoreboard
       </Button>
 
