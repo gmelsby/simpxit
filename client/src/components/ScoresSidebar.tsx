@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Offcanvas } from 'react-bootstrap';
+import { Button, Col, Offcanvas, Row } from 'react-bootstrap';
 import { Player } from '../../../types';
 import PlayerList from './PlayerList';
 
@@ -40,7 +40,7 @@ export default function ScoresSidebar({ players, userId, targetScore }: { player
 
   return (
     <>
-      <Button variant="secondary" className="top-right-button position-absolute top-0 end-0 btn-outline-dark" onClick={handleShow}>
+      <Button variant="warning" className="top-right-button position-absolute top-0 end-0 btn-outline-dark" onClick={handleShow}>
         Scoreboard
       </Button>
 
@@ -49,7 +49,14 @@ export default function ScoresSidebar({ players, userId, targetScore }: { player
           <Offcanvas.Title>Scoreboard</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
-          <h5>Points to win: {targetScore}</h5>
+          <Row>
+            <Col xs={7}>
+              <h5 className='mb-5'>Points to win: </h5>
+            </Col>
+            <Col className='text-center'>
+              <h5><b>{targetScore}</b></h5>
+            </Col>
+          </Row>
           <PlayerList {...{players, userId}} isScoreboard />
         </Offcanvas.Body>
       </Offcanvas>
