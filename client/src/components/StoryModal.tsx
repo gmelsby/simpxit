@@ -47,14 +47,14 @@ export default function StoryModal({
         handleSubmit();
       }}>
         <Modal.Footer>
-          <Col xs={8}>
+          <Col xs={8} md={9}>
             <Form.Control type="text" required name="descriptor"
               maxLength={45} placeholder="Describe the image"
               value={descriptor}
               onChange={e => setDescriptor(e.target.value.trimStart())}
               ref={descriptionForm} />
           </Col>
-          <Col>
+          <Col className='text-center'>
             <ButtonTimer onClick={handleSubmit} disabled={descriptor.length < 1}>Submit</ButtonTimer>
           </Col>
         </Modal.Footer>
