@@ -57,12 +57,12 @@ body {
   animation-duration: 1s;
 }
 
-.options {
+.top-right-button {
   border-radius: 0px 0px 0px 10px;
   border-width: 0px 0px 2px 2px;
 }
 
-.options:hover {
+.top-right-button:hover {
   transform: scale(1);
 }
 
@@ -134,7 +134,7 @@ body {
 
 }
 
-.sidebar {
+.top-left-button {
   border-radius: 0px 0px 10px 0px;
   border-width: 0px 2px 2px 0px;
 }

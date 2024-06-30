@@ -24,7 +24,7 @@ export default function OptionsModal({ currentOptions, changeOptions }:{ current
   
   return (
     <>
-      <Button variant="warning" className="options position-absolute top-0 end-0 btn-outline-dark"  onClick={handleShowOptions}>
+      <Button variant="warning" className="top-right-button position-absolute top-0 end-0 btn-outline-dark"  onClick={handleShowOptions}>
         Options
       </Button>
 
