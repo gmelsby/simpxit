@@ -10,7 +10,7 @@ export default function InfoCard({ card }: { card: GameCard}) {
     <div className="flipcard selectable-no-grow" onClick={() => setIsFlipped(current => !current)}>
       <div className={`flipcard-inner ${isFlipped ? 'flipped' : ''}`}>
         <Front card={card} />
-        <Back cardId={card.id} />
+        <Back cardId={card.id} isFlipped={isFlipped} />
         <div>
           <Image src='/image-placeholder.svg' fluid/>
         </div>
@@ -27,11 +27,11 @@ function Front({ card }: { card: GameCard }) {
   );
 }
 
-function Back({ cardId }: { cardId: string }) {
+function Back({ cardId, isFlipped }: { cardId: string, isFlipped: boolean }) {
   return (
-    <div className='d-flex flex-column bg-body justify-content-center-safe overflow-auto flipcard-back card-img'>
+    <div className={`d-flex flex-column bg-body justify-content-center-safe ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
       <Container className='py-4'>
-        <CardInfoWrapper cardId={cardId}/>
+        <CardInfoWrapper cardId={cardId} load={isFlipped}/>
       </Container>
     </div>
   );

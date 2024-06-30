@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto");
 @import url('https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Walter+Turncoat&display=swap');
 
@@ -10,18 +9,12 @@ body {
   padding: 0;
   margin: 0;
   height: 100svh;
-  font-family: "Walter Turncoat", cursive, sans-serif;
+  font-family: "Walter Turncoat", 'Helvetica', 'Arial', sans-serif;
   overflow: auto;
 }
 
 .rock-salt-regular {
   font-family: "Rock Salt", cursive;
-  font-weight: 400;
-  font-style: normal;
-}
-
-.walter-turncoat-regular {
-  font-family: "Walter Turncoat", cursive;
   font-weight: 400;
   font-style: normal;
 }
@@ -57,12 +50,12 @@ body {
   animation-duration: 1s;
 }
 
-.options {
+.top-right-button {
   border-radius: 0px 0px 0px 10px;
   border-width: 0px 0px 2px 2px;
 }
 
-.options:hover {
+.top-right-button:hover {
   transform: scale(1);
 }
 
@@ -106,6 +99,7 @@ body {
 }
 
 /* Buttons no longer have hover effects for touch only devices */
+/* Only works for Bootstrap default theming */
 /* Quick fix, if theming is applied will use sass */
 @media (hover: none) {
   .btn-primary:hover {
@@ -126,15 +120,15 @@ body {
     color: #000;
   }
 
-  .btn-light:hover {
+  .btn-secondary:hover {
     transform: scale(1);
-    background-color: #f8f9fa;
+    background-color: #6c757d;
     color: #000;
   }
 
 }
 
-.sidebar {
+.top-left-button {
   border-radius: 0px 0px 10px 0px;
   border-width: 0px 2px 2px 0px;
 }
@@ -177,12 +171,22 @@ body {
 
 .flipcard-back {
   transform: rotateY(180deg);
+  z-index: 1;
 }
 
 /* fixes for scrolling when flexboxes overflow */
 .justify-content-center-safe {
   overflow: auto;
   justify-content: safe center;
+}
+
+/* for Hand to not overwhelm medium screen size */
+.maxwidth-67svw {
+  max-width: 67svw;
+}
+
+.maxwidth-60svw {
+  max-width: 60svw;
 }
 
 /*# sourceMappingURL=App.css.map */

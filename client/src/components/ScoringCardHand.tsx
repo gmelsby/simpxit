@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Row, Carousel } from 'react-bootstrap';
+import { Container, Row, Carousel, Col } from 'react-bootstrap';
 import ScoringCard from './ScoringCard';
 import { GameCard, Player } from '../../../types';
 import CarouselController from './CarouselController';
@@ -28,6 +28,7 @@ export default function ScoringCardHand({storyTeller,
 
   // maps from length of hand to length of row
   const lengthMap = new Map([
+    [4, 4],
     [7, 4],
     [8, 4],
   ]);
@@ -36,11 +37,13 @@ export default function ScoringCardHand({storyTeller,
     <>
       <Row 
         xs={lengthMap.has(submittedCards.length) ? lengthMap.get(submittedCards.length) : 3}
-        className="g-2 mx-auto my-3 d-none d-md-flex justify-content-center">
+        className="g-2 mx-auto my-3 d-none d-md-flex maxwidth-60svw justify-content-center">
         {submittedCards.map(c => 
-          <ScoringCard key={c.id} player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
-            guessedPlayers={playersWhoGuessed(c.id)} 
-            isStoryTeller={c.submitter === storyTeller.playerId} />
+          <Col key={c.id} className="d-flex flex-column justify-content-center">
+            <ScoringCard key={c.id} player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
+              guessedPlayerNames={playersWhoGuessed(c.id).map(p => p.playerName)} 
+              isStoryTeller={c.submitter === storyTeller.playerId} />
+          </Col>
         )}
       </Row>
 
@@ -49,9 +52,9 @@ export default function ScoringCardHand({storyTeller,
         <Carousel className="" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
           {submittedCards.map(c => 
             <Carousel.Item key={c.id}> 
-              <Container>
+              <Container className="py-5">
                 <ScoringCard player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
-                  guessedPlayers={playersWhoGuessed(c.id)} 
+                  guessedPlayerNames={playersWhoGuessed(c.id).map(p => p.playerName)} 
                   isStoryTeller={c.submitter === storyTeller.playerId} />
               </Container>
             </Carousel.Item>

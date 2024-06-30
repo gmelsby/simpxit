@@ -54,7 +54,13 @@ export default function Scoring({
 
   let topMessage = 'Nobody guessed the storyteller\'s card.';
   if (correctGuesses.length > 0 && correctGuesses.length < Object.values(guesses).length) {
-    topMessage = `${players.filter(p => guesses[p.playerId] === storyCardId).map(p => p.playerName).join(', ')} guessed the storyteller's card.`;
+    const guessedPlayerNames = players.filter(p => guesses[p.playerId] === storyCardId).map(p => p.playerName);
+    const playerString = guessedPlayerNames.length === 1 ?
+      guessedPlayerNames[0]
+      :
+      `${guessedPlayerNames.slice(0, -1).join(', ')} & ${guessedPlayerNames[guessedPlayerNames.length-1]}`;
+
+    topMessage = `${playerString} guessed the storyteller's card.`;
   }
 
   else if (correctGuesses.length === Object.values(guesses).length) {
@@ -66,7 +72,7 @@ export default function Scoring({
     <JustifyEvenlyContainer className="text-center h-100 d-flex flex-column">
       <Container className= "mt-5 mt-md-1">
         { winners.length !== 0 && <h1>{winners.map(p => p.playerName).join(', ')} win{winners.length === 1 && 's'}!</h1>}
-        <h3 className="mb-4">{topMessage}</h3>
+        <h3 className="mb-1">{topMessage}</h3>
       </Container>
       <ScoringCardHand storyTeller={storyTeller} players={players} submittedCards={submittedCards} guesses={guesses} />
       <Container className="mt-4 pb-5">

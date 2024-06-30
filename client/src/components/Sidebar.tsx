@@ -3,12 +3,11 @@ import { Button, Form, Offcanvas, Tab, Tabs } from 'react-bootstrap';
 import { BiMenu } from 'react-icons/bi';
 import Rules from './Rules';
 import { Player } from '../../../types';
-import PlayerList from './PlayerList';
 
-export default function Sidebar({ players, userId, currentName, changeName, targetScore }: { players?: Player[], userId?: string, currentName?: string, changeName?: (newName: string) => void, targetScore?: number }) {
+export default function Sidebar({ currentName, changeName }: { players?: Player[], userId?: string, currentName?: string, changeName?: (newName: string) => void, targetScore?: number }) {
   const [show, setShow] = useState(false);
   const [newName, setNewName] = useState(currentName !== undefined ? currentName : '');
-  const [tabKey, setTabKey] = useState(players == undefined || userId == undefined ? 'rules' : 'scoreboard');
+  const [tabKey, setTabKey] = useState('rules');
   useEffect(() => {
     if (currentName !== undefined) setNewName(currentName);
   }, [currentName, setNewName]);  
@@ -48,7 +47,7 @@ export default function Sidebar({ players, userId, currentName, changeName, targ
 
   return (
     <>
-      <Button variant="secondary" className="sidebar position-absolute top-0 start-0 btn-outline-dark" onClick={handleShow}>
+      <Button variant="secondary" className="top-left-button position-absolute top-0 start-0 btn-outline-dark" onClick={handleShow}>
         <BiMenu />
       </Button>
 
@@ -65,12 +64,6 @@ export default function Sidebar({ players, userId, currentName, changeName, targ
             <Tab eventKey={'rules'} title="Rules">
               <Rules />
             </Tab>
-            {players !== undefined && userId !== undefined && 
-            <Tab eventKey={'scoreboard'} title="Scoreboard">
-              <h5>Points to win: {targetScore}</h5>
-              <PlayerList {...{players, userId}} isScoreboard />
-            </Tab>
-            }
             {changeName !== undefined && 
               <Tab eventKey={'changeName'} title="Change Name">
                 <Form onSubmit={(e: React.SyntheticEvent) => {

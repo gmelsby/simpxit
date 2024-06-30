@@ -1,5 +1,5 @@
 import { JSONPatchOperation } from 'immutable-json-patch';
-import { Room } from '../gameClasses.js';
+import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
 import { ClientToServerEvents, ServerToClientEvents } from '../../types.js';
 

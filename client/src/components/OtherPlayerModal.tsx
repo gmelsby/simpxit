@@ -1,7 +1,8 @@
 import React from 'react';
-import { Button, Stack, Image, Modal } from 'react-bootstrap';
+import { Button, Stack, Modal } from 'react-bootstrap';
 import ButtonTimer from './ButtonTimer';
 import { GameCard } from '../../../types';
+import GameImage from './GameImage';
 
 export default function OtherPlayerModal({
   use,
@@ -34,7 +35,7 @@ export default function OtherPlayerModal({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Image src={selectedCard !== null ? selectedCard.locator : ''} className="card-img" fluid />
+        <GameImage card={selectedCard ? selectedCard : {id: '-1', locator:'/image-placeholder.svg'}} className="card-img" />
       </Modal.Body>
       <Modal.Footer>
         <Stack direction="horizontal" gap={3}>

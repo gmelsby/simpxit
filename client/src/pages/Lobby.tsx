@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import PlayerList from '../components/PlayerList';
 import { CopyIcon } from '../components/CopyIcon';
-import { BiPencil, BiUndo } from 'react-icons/bi';
+import { BiPencil } from 'react-icons/bi';
 import { Socket } from 'socket.io-client';
 import { Player } from '../../../types';
 import JustifyEvenlyContainer from '../components/JustifyEvenlyContainer';
@@ -70,9 +70,8 @@ function NameForm({ players, roomId, userId, socket }:
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(currentName);
   const nameFormRef = useRef<HTMLInputElement>(null);
-  const undoRef = useRef<HTMLInputElement>(null);
 
-  const handleNameChange = useCallback((e: MouseEvent | React.SyntheticEvent) => {
+  const handleNameChange = useCallback((e: Event | React.SyntheticEvent) => {
     e.preventDefault();
     // check if player has not changed name
     if (currentName === newName) {
@@ -119,21 +118,19 @@ function NameForm({ players, roomId, userId, socket }:
     }
   }, [isEditingName, currentName, nameFormRef.current]);
 
-  // check if click outside of text box, if so cancels update
   useEffect(() => {
-    const clickHandler = (e: MouseEvent) => {
-      if(nameFormRef.current && !nameFormRef.current.contains(e.target as Node) && undoRef.current && !undoRef.current.contains(e.target as Node)) {
-        if (newName !== '') {
-          handleNameChange(e);
-        }
+    const unfocusHandler = (e: Event) => {
+      if (newName !== '') {
+        handleNameChange(e);
       }
     };
 
-    document.addEventListener('mousedown', clickHandler);
+    // when 'done' is clicked on iOS keyboard or click outside text box is made
+    document.addEventListener('focusout', unfocusHandler);
     return () => {
-      document.removeEventListener('mousedown', clickHandler);
+      document.removeEventListener('focusout', unfocusHandler);
     };
-  }, [nameFormRef, undoRef, handleNameChange, newName]);
+  }, [handleNameChange, newName]);
 
   // allows for in-line editing of name
   if (isEditingName) {
@@ -151,11 +148,6 @@ function NameForm({ players, roomId, userId, socket }:
                 onChange={e => setNewName(e.target.value.trimStart())}
                 autoFocus={true}
                 ref={nameFormRef} />
-            </Col>
-            <Col xs="auto" className="d-none d-md-flex" ref={undoRef}>
-              <h5>
-                <BiUndo className="mx-1 selectable" onClick={() => {setIsEditingName(false);}}></BiUndo>
-              </h5>
             </Col>
           </Row>
         </Form>
