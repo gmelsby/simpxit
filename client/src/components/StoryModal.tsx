@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { Form, Image, Modal, Col} from 'react-bootstrap';
+import { Form, Modal, Col} from 'react-bootstrap';
 import ButtonTimer from './ButtonTimer';
 import { GameCard } from '../../../types';
+import GameImage from './GameImage';
 
 export default function StoryModal({
   selectedCard,
@@ -39,7 +40,7 @@ export default function StoryModal({
         <Modal.Title>You selected this image:</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Image src={selectedCard?.locator} className="card-img" fluid />
+        <GameImage card={selectedCard ? selectedCard : {id: '-1', locator:'/image-placeholder.svg'}} className="card-img" />
       </Modal.Body>
       <Form onSubmit={e => {
         e.preventDefault();
