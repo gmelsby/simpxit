@@ -35,6 +35,7 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
 
   // maps from length of hand to length of row
   const lengthMap = new Map([
+    [4, 4],
     [7, 4],
     [8, 4],
   ]);

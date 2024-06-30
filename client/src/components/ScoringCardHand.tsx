@@ -28,6 +28,7 @@ export default function ScoringCardHand({storyTeller,
 
   // maps from length of hand to length of row
   const lengthMap = new Map([
+    [4, 4],
     [7, 4],
     [8, 4],
   ]);
