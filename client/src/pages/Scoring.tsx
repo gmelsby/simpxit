@@ -66,7 +66,7 @@ export default function Scoring({
     <JustifyEvenlyContainer className="text-center h-100 d-flex flex-column">
       <Container className= "mt-5 mt-md-1">
         { winners.length !== 0 && <h1>{winners.map(p => p.playerName).join(', ')} win{winners.length === 1 && 's'}!</h1>}
-        <h3 className="mb-4">{topMessage}</h3>
+        <h3 className="mb-1">{topMessage}</h3>
       </Container>
       <ScoringCardHand storyTeller={storyTeller} players={players} submittedCards={submittedCards} guesses={guesses} />
       <Container className="mt-4 pb-5">

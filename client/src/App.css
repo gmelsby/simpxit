@@ -177,6 +177,7 @@ body {
 
 .flipcard-back {
   transform: rotateY(180deg);
+  z-index: 1;
 }
 
 /* fixes for scrolling when flexboxes overflow */
@@ -188,6 +189,10 @@ body {
 /* for Hand to not overwhelm medium screen size */
 .maxwidth-67svw {
   max-width: 67svw;
+}
+
+.maxwidth-60svw {
+  max-width: 60svw;
 }
 
 /*# sourceMappingURL=App.css.map */
