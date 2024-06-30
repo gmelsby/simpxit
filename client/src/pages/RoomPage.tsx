@@ -239,7 +239,7 @@ export default function RoomPage({ userId }: {userId: string}) {
 
   return (
     <>
-      <Sidebar players={roomState.players} {...{userId, currentName, changeName}}/>
+      <Sidebar {...{currentName, changeName}}/>
       {isAdmin && roomState.gamePhase == 'lobby' && <OptionsModal currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} />}
       {roomState.gamePhase !== 'lobby' && <ScoresSidebar players={roomState.players} targetScore={roomState.targetScore} {...{userId}} />}
       {!isConnected && 

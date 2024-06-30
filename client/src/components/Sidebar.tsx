@@ -4,10 +4,10 @@ import { BiMenu } from 'react-icons/bi';
 import Rules from './Rules';
 import { Player } from '../../../types';
 
-export default function Sidebar({ players, userId, currentName, changeName }: { players?: Player[], userId?: string, currentName?: string, changeName?: (newName: string) => void, targetScore?: number }) {
+export default function Sidebar({ currentName, changeName }: { players?: Player[], userId?: string, currentName?: string, changeName?: (newName: string) => void, targetScore?: number }) {
   const [show, setShow] = useState(false);
   const [newName, setNewName] = useState(currentName !== undefined ? currentName : '');
-  const [tabKey, setTabKey] = useState(players == undefined || userId == undefined ? 'rules' : 'scoreboard');
+  const [tabKey, setTabKey] = useState('rules');
   useEffect(() => {
     if (currentName !== undefined) setNewName(currentName);
   }, [currentName, setNewName]);  
