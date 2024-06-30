@@ -31,7 +31,7 @@ function Back({ cardId, isFlipped }: { cardId: string, isFlipped: boolean }) {
   return (
     <div className={`d-flex flex-column bg-body justify-content-center-safe ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
       <Container className='py-4'>
-        <CardInfoWrapper cardId={cardId}/>
+        <CardInfoWrapper cardId={cardId} load={isFlipped}/>
       </Container>
     </div>
   );

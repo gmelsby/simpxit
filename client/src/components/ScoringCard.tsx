@@ -75,15 +75,6 @@ function Front({ player, card, guessedPlayerNames, isStoryTeller }:
 }
 
 function Back({ cardId, isFlipped, guessedPlayerNames }: { cardId: string, isFlipped: boolean, guessedPlayerNames: string[] }) {
-  if (guessedPlayerNames.length === 0) {
-    return (
-      <BootstrapCard className={`d-flex flex-column bg-body justify-content-center-safe ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
-        <BootstrapCard.Body className='py-4'>
-          <CardInfoWrapper cardId={cardId}/>
-        </BootstrapCard.Body>
-      </BootstrapCard>
-    );
-  }
   return (
     <BootstrapCard className={`d-flex flex-column bg-body justify-content-center-safe ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
       {guessedPlayerNames.length !== 0 && 
@@ -95,7 +86,7 @@ function Back({ cardId, isFlipped, guessedPlayerNames }: { cardId: string, isFli
       </BootstrapCard.Header>
       }
       <BootstrapCard.Body className='py-4'>
-        <CardInfoWrapper cardId={cardId}/>
+        <CardInfoWrapper cardId={cardId} load={isFlipped}/>
       </BootstrapCard.Body>
     </BootstrapCard>
   );
