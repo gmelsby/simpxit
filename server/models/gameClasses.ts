@@ -61,14 +61,18 @@ export class Room implements IRoom {
     return this.updateCount;
   }
   
-  // returns true if the current player count is less than the max player count
+  // returns message if the current player count is less than the max player count
   // also the gamePhase must be 'lobby'
-  isJoinable() {
-    if(this.playerCount < this.maxPlayers && this.gamePhase === 'lobby') {
-      return true;
+  // If room is joinable, returns undefined
+  // Otherwise, returns a message about why the room is not joinable
+  isNotJoinable() {
+    if (this.gamePhase !== 'lobby') {
+      return 'Gameplay is in progress';
     }
-    
-    return false;
+    if(this.playerCount >= this.maxPlayers) {
+      return 'Room is full';
+    } 
+    return undefined;
   }
   
   // returns true if a player with the currently passed-in id is already in the room

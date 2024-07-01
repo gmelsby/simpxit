@@ -68,9 +68,10 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       }
       
       // if room is full sends error
-      if (!room.isJoinable()) {
-        console.log(`${userId} could not join room: room is full`);
-        return callback('Room is full');
+      const roomIssue = room.isNotJoinable();
+      if (roomIssue !== undefined) {
+        console.log(`${userId} could not join room: ${roomIssue}`);
+        return callback(`could not join room: ${roomIssue}`);
       }
         
       // adds player to room
