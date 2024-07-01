@@ -40,20 +40,16 @@ export default function OptionsModal({ currentOptions, changeOptions }:{ current
                   <Form.Label htmlFor="new-target-score">Points to Win</Form.Label>
                 </Row>
                 <Row className="justify-content-evenly">
-                  <Col xs={7} className="text-center">
-                    <Form.Range className="w-100 align-middle" name="new-target-score"
+                  <Col xs={9} className="text-center">
+                    <Form.Range className="w-100 align-middle" id="new-target-score"
                       value={newOptions}
                       max={100}
                       min={5}
                       step={5}
                       onChange={e => setNewOptions(Number(e.target.value))} />
                   </Col>
-                  <Col xs={4} sm={3}>
-                    <Form.Control type="number" required name="new-target-score"
-                      value={newOptions}
-                      max={100}
-                      min={5}
-                      onChange={e => setNewOptions(Number(e.target.value))} />
+                  <Col xs={3} className="text-center">
+                    <h3>{newOptions}</h3>
                   </Col>
                 </Row>
               </Container>

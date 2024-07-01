@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Card as BootstrapCard, Col, Container, Image, Row} from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
 import { Player, GameCard } from '../../../types';
 import GameImage from './GameImage';
 
 export default function ScoringCard({ player, card, guessedPlayerNames, isStoryTeller }:
-  {player: Player, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean}) {
+  {player: Player | undefined, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean}) {
   // returns the html code for the number in a cicle for numbers 1-8
   const [isFlipped, setIsFlipped] = useState(false);
   return (
@@ -24,7 +24,7 @@ export default function ScoringCard({ player, card, guessedPlayerNames, isStoryT
                       <p className='mb-0'>Submitted by</p>
                     </Row>
                     <Row className='pt-0 mt-0'>
-                      <h5 className='mt-1'>{isStoryTeller && 'Storyteller '}{!isStoryTeller && player.playerName}</h5>
+                      <h5 className='mt-1'>{isStoryTeller && 'Storyteller '}{!isStoryTeller && player?.playerName}</h5>
                     </Row>
                   </Col>
                   <Col className='d-flex flex-column justify-content-center'>
@@ -41,7 +41,7 @@ export default function ScoringCard({ player, card, guessedPlayerNames, isStoryT
 }
 
 function Front({ player, card, guessedPlayerNames, isStoryTeller }:
-  {player: Player, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean}) {
+  {player: Player | undefined, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean}) {
 
   const circleNumberHtmlCalc = useCallback(((n: number) => String.fromCharCode(0x245F + n)), []);
 
@@ -57,7 +57,7 @@ function Front({ player, card, guessedPlayerNames, isStoryTeller }:
                   <p className='mb-0'>Submitted by</p>
                 </Row>
                 <Row className='pt-0 mt-0'>
-                  <h5 className='mt-1'>{isStoryTeller && 'Storyteller '}{!isStoryTeller && player.playerName}</h5>
+                  <h5 className='mt-1'>{isStoryTeller && 'Storyteller '}{!isStoryTeller && player?.playerName}</h5>
                 </Row>
               </Col>
               <Col className='d-flex flex-column justify-content-center'>
@@ -75,8 +75,18 @@ function Front({ player, card, guessedPlayerNames, isStoryTeller }:
 }
 
 function Back({ cardId, isFlipped, guessedPlayerNames }: { cardId: string, isFlipped: boolean, guessedPlayerNames: string[] }) {
+  const backRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (backRef.current) {
+      backRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }, [isFlipped, backRef]);
+
   return (
-    <BootstrapCard className={`d-flex flex-column bg-body justify-content-center-safe ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
+    <BootstrapCard className={`d-flex flex-column bg-body justify-content-start ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
       {guessedPlayerNames.length !== 0 && 
       <BootstrapCard.Header>
         <Container className=''>

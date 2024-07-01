@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { GameCard } from '../../../types';
 import { Container, Image } from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
@@ -28,8 +28,20 @@ function Front({ card }: { card: GameCard }) {
 }
 
 function Back({ cardId, isFlipped }: { cardId: string, isFlipped: boolean }) {
+  const backRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (backRef.current) {
+      backRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }, [isFlipped, backRef]);
+
   return (
-    <div className={`d-flex flex-column bg-body justify-content-center-safe ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
+    <div className={`d-flex flex-column bg-body justify-content-start ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}
+      ref={backRef}
+    >
       <Container className='py-4'>
         <CardInfoWrapper cardId={cardId} load={isFlipped}/>
       </Container>

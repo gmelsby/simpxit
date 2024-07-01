@@ -72,8 +72,8 @@ body {
   .selectable-card:hover {
     transform: scale(1.05);
     cursor: pointer;
-    box-shadow: 0 0 1rem yellow;
-    border-color: yellow;
+    box-shadow: 0 0 1rem #ffc107;
+    border-color: #ffc107;
   }
   .selectable-no-grow:hover {
     cursor: pointer;

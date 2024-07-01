@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Offcanvas, Tab, Tabs } from 'react-bootstrap';
+import { Button, Col, Form, Offcanvas, Row, Tab, Tabs } from 'react-bootstrap';
 import { BiMenu } from 'react-icons/bi';
 import Rules from './Rules';
 import { Player } from '../../../types';
@@ -72,12 +72,18 @@ export default function Sidebar({ currentName, changeName }: { players?: Player[
                 }
                 }>
                   <Form.Group>
-                    <Form.Control className="w-auto" type="text" required name="new-name"
-                      maxLength={20} placeholder="New Name"
-                      value={newName}
-                      onChange={e => setNewName(e.target.value.trimStart())}
-                    />
-                    <Button type="submit" className="my-2">Submit</Button>
+                    <Row>
+                      <Col xs={8} className='d-flex flex-col justify-content-center align-items-center'>
+                        <Form.Control type="text" required name="new-name"
+                          maxLength={20} placeholder="New Name"
+                          value={newName}
+                          onChange={e => setNewName(e.target.value.trimStart())}
+                        />
+                      </Col>
+                      <Col>
+                        <Button type="submit" className="my-2">Submit</Button>
+                      </Col>
+                    </Row>
                   </Form.Group>
                 </Form>
               </Tab>

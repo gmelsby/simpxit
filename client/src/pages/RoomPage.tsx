@@ -75,7 +75,7 @@ export default function RoomPage({ userId }: {userId: string}) {
     newSocket.on('receiveRoomPatch', ({operations, updateCount}) => {
       // if an update has been skipped
       if (updateCount !== socketUpdateCount + 1) {
-        console.error('Unable to gracefully update room state: falling back on full request');
+        console.error('Unable to gracefully update room state: updateCount not sequential -- falling back on full request');
         if (roomId !== undefined) {
           newSocket.emit('requestRoomState', {roomId, userId});
         }
@@ -91,7 +91,7 @@ export default function RoomPage({ userId }: {userId: string}) {
         } 
         // if not request whole room state
         catch {
-          console.error('Unable to gracefully update room state: falling back on full request');
+          console.error('Unable to gracefully update room state: error with patch -- falling back on full request');
           if (roomId !== undefined) {
             newSocket.emit('requestRoomState', {roomId, userId});
           }
@@ -101,7 +101,12 @@ export default function RoomPage({ userId }: {userId: string}) {
     });
 
     // to be invoked when round is over
-    newSocket.on('resetRoundValues', () => {
+    newSocket.on('resetRoundValues', updateCount => {
+      // check for desync
+      if (updateCount !== roomState.updateCount && roomId !== undefined && userId !== undefined) {
+        newSocket.emit('requestRoomState', {roomId, userId});
+        return;
+      }
       // console.log('resetting round values');
       setRoomState(produce(room => {
         room.gamePhase = 'storyTellerPick';
@@ -113,12 +118,18 @@ export default function RoomPage({ userId }: {userId: string}) {
         for (const player of room.players) {
           player.scoredThisRound = 0;
         }
+        room.updateCount = updateCount;
         // console.log(JSON.stringify(room));
       }));
     });
 
     // to be invoked when game is won and players return to lobby
-    newSocket.on('resetToLobby', () => {
+    newSocket.on('resetToLobby', updateCount => {
+      // check for desync
+      if (updateCount !== roomState.updateCount && roomId !== undefined && userId !== undefined) {
+        newSocket.emit('requestRoomState', {roomId, userId});
+        return;
+      }
       // console.log('resetting to lobby');
       setRoomState(produce(room => {
         room.players = [...room.players];
@@ -134,6 +145,7 @@ export default function RoomPage({ userId }: {userId: string}) {
           p.scoredThisRound = 0;
           p.hand = [];
         }
+        room.updateCount = updateCount;
         // console.log(JSON.stringify(room));
       }));
     });
