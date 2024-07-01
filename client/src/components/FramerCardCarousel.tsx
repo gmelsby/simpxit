@@ -83,7 +83,7 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
                 }
               }}
             >
-              <Container>
+              <Container style={{pointerEvents: index !== 0 ? 'none' : 'all'}}>
                 <motion.div
                   animate={{ 
                     rotate: rotation,
@@ -112,6 +112,7 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
           isStoryTeller: true,
         }}/>}
       </div>
+      
       <Row className='d-flex justify-content-center'>
         {[...Array(cards.length).keys()].map(i => 
           <span key={i} 
