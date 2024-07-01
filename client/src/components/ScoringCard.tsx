@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Card as BootstrapCard, Col, Container, Image, Row} from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
 import { Player, GameCard } from '../../../types';
@@ -75,8 +75,18 @@ function Front({ player, card, guessedPlayerNames, isStoryTeller }:
 }
 
 function Back({ cardId, isFlipped, guessedPlayerNames }: { cardId: string, isFlipped: boolean, guessedPlayerNames: string[] }) {
+  const backRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (backRef.current) {
+      backRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }, [isFlipped, backRef]);
+
   return (
-    <BootstrapCard className={`d-flex flex-column bg-body justify-content-center-safe ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
+    <BootstrapCard className={`d-flex flex-column bg-body justify-content-start ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
       {guessedPlayerNames.length !== 0 && 
       <BootstrapCard.Header>
         <Container className=''>
