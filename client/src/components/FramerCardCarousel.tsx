@@ -103,7 +103,8 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
             </motion.div>);
         })}
       </div>
-      <div className='opacity-0' style={{zIndex: -1}}> 
+
+      <div className='opacity-0' style={{zIndex: -1, pointerEvents: 'none'}}> 
         {!scoring && <Image className='card-img' src='/image-placeholder.svg' />} 
         {scoring && <ScoringCard {...{
           player: scoring.players[0],
