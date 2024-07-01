@@ -75,7 +75,7 @@ export default function Scoring({
         <h3 className="mb-1">{topMessage}</h3>
       </Container>
       <ScoringCardHand storyTeller={storyTeller} players={players} submittedCards={submittedCards} guesses={guesses} />
-      <Container className="mt-4 pb-5">
+      <Container className="my-4 pb-1">
         {winners.length === 0 && !(isReady) && <ButtonTimer onClick={handleReady}>Ready for Next Round</ButtonTimer>}
         {winners.length !== 0 && !(isReady) && <ButtonTimer onClick={handleReady}>Return to Room Lobby</ButtonTimer>}
         {isReady && <WaitingOn waitingOn={waitingOn} />}
