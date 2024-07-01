@@ -1,5 +1,6 @@
 import { Room as IRoom, Player as IPlayer, GameCard } from '../../types.js';
 import { drawCards } from './cardModel.js';
+import { logger } from '../app.js';
 
 type IGamePhase = 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlayersGuess' | 'scoring';
 
@@ -178,7 +179,7 @@ export class Room implements IRoom {
     if(this.players.map(player => player.playerName.toLowerCase()).includes(newName.toLowerCase())) {
       return true;
     }
-    console.log('name is not in use');
+    logger.log('info', 'name is not in use');
     return false;
   }
 
@@ -216,10 +217,10 @@ export class Room implements IRoom {
     const cardsNeededPerPlayer = this.players.map(p => this.handSize - p.hand.length);
     const totalCardsNeeded =  cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0);
     const currentCardIds = this.players.map(p => p.hand.map(c => c.id)).flat();
-    console.log(`currentCardIds: ${JSON.stringify(currentCardIds)}`);
+    logger.log('info', `currentCardIds: ${JSON.stringify(currentCardIds)}`);
     // get total number of cards needed in one database call
     const newCards = await drawCards(totalCardsNeeded, currentCardIds);
-    console.log(`${cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0)} cards needed, ${newCards.length} cards drawn`);
+    logger.log('info', `${cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0)} cards needed, ${newCards.length} cards drawn`);
     const newCardsPerPlayer: {card: GameCard, handIndex: number}[][] = [];
     for (const player of this.players) {
       const newCardsForCurrentPlayer: {card: GameCard, handIndex: number}[] = [];
@@ -229,7 +230,7 @@ export class Room implements IRoom {
           player.hand.push(card);
           newCardsForCurrentPlayer.push({card, handIndex});
         } else {
-          console.error('something went wrong - not enough cards drawn');
+          logger.error('something went wrong - not enough cards drawn');
         }
       }
       newCardsPerPlayer.push(newCardsForCurrentPlayer);
@@ -330,7 +331,7 @@ export class Room implements IRoom {
         gamePhase: this.gamePhase,
         scoreList: this.players.map(p => [p.score, p.scoredThisRound]),
       };
-      console.log('advancing game phase');
+      logger.log('info', 'advancing game phase');
     }
     this.lastModified = Date.now();
     return { isSuccessful: true, ...{scoringInfo} };
@@ -350,7 +351,7 @@ export class Room implements IRoom {
 
   // assigns points for case where some players guessed the correct card and some did not
   handleSomeCorrectSomeIncorrect(correctGuessers: string[]) {
-    // console.log('Some players guessed correctly, some did not');
+    // logger.log('info', 'Some players guessed correctly, some did not');
     this.players[this.playerTurn].incrementScore(3);
     for (const correctGuesser of correctGuessers) {
       this.getPlayer(correctGuesser)?.incrementScore(3);
@@ -359,7 +360,7 @@ export class Room implements IRoom {
 
   // assigns points for case where all or no players guessed the correct card
   handleAllOrNoneCorrect() {
-    // console.log('Everyone but the storyteller gets 2 points');
+    // logger.log('info', 'Everyone but the storyteller gets 2 points');
     for (const nonStoryTeller of this.players.filter(p => !Object.is(p, this.storyTeller))) {
       nonStoryTeller.incrementScore(2);
     }
@@ -367,7 +368,7 @@ export class Room implements IRoom {
 
   // assigns points to players who fooled other players.
   handleFoolingPoints() {
-    // console.log('Distributing points for fooling other players');
+    // logger.log('info', 'Distributing points for fooling other players');
     const successfulFakes = Object.values(this.guesses).filter(cardId => cardId !== this.storyCardId);
     for (const fakeId of successfulFakes) {
       const fakerId = this.submittedCards.find(c => c.id === fakeId)?.submitter;
@@ -427,10 +428,10 @@ export class Room implements IRoom {
   startNextRound() {
     if (this.isGameWon()) {
       this.resetToLobby();
-      console.log('resetting to lobby');
+      logger.log('info', 'resetting to lobby');
       return;
     }
-    // console.log("starting next round");
+    logger.log('info', 'starting next round');
     this.resetRoundValues();
     this.gamePhase = 'storyTellerPick';
   }

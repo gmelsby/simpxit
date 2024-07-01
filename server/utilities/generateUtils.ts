@@ -1,5 +1,3 @@
-import { v4 } from 'uuid';
-
 // returns a 4-letter room code
 function generateRoomCode() {
   let code = '';
@@ -10,9 +8,4 @@ function generateRoomCode() {
   return code;
 }
 
-
-function generateUuid() {
-  return v4();
-}
-
-export { generateRoomCode, generateUuid };
+export { generateRoomCode };
