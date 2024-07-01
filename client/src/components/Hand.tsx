@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Col, Row, Carousel, Container } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Col, Row, Container } from 'react-bootstrap';
 import GameImage from './GameImage';
 import { GameCard } from '../../../types';
-import CarouselController from './CarouselController';
 import InfoCard from './InfoCard';
+import FramerCardCarousel from './FramerCardCarousel';
+import CarouselController from './CarouselController';
 
 export default function Hand( { hand, setSelectedCard, isGallery, isInfo }: 
   {
@@ -14,16 +15,13 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
   }) {
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [swipe, setSwipe] = useState<'left' | 'right' | undefined>(undefined);
 
   // in a 3-player game resets the carousel after the first card of two is picked
   useEffect(() => {
     setActiveIndex(0);
   }, [hand.length, setActiveIndex]);
 
-  const updateActiveIndex = (eventKey: number) => {
-    setActiveIndex(eventKey);
-  };
-  
   const handleSelectCard = (card: GameCard) => {
     if (setSelectedCard !== undefined) {
       setSelectedCard(card);
@@ -57,20 +55,9 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
       <Container className="d-xs-flex d-md-none justify-content-center">
         {hand.length > 1 && 
           <>
-            <Carousel className="" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
-              {hand.map(c => 
-                <Carousel.Item key={c.id}> 
-                  <div className={`${isInfo ? 'py-5' : ''}`}>
-                    {isInfo ?
-                      <InfoCard card={c} />
-                      :
-                      <GameImage className="mb-5" card={c} />
-                    }
-                  </div>
-                </Carousel.Item>
-              )}
-            </Carousel>
-            <CarouselController {...{hand, activeIndex, updateActiveIndex}} handleSelectCard={isGallery || isInfo ? undefined : handleSelectCard}/>
+            <FramerCardCarousel cards={hand} {...{activeIndex, setActiveIndex, swipe, setSwipe}} />
+            <CarouselController hand={hand} {...{activeIndex, setSwipe}} 
+              handleSelectCard={isGallery || isInfo ? undefined : handleSelectCard}/>
           </>
         }
         {hand.length === 1 &&

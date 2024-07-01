@@ -3,11 +3,11 @@ import {Container, Row, Col, Button } from 'react-bootstrap';
 import { BsCaretLeftFill, BsCaretRightFill } from 'react-icons/bs';
 import { GameCard } from '../../../types';
 
-export default function CarouselController({hand, activeIndex, updateActiveIndex, handleSelectCard}:
+export default function CarouselController({hand, activeIndex, setSwipe, handleSelectCard}:
   {
     hand: GameCard[],
     activeIndex: number,
-    updateActiveIndex: (newIndex: number) => void,
+    setSwipe: React.Dispatch<React.SetStateAction<'left' | 'right' | undefined>>,
     handleSelectCard?: (selectedCard: GameCard) => void
   }) {
 
@@ -15,7 +15,7 @@ export default function CarouselController({hand, activeIndex, updateActiveIndex
     <Container className="mt-3 text-center">
       <Row>
         <Col>
-          <Button onClick={() => updateActiveIndex((((activeIndex - 1) % hand.length) + hand.length) % hand.length)} className="px-3">
+          <Button onClick={() => setSwipe('left')} className="px-3">
             <BsCaretLeftFill />
           </Button>
         </Col>
@@ -27,7 +27,7 @@ export default function CarouselController({hand, activeIndex, updateActiveIndex
           </Button>}
         </Col>
         <Col>
-          <Button onClick={() => updateActiveIndex((activeIndex + 1) % hand.length)} className="px-3">
+          <Button onClick={() => setSwipe('right')} className="px-3">
             <BsCaretRightFill />
           </Button>
         </Col>
