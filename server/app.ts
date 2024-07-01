@@ -10,9 +10,20 @@ import cors from 'cors';
 import path from 'node:path';
 import { retrieveCardInfo } from './models/cardModel.js';
 import { GameCard, ClientToServerEvents, ServerToClientEvents } from '../types.js';
-
+import { createLogger, format, transports } from 'winston';
 
 const PORT = process.env.PORT || 3000;
+
+export const logger = createLogger({
+  format: format.combine(
+    format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss'
+    }),
+    format.errors({stack: true}),
+    format.splat(),
+    format.json()),
+  transports: [new transports.Console()]
+});
 
 const app = express();
 app.use(express.json());
@@ -48,7 +59,7 @@ socketHandler(io, rooms);
 // for caching card info, clears every 2 minutes
 let cardInfoCache: { [key: string]: GameCard } = {};
 setInterval(() => {
-  console.log('clearing cardInfoCache');
+  logger.info('clearing cardInfoCache');
   cardInfoCache = {};
 }, 1000 * 60 * 2);
 
@@ -57,11 +68,11 @@ setInterval(() => {
 app.get('/api/cardinfo/:cardIdString', async (req, res) => {
   const { cardIdString } = req.params;
 
-  console.log(`received request for card info for card ${cardIdString}`);
+  logger.info(`received request for card info for card ${cardIdString}`);
 
   // case where value was cached
   if (Object.keys(cardInfoCache).includes(cardIdString)) {
-    console.log('returning cached value');
+    logger.info('returning cached value');
     res.send(cardInfoCache[cardIdString]);
     return;
   }
@@ -91,7 +102,7 @@ app.get('/api/cardinfo/:cardIdString', async (req, res) => {
 
 // allows users to create a new room
 app.post('/api/room', (req, res) => {
-  console.log(`received create room request with UUID ${req.body.userId}`);
+  logger.info(`received create room request with UUID ${req.body.userId}`);
   const uuid  = req.body.userId;
   if (!uuid) {
     res.status(403).send({error: 'User does not have UUID. Refresh page and try again.'});
@@ -104,7 +115,7 @@ app.post('/api/room', (req, res) => {
     newRoomCode = generateRoomCode();
   } while (newRoomCode in rooms);
 
-  console.log(`new room code is ${newRoomCode}`);
+  logger.info(`new room code is ${newRoomCode}`);
   rooms[newRoomCode] = new Room(uuid);
   res.status(201).send({ newRoomCode });
 });
@@ -116,5 +127,5 @@ app.get('*', (req, res) => {
 
 
 server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}...`);
+  logger.info(`Server listening on port ${PORT}...`);
 });

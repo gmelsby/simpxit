@@ -36,7 +36,7 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
 
   const orderedCards = cards.slice(activeIndex, cards.length).concat(cards.slice(0, activeIndex));
   return (
-    <div style={{position: 'relative'}}>
+    <div className='d-flex flex-column' style={{position: 'relative'}}>
 
       <div>
         {orderedCards.map((card, index) => {
@@ -103,17 +103,21 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
             </motion.div>);
         })}
       </div>
-      <div className='opacity-0' style={{zIndex: -1}}> 
-        {!scoring && <Image className='card-img' src='/image-placeholder.svg' />} 
-        {scoring && <ScoringCard {...{
-          player: scoring.players[0],
+
+
+      <div className='opacity-0' style={{zIndex: -1, pointerEvents: 'none'}}> 
+        {scoring === undefined && <Image className='card-img' src='/image-placeholder.svg' />} 
+        {scoring !== undefined && <ScoringCard {...{
+          player: scoring.players.slice(1).reduce((acc, p) => {
+            return p.playerName.length > acc.playerName.length ? p : acc;
+          }),
           card: scoring.players[0].hand[0],
           guessedPlayerNames: [],
-          isStoryTeller: true,
+          isStoryTeller: false,
         }}/>}
       </div>
       
-      <Row className='d-flex justify-content-center'>
+      <Row className='d-flex justify-content-center' style={{zIndex: 20}}>
         {[...Array(cards.length).keys()].map(i => 
           <span key={i} 
             style={{height: '7px', width: '15px', backgroundColor: i === activeIndex ? '#FFFFFF' : '#6c757d', borderRadius: '20%'}} 
