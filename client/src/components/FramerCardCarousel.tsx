@@ -34,8 +34,6 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
     return (() => clearTimeout(timeout));
   }, [swipe, cards.length]);
 
-  console.log(activeIndex);
-
   const orderedCards = cards.slice(activeIndex, cards.length).concat(cards.slice(0, activeIndex));
   return (
     <div style={{position: 'relative'}}>
