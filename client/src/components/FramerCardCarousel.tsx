@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { GameCard } from '../../../types';
 import GameImage from './GameImage';
-import { Container, Image } from 'react-bootstrap';
+import { Container, Image, Row } from 'react-bootstrap';
 import InfoCard from './InfoCard';
 import ScoringCard from './ScoringCard';
 
-export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, swipe, setSwipe, info, scoring}: 
+export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, swipe, setSwipe, isInfo, scoring}: 
   {
     cards: GameCard[], 
     activeIndex: number, 
     setActiveIndex: React.Dispatch<React.SetStateAction<number>>, 
     swipe: 'left' | 'right' | undefined
     setSwipe: React.Dispatch<React.SetStateAction<'left' | 'right' | undefined>>,
-    info?: boolean, 
+    isInfo?: boolean, 
     scoring?: boolean
   }) {
   const [dragStartX, setDragStartX] = useState(0);
@@ -88,8 +88,8 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
                   animate={{ 
                     rotate: index < 2 || index === cards.length - 1 ? 0 : (Number.parseInt(card.id) % 5) * (Number.parseInt(card.id) % 2 ? 1 : -1),
                   }}>
-                  {info && <InfoCard card={card} />}
-                  {!info && <GameImage card={card} />}
+                  {isInfo && <InfoCard card={card} />}
+                  {!isInfo && <GameImage card={card} />}
                 </motion.div>
               </Container>
             </motion.div>);
@@ -98,5 +98,13 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
       <div className='opacity-0' style={{zIndex: -1}}> 
         <Image className='card-img' src='/image-placeholder.svg' />
       </div>
+      <Row className='d-flex justify-content-center'>
+        {[...Array(cards.length).keys()].map(i => 
+          <span key={i} 
+            style={{height: '7px', width: '15px', backgroundColor: i === activeIndex ? '#FFFFFF' : '#6c757d', borderRadius: '20%'}} 
+            className='mx-1'
+          />
+        )}
+      </Row>
     </div>);
 }

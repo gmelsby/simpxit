@@ -55,7 +55,7 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
       <Container className="d-xs-flex d-md-none justify-content-center">
         {hand.length > 1 && 
           <>
-            <FramerCardCarousel cards={hand} {...{activeIndex, setActiveIndex, swipe, setSwipe}} />
+            <FramerCardCarousel cards={hand} {...{activeIndex, setActiveIndex, swipe, setSwipe, isInfo}} />
             <CarouselController hand={hand} {...{activeIndex, setSwipe}} 
               handleSelectCard={isGallery || isInfo ? undefined : handleSelectCard}/>
           </>
