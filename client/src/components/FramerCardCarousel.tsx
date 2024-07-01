@@ -42,24 +42,20 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
 
       <div>
         {orderedCards.map((card, index) => {
-          const deltaY = index === 0 || index === 1 || index === cards.length - 1 ? 0 
-            : (Number.parseInt(card.id) % 10) * (Number.parseInt(card.id) % 2 ? 1 : -1);
-          let deltaX = (Number.parseInt(card.id) % 11) * (Number.parseInt(card.id) % 3 ? 1 : -1);
+          let deltaY = (Number.parseInt(card.id) % 7) * (Number.parseInt(card.id) % 3 ? 1 : -1);
+          let deltaX = (Number.parseInt(card.id) % 11) * (Number.parseInt(card.id) % 5 ? 1 : -1);
+          let rotation = (Number.parseInt(card.id) % 3) * (Number.parseInt(card.id) % 2 ? 1 : -1);
           // handles animtion for button input from CarouselController
           if (index === 0) {
+            deltaY = 0;
+            rotation = 0;
             if (swipe === 'right') {
               deltaX = -70;
             } else {
               deltaX = 0;
             }
-          } else if (index === cards.length - 1) {
-            if (swipe === 'left') {
-              deltaX = -70;
-            } else {
-              deltaX = 0;
-            }
-          } else if (index === 1) {
-            deltaX = 0;
+          } else if (index === cards.length - 1 && swipe === 'left') {
+            deltaX = -70;
           }
 
           return (
@@ -70,6 +66,7 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
                 y: deltaY,
                 x: deltaX,
               }}
+              transition={{type: 'tween'}}
               drag={index === 0 ? 'x' : false}
               dragConstraints={{
                 left: 0,
@@ -78,7 +75,7 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
               onDragStart={(e, info) => setDragStartX(info.point.x)}
               onDragEnd={(e, info) => {
                 const lateralDrag = info.point.x - dragStartX;
-                // drag right
+                // drag left
                 if (lateralDrag >= 20) {
                   setSwipe('left');
                 }
@@ -91,7 +88,7 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
               <Container>
                 <motion.div
                   animate={{ 
-                    rotate: index < 2 || index === cards.length - 1 ? 0 : (Number.parseInt(card.id) % 5) * (Number.parseInt(card.id) % 2 ? 1 : -1),
+                    rotate: rotation,
                   }}>
                   {isInfo && <InfoCard card={card} />}
                   {scoring && 
