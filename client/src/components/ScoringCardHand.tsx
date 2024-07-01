@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Container, Row, Carousel, Col } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import ScoringCard from './ScoringCard';
 import { GameCard, Player } from '../../../types';
 import CarouselController from './CarouselController';
+import FramerCardCarousel from './FramerCardCarousel';
 
 export default function ScoringCardHand({storyTeller,
   players,
@@ -16,10 +17,7 @@ export default function ScoringCardHand({storyTeller,
                                         }) {
 
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const updateActiveIndex = (eventKey: number) => {
-    setActiveIndex(eventKey);
-  };
+  const [swipe, setSwipe] =  useState<'left' | 'right' | undefined>(undefined);
   
   // returns list of player names that guessed the card
   const playersWhoGuessed = (cardId: string) => {
@@ -32,6 +30,12 @@ export default function ScoringCardHand({storyTeller,
     [7, 4],
     [8, 4],
   ]);
+
+  const scoring = {
+    players: players,
+    guesses: guesses,
+    storyTellerId: storyTeller.playerId
+  };
 
   return (
     <>
@@ -49,18 +53,8 @@ export default function ScoringCardHand({storyTeller,
 
 
       <Container className="d-xs-flex d-md-none">
-        <Carousel className="" interval={null} variant="dark" controls={false} activeIndex={activeIndex} onSelect={updateActiveIndex}>
-          {submittedCards.map(c => 
-            <Carousel.Item key={c.id}> 
-              <Container className="py-5">
-                <ScoringCard player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
-                  guessedPlayerNames={playersWhoGuessed(c.id).map(p => p.playerName)} 
-                  isStoryTeller={c.submitter === storyTeller.playerId} />
-              </Container>
-            </Carousel.Item>
-          )}
-        </Carousel>
-        <CarouselController hand={submittedCards} {...{activeIndex, updateActiveIndex}} />
+        <FramerCardCarousel cards={submittedCards} {...{activeIndex, setActiveIndex, swipe, setSwipe, scoring}}/>
+        <CarouselController hand={submittedCards} {...{activeIndex, setSwipe}} />
       </Container>
     </>
   );

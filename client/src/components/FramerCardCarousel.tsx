@@ -5,6 +5,7 @@ import GameImage from './GameImage';
 import { Container, Image, Row } from 'react-bootstrap';
 import InfoCard from './InfoCard';
 import ScoringCard from './ScoringCard';
+import { Player } from '../../../types';
 
 export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, swipe, setSwipe, isInfo, scoring}: 
   {
@@ -14,7 +15,11 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
     swipe: 'left' | 'right' | undefined
     setSwipe: React.Dispatch<React.SetStateAction<'left' | 'right' | undefined>>,
     isInfo?: boolean, 
-    scoring?: boolean
+    scoring?: {
+      players: Player[];
+      guesses: {[key:string]: string};
+      storyTellerId: string;
+    }
   }) {
   const [dragStartX, setDragStartX] = useState(0);
 
@@ -89,14 +94,28 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
                     rotate: index < 2 || index === cards.length - 1 ? 0 : (Number.parseInt(card.id) % 5) * (Number.parseInt(card.id) % 2 ? 1 : -1),
                   }}>
                   {isInfo && <InfoCard card={card} />}
-                  {!isInfo && <GameImage card={card} />}
+                  {scoring && 
+                    <ScoringCard 
+                      player={scoring.players.find(p => p.playerId === card.submitter)}
+                      card={card}
+                      guessedPlayerNames={scoring.players.filter(p => scoring.guesses[p.playerId] === card.id).map(p => p.playerName)}
+                      isStoryTeller={scoring.players.find(p => p.playerId === card.submitter)?.playerId === scoring.storyTellerId}
+                    />
+                  }
+                  {!isInfo && !scoring && <GameImage card={card} />}
                 </motion.div>
               </Container>
             </motion.div>);
         })}
       </div>
       <div className='opacity-0' style={{zIndex: -1}}> 
-        <Image className='card-img' src='/image-placeholder.svg' />
+        {!scoring && <Image className='card-img' src='/image-placeholder.svg' />} 
+        {scoring && <ScoringCard {...{
+          player: scoring.players[0],
+          card: scoring.players[0].hand[0],
+          guessedPlayerNames: [],
+          isStoryTeller: true,
+        }}/>}
       </div>
       <Row className='d-flex justify-content-center'>
         {[...Array(cards.length).keys()].map(i => 
