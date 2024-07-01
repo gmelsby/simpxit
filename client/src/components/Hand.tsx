@@ -40,18 +40,21 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
 
   return(
     <>
-      <Row 
-        xs={lengthMap.has(hand.length) ? lengthMap.get(hand.length) : Math.min(Math.max(hand.length, 2), 3)} 
-        className="justify-content-center maxwidth-67svw g-2 my-3 mx-auto d-none d-md-flex">
-        {hand.map(card =>
-          <Col key={card.id} className="d-flex flex-column justify-content-center">
-            {isInfo ?
-              <InfoCard card={card} />
-              :
-              <GameImage card={card} handleSelectCard={handleSelectCard} selectablecard={selectablecard}/>
-            }
-          </Col>)}
-      </Row>
+      <div>
+        <Row 
+          xs={lengthMap.has(hand.length) ? lengthMap.get(hand.length) : Math.min(Math.max(hand.length, 2), 3)} 
+          className="justify-content-center maxwidth-67svw g-2 my-3 mx-auto d-none d-md-flex">
+          {hand.map(card =>
+            <Col key={card.id} className="d-flex flex-column justify-content-center">
+              {isInfo ?
+                <InfoCard card={card} />
+                :
+                <GameImage card={card} handleSelectCard={handleSelectCard} selectablecard={selectablecard}/>
+              }
+            </Col>)}
+        </Row>
+        {isInfo && <h6 className='my-3 opacity-75'>{'ontouchstart' in window ? 'Tap' : 'Click'} card{hand.length > 1 ? 's': ''} for more info!</h6>}
+      </div>
       <Container className="d-xs-flex d-md-none justify-content-center">
         {hand.length > 1 && 
           <>
@@ -63,7 +66,10 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
         {hand.length === 1 &&
           <div>
             {isInfo ?
-              <InfoCard card={hand[0]} />
+              <>
+                <InfoCard card={hand[0]} />
+                <h6 className='my-3 opacity-75'>{'ontouchstart' in window ? 'Tap' : 'Click'} card{hand.length > 1 ? 's': ''} for more info!</h6>
+              </>
               :
               <GameImage card={hand[0]} selectablecard={selectablecard} />
             }
