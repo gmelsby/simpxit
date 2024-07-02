@@ -69,6 +69,8 @@ app.get('/api/cardinfo/:cardIdString', async (req, res) => {
   const { cardIdString } = req.params;
 
   logger.info(`received request for card info for card ${cardIdString}`);
+  // card info based on id should not change, so set Cache-Control very high
+  res.set('Cache-Control', 'public, max-age=31557600');
 
   // case where value was cached
   if (Object.keys(cardInfoCache).includes(cardIdString)) {
@@ -118,6 +120,12 @@ app.post('/api/room', (req, res) => {
   logger.info(`new room code is ${newRoomCode}`);
   rooms[newRoomCode] = new Room(uuid);
   res.status(201).send({ newRoomCode });
+});
+
+
+// basic healthcheck
+app.get('/api/healthcheck', (req, res) => {
+  res.status(200).send();
 });
 
 // serves react app for all other routes
