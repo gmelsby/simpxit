@@ -5,7 +5,7 @@ import ScoringCardHand from '../components/ScoringCardHand';
 import WaitingOn from '../components/WaitingOn';
 import { Player, GameCard } from '../../../types';
 import { Socket } from 'socket.io-client';
-import JustifyEvenlyContainer from '../components/JustifyEvenlyContainer';
+import JustifySafelyContainer from '../components/JustifySafelyContainer';
 
 export default function Scoring({ 
   userId,
@@ -69,7 +69,7 @@ export default function Scoring({
 
 
   return (
-    <JustifyEvenlyContainer className="text-center h-100 d-flex flex-column">
+    <JustifySafelyContainer justifyType='evenly' className="text-center h-100 d-flex flex-column">
       <Container className= "mt-5 mt-md-1">
         { winners.length !== 0 && <h1>{winners.map(p => p.playerName).join(', ')} win{winners.length === 1 && 's'}!</h1>}
         <h3 className="mb-1">{topMessage}</h3>
@@ -80,6 +80,6 @@ export default function Scoring({
         {winners.length !== 0 && !(isReady) && <ButtonTimer onClick={handleReady}>Return to Room Lobby</ButtonTimer>}
         {isReady && <WaitingOn waitingOn={waitingOn} />}
       </Container>
-    </JustifyEvenlyContainer>
+    </JustifySafelyContainer>
   );
 }

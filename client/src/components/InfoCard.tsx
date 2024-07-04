@@ -3,6 +3,7 @@ import { GameCard } from '../../../types';
 import { Container, Image } from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
 import GameImage from './GameImage';
+import JustifySafelyContainer from './JustifySafelyContainer';
 
 export default function InfoCard({ card }: { card: GameCard}) {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -39,12 +40,12 @@ function Back({ cardId, isFlipped }: { cardId: string, isFlipped: boolean }) {
   }, [isFlipped, backRef]);
 
   return (
-    <div className={`d-flex flex-column bg-body justify-content-start ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}
+    <JustifySafelyContainer justifyType='center' overflowType='auto' className={`d-flex flex-column bg-body ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}
       ref={backRef}
     >
       <Container className='py-4'>
         <CardInfoWrapper cardId={cardId} load={isFlipped}/>
       </Container>
-    </div>
+    </JustifySafelyContainer>
   );
 }

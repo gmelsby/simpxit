@@ -4,7 +4,7 @@ import Hand from '../components/Hand';
 import StoryModal from '../components/StoryModal';
 import { GameCard, Player } from '../../../types';
 import { Socket } from 'socket.io-client';
-import JustifyEvenlyContainer from '../components/JustifyEvenlyContainer';
+import JustifySafelyContainer from '../components/JustifySafelyContainer';
 
 export default function StoryTellerPick({ 
   userId,
@@ -50,7 +50,7 @@ export default function StoryTellerPick({
       <>
         <StoryModal selectedCard={selectedCard} setSelectedCard={setSelectedCard} descriptor={descriptor} 
           setDescriptor={setDescriptor} handleSubmit={handleSubmit} />
-        <JustifyEvenlyContainer className="d-flex flex-column text-center align-items-center h-100 m-auto">
+        <JustifySafelyContainer justifyType='evenly' className="d-flex flex-column text-center align-items-center h-100 m-auto">
           <Row className='my-2'>
             <h1>You are the storyteller!</h1>
             <h2>Pick an image and come up with a description.</h2>
@@ -58,7 +58,7 @@ export default function StoryTellerPick({
           <Row className='mb-2'>
             <Hand hand={storyTeller.hand} setSelectedCard={setSelectedCard} />
           </Row>
-        </JustifyEvenlyContainer>
+        </JustifySafelyContainer>
       </>
     );
   }
