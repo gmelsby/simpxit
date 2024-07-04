@@ -15,6 +15,7 @@ import { createLogger, format, transports } from 'winston';
 const PORT = process.env.PORT || 3000;
 
 export const logger = createLogger({
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   format: format.combine(
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss'
@@ -59,7 +60,7 @@ socketHandler(io, rooms);
 // for caching card info, clears every 2 minutes
 let cardInfoCache: { [key: string]: GameCard } = {};
 setInterval(() => {
-  logger.info('clearing cardInfoCache');
+  logger.verbose('clearing cardInfoCache');
   cardInfoCache = {};
 }, 1000 * 60 * 2);
 
@@ -74,7 +75,7 @@ app.get('/api/cardinfo/:cardIdString', async (req, res) => {
 
   // case where value was cached
   if (Object.keys(cardInfoCache).includes(cardIdString)) {
-    logger.info('returning cached value');
+    logger.verbose('returning cached value');
     res.send(cardInfoCache[cardIdString]);
     return;
   }
