@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap';
 import WaitingOn from './WaitingOn';
 import { Player, GameCard } from '../../../types';
 import Hand from './Hand';
-import JustifyEvenlyContainer from './JustifyEvenlyContainer';
+import JustifySafelyContainer from './JustifySafelyContainer';
 
 
 
@@ -25,7 +25,7 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
   };
 
   return (
-    <JustifyEvenlyContainer className="h-100 d-flex flex-column">
+    <JustifySafelyContainer justifyType="evenly" className="h-100 d-flex flex-column">
       <Container className="text-center mt-5 align-items-center">
         <h3 className="">
           {phraseMap[use][0]}
@@ -43,6 +43,6 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
       <Container className="text-center my-2">
         <WaitingOn waitingOn={waitingOn} />
       </Container>
-    </JustifyEvenlyContainer>
+    </JustifySafelyContainer>
   );
 }

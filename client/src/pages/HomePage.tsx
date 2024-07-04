@@ -3,7 +3,7 @@ import { Button, Col, Row, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import ButtonTimer from '../components/ButtonTimer';
 import Sidebar from '../components/Sidebar';
-import JustifyEvenlyContainer from '../components/JustifyEvenlyContainer';
+import JustifySafelyContainer from '../components/JustifySafelyContainer';
 
 
 export default function HomePage( { userId }: { userId: string}) {
@@ -60,7 +60,7 @@ export default function HomePage( { userId }: { userId: string}) {
   return (
     <>
       <Sidebar />
-      <JustifyEvenlyContainer className="d-flex flex-column text-center align-items-center h-100 m-auto">
+      <JustifySafelyContainer justifyType='evenly' className="d-flex flex-column text-center align-items-center h-100 m-auto">
         <Row className='m-5'>
           <h1 className='rock-salt-regular'>Simpxit</h1>
           <h4>A Simpsons/Dixit Fan Game!</h4>
@@ -113,7 +113,7 @@ export default function HomePage( { userId }: { userId: string}) {
             </Form>
           </Row>
         </Row>
-      </JustifyEvenlyContainer>
+      </JustifySafelyContainer>
     </>
   );
 }
