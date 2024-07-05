@@ -108,13 +108,23 @@ export async function getAdminId(roomCode: string) {
   return result[0];
 }
 
+export async function getPlayerIds(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.players..playerId'});
+  return result as string[] | null;
+}
+
+export async function getPlayerNames(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.players..playerName'});
+  return result as string[] | null;
+}
+
 // kicks player at specified index and adds id to banned list
 export async function kickPlayer(roomCode: string, kickUserId: string, kickIndex: number) {
   const result = await client.multi()
     .json.arrAppend(roomPrefix(roomCode), '$.kickedPlayers', kickUserId)
     .json.del(roomPrefix(roomCode), `$.players[${kickIndex}]`)
     .exec();
-  // returns true if result has no null elemetns, false if it does
+  // returns true if result has no null elements, false if it does
   return !result.some(res => res === null);
 }
 

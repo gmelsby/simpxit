@@ -3,8 +3,7 @@ import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
 import { ClientToServerEvents, ServerToClientEvents } from '../../types.js';
 import { logger } from '../app.js';
-import {  addPlayerToRoom, changeName, changeOptions, getAdminId, getPlayers, getRoom, incrementUpdateCount, kickPlayer, removePlayer, resetTTL } from '../models/roomModel.js';
-import { approveNameChange, findPlayerIndex, isAdmin, isCurrentPlayer } from '../utilities/roomUtils.js';
+import  * as roomModel from '../models/roomModel.js';
 
 export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>, rooms: {[key: string]: Room}) {
   io.on('connection', socket => {
@@ -21,7 +20,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       logger.log('info', `request from user ${userId} for state of room ${roomId}`);
 
-      const room = await getRoom(roomId);
+      const room = await roomModel.getRoom(roomId);
       // case where room does not exist
       if (!room) {
         logger.log('info', 'room does not exist');
@@ -29,12 +28,12 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       }
 
 
-      if(!isCurrentPlayer(room, userId)) {
+      if(!room.players.some(p => p.playerId === userId)) {
         logger.log('info', `user ${userId} is not a current member of room ${roomId}`);
         return;
       }
 
-      await resetTTL(roomId);
+      await roomModel.resetTTL(roomId);
       logger.log('info', `socketid ${socket.id} requested room state: sending room data`);
       io.to(socket.id).emit('receiveRoomState', room);
     });
@@ -49,7 +48,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       logger.log('info', `attempt to join room: roomId: ${roomId}, userId: ${userId}`);
 
-      const room = await getRoom(roomId);
+      const room = await roomModel.getRoom(roomId);
       // case where room does not exist
       if (!room) {
         logger.log('info', 'room does not exist');
@@ -88,10 +87,10 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         
       // adds player to room
       logger.log('info', `adding ${userId} to player list`);
-      const {newPlayer, index} = await addPlayerToRoom(roomId, userId);
+      const {newPlayer, index} = await roomModel.addPlayerToRoom(roomId, userId);
       // record that we have updated the room
-      const updateCount = await incrementUpdateCount(roomId);
-      await resetTTL(roomId);
+      const updateCount = await roomModel.incrementUpdateCount(roomId);
+      await roomModel.resetTTL(roomId);
 
       // send joining player entire room state
       io.to(socket.id).emit('receiveRoomState', room);
@@ -122,27 +121,27 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         return;
       }
 
-      const players = await getPlayers(roomId);
+      const playerIds = await roomModel.getPlayerIds(roomId);
 
-      if (!players) {
+      if (!playerIds || playerIds.length === 0) {
         return;
       } 
 
-      if (!isAdmin(players, userId)) {
+      if (playerIds[0] !== userId) {
         logger.info('kicking player is not admin');
         return;
       }
 
       // check that kicked user is in room
-      const kickIndex = findPlayerIndex(players, kickUserId);
+      const kickIndex = playerIds.indexOf(kickUserId);
       if (kickIndex === -1) {
         logger.info('player to be kicked is not in the room');
       }
       
-      if (await kickPlayer(roomId, kickUserId, kickIndex)) {
+      if (await roomModel.kickPlayer(roomId, kickUserId, kickIndex)) {
         logger.log('info', `kicked player ${kickUserId}`);
-        const updateCount = await incrementUpdateCount(roomId);
-        await resetTTL(roomId);
+        const updateCount = await roomModel.incrementUpdateCount(roomId);
+        await roomModel.resetTTL(roomId);
         io.to(roomId).emit('receiveRoomPatch', {
           operations: [
             {
@@ -174,13 +173,13 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       logger.log('info', `player ${userId} attempting to leave room ${roomId}`);
       // check for existence of room
 
-      const players = await getPlayers(roomId);
+      const playerIds = await roomModel.getPlayerIds(roomId);
 
-      if (!players) {
+      if (!playerIds || playerIds.length === 0) {
         logger.log('info', 'room player is attempting to leave does not exist');
         return callback('Room does not exist');
       }
-      const playerIndex = findPlayerIndex(players, userId);
+      const playerIndex = playerIds.indexOf(userId);
       if (playerIndex === -1) {
         logger.log('info', 'player is not in room');
         return callback('Player is not in room');
@@ -188,7 +187,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       
       // successful exit
-      if (await removePlayer(roomId, playerIndex)) {
+      if (await roomModel.removePlayer(roomId, playerIndex)) {
         logger.log('info', 'player removed successfully');
         io.to(roomId).emit('receiveRoomPatch', {
           operations: [
@@ -197,9 +196,9 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
               'path': `/players/${playerIndex}`
             }
           ],
-          updateCount: await incrementUpdateCount(roomId)
+          updateCount: await roomModel.incrementUpdateCount(roomId)
         });
-        await resetTTL(roomId);
+        await roomModel.resetTTL(roomId);
       }
       else {
         logger.log('info', 'unable to remove player');
@@ -216,29 +215,35 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       const trimmedNewName = newName.trim();
       logger.log('info', `player ${userId} attempting to change name to ${trimmedNewName}`);
-      const players = await getPlayers(roomId);
-      if (!players) {
+      const playerIds = await roomModel.getPlayerIds(roomId);
+      const playerNames = await roomModel.getPlayerNames(roomId);
+      if (!playerIds || !playerNames || Math.min(playerIds.length, playerNames.length) === 0) {
         return;
       }
       
-      // check if name is identical to existing names or player is not in room
-      const { approvedName, playerIndex } = approveNameChange(players, userId, trimmedNewName);
+      const playerIndex = playerIds.indexOf(userId);
       if (playerIndex === -1) {
-        logger.log('info', `player ${userId} could not succesfully change name`);
+        logger.log('info', `player ${userId} is not in room`);
         return;
       }
-      if (await changeName(roomId, playerIndex, approvedName)) {
+      
+      if (playerNames.some(p => p.toLowerCase() === trimmedNewName.toLowerCase()))  {
+        logger.log('info', `a player by name ${trimmedNewName} already exists`);
+        return;
+      }
+
+      if (await roomModel.changeName(roomId, playerIndex, trimmedNewName)) {
         io.to(roomId).emit('receiveRoomPatch', {
           operations: [
             {
               'op': 'replace',
               'path': `/players/${playerIndex}/playerName`,
-              'value': approvedName,
+              'value': trimmedNewName,
             }
           ],
-          updateCount: await incrementUpdateCount(roomId)
+          updateCount: await roomModel.incrementUpdateCount(roomId)
         });
-        await resetTTL(roomId);
+        await roomModel.resetTTL(roomId);
       } else {
         logger.error('issue changing name in redis');
       }
@@ -260,12 +265,12 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         return;
       }
 
-      if (userId !== await getAdminId(roomId)) {
+      if (userId !== await roomModel.getAdminId(roomId)) {
         logger.log('info', 'room does not exist or user in not admin');
         return;
       }
 
-      if (await changeOptions(roomId, newOptions) === null) {
+      if (await roomModel.changeOptions(roomId, newOptions) === null) {
         logger.log('info', 'could not change options');
         return;
       }
@@ -280,9 +285,9 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
             'value': newOptions,
           }
         ],
-        updateCount: await incrementUpdateCount(roomId)
+        updateCount: await roomModel.incrementUpdateCount(roomId)
       });
-      await resetTTL(roomId);
+      await roomModel.resetTTL(roomId);
     });
     
     socket.on('startGame', async request => {
@@ -303,7 +308,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
             'path': '/gamePhase',
             'value': 'storyTellerPick'
           }],
-          updateCount: await incrementUpdateCount(roomId)
+          updateCount: await roomModel.incrementUpdateCount(roomId)
         });
         logger.log('info', 'game started. populating hands...');
         // populate hands returns a promise
