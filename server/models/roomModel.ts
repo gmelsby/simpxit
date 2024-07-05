@@ -248,3 +248,36 @@ export async function submitStoryCard(roomCode: string, playerIndex: number, car
   const results = await Promise.all(promises);
   return !results.some(result => result === null || result === false || (typeof result === 'number' && result <  0));
 }
+
+// returns list of ids of players who haves submitted a card
+export async function getCardSubmitters(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.submittedCards..submitter'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result as string[];
+}
+
+// returns true if successful, false if not
+export async function submitOtherCard(roomCode: string, playerIndex: number, cardIndex: number, card: GameCard) {
+  const promises = [
+    pushCardToSumbittedCards(roomCode, card),
+    removeCardFromPlayerHand(roomCode, playerIndex, cardIndex),
+  ];
+  const results = await Promise.all(promises);
+  return !results.some(result => result === null || result === false || (typeof result === 'number' && result <  0));
+}
+
+// returns true if submittedCards.length === players.length or 3 player game modification, false otherwise
+export async function isOtherPlayerSubmitOver(roomCode: string) {
+  const playerLengthResult = await client.json.arrLen(roomPrefix(roomCode), '$.players');
+  const submittedCardLengthResult = await client.json.arrLen(roomPrefix(roomCode), '$.submittedCards');
+
+  const playerLength = Array.isArray(playerLengthResult) ? playerLengthResult[0] : playerLengthResult;
+  const submittedCardLength = Array.isArray(submittedCardLengthResult) ? submittedCardLengthResult[0] : submittedCardLengthResult;
+
+  if (playerLength === 3) {
+    return submittedCardLength === 5;
+  }
+  return submittedCardLength === playerLength;
+}

@@ -1,7 +1,7 @@
 import { JSONPatchOperation } from 'immutable-json-patch';
 import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
-import { ClientToServerEvents, GameCard, ServerToClientEvents } from '../../types.js';
+import { ClientToServerEvents, GameCard, GamePhase, ServerToClientEvents } from '../../types.js';
 import { logger } from '../app.js';
 import  * as roomModel from '../models/roomModel.js';
 import * as cardModel from '../models/cardModel.js';
@@ -433,7 +433,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       });
     });
 
-    socket.on('submitOtherCard', request => {
+    socket.on('submitOtherCard', async request => {
       const { roomId, userId, selectedCardId} = request;
 
       if ([roomId, userId, selectedCardId].some(val => typeof val !== 'string') ) {
@@ -441,17 +441,63 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         return;
       }
 
-      const room = rooms[roomId];
-      if (!room) {
+      const playerIds = await roomModel.getPlayerIds(roomId);
+      if (!playerIds) {
         return; 
       }
-      // check that user is able to submit other card
-      const { card, playerIndex, handIndex, gamePhase } = room.submitOtherCard(userId, selectedCardId);
-      if (card === undefined || playerIndex === -1 || handIndex === -1) {
-        logger.log('info', 'could not submit other card');
+      const playerIndex = playerIds.indexOf(userId);
+      if (playerIndex === -1) {
+        logger.info('player is not in room');
         return;
       }
+      
+      const player = await roomModel.getPlayerAtIndex(roomId, playerIndex);
+      if (player === null) {
+        return;
+      }
+
+      // check if card is in hand
+      const handIndex = player.hand.findIndex(c => c.id === selectedCardId);
+      if (handIndex === -1) {
+        logger.info('card is not in storyteller hand');
+        return;
+      }
+
+      const card =  player.hand[handIndex]; 
+      if (card === undefined) {
+        logger.log('info', 'unable to submit card');
+        return;
+      }
+
+      // check that user has not already submitted card
+      const cardSubmitters = await roomModel.getCardSubmitters(roomId);
+      logger.info(`submitters: ${cardSubmitters}`);
+      const submissionCount = cardSubmitters?.filter(id => id === userId).length;
+      // in a 3 player game, users get to submit 2 cards
+      if (submissionCount === undefined || 
+        (submissionCount === 1 && playerIds.length > 3) ||
+        (submissionCount === 2 && playerIds.length === 3)
+      ) {
+        logger.info('user has already submitted their cards');
+        return;
+      }
+
+      card.submitter = player.playerId;
+      if(!await roomModel.submitOtherCard(roomId, playerIndex, handIndex, card)) {
+        logger.error('issue submitting valid card');
+        return;
+      }
+
       logger.log('info', `Other card ${selectedCardId} submitted by ${userId}`);
+
+      // check if we need to advance game phase
+      let gamePhase: GamePhase | undefined = undefined;
+      if (await roomModel.isOtherPlayerSubmitOver(roomId)) {
+        gamePhase = 'otherPlayersGuess';
+        await roomModel.setGamePhase(roomId, gamePhase);
+      }
+      
+
       const operations: JSONPatchOperation[] = [
         {
           'op': 'add',
@@ -473,7 +519,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         });
       }
 
-      io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: room.incrementUpdateCount()});
+      io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: await roomModel.incrementUpdateCount(roomId)});
     });
     
     socket.on('guess', request => {
