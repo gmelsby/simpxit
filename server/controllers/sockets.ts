@@ -3,9 +3,11 @@ import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
 import { ClientToServerEvents, ServerToClientEvents } from '../../types.js';
 import { logger } from '../app.js';
+import { setKey } from '../models/roomModel.js';
 
 export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>, rooms: {[key: string]: Room}) {
   io.on('connection', socket => {
+    setKey();
     logger.log('info', `connection made: ${socket.id}`);
 
     // when client realizes something is wrong and needs to get the full room state
