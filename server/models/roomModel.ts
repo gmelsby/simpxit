@@ -281,3 +281,23 @@ export async function isOtherPlayerSubmitOver(roomCode: string) {
   }
   return submittedCardLength === playerLength;
 }
+
+export async function getSubmittedCardIds(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.submittedCards..id'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result as string[];
+}
+
+export async function getGuessers(roomCode: string) {
+  const result = await client.json.objKeys(roomPrefix(roomCode), '$.guesses');
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result.flat();
+}
+
+export async function submitGuess(roomCode: string, userId: string, cardId: string) {
+  return await client.json.set(roomPrefix(roomCode), `$.guesses.${userId}`, cardId);
+}

@@ -522,7 +522,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: await roomModel.incrementUpdateCount(roomId)});
     });
     
-    socket.on('guess', request => {
+    socket.on('guess', async request => {
       const {roomId, userId, selectedCardId} = request;
 
       if ([roomId, userId, selectedCardId].some(val => typeof val !== 'string') ) {
@@ -532,15 +532,29 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       logger.log('info', 'received guess');
 
-      const room = rooms[roomId];
-      if (!room) {
-        logger.log('info', 'room does not exist');
+      const playerIds = await roomModel.getPlayerIds(roomId);
+      if (!playerIds) {
+        return; 
+      }
+      const playerIndex = playerIds.indexOf(userId);
+      if (playerIndex === -1) {
+        logger.info('player is not in room');
         return;
       }
 
-      // check that user is able to make guess
-      const {isSuccessful, scoringInfo} = room.makeGuess(userId, selectedCardId);
-      if (!isSuccessful) {
+      const submittedCardIds = await roomModel.getSubmittedCardIds(roomId);
+      if (submittedCardIds === null || !submittedCardIds.includes(selectedCardId)) {
+        logger.info('cardId is not in submittedCards');
+        return;
+      }
+
+      const guessers = await roomModel.getGuessers(roomId);
+      if (guessers !== null && guessers.includes(userId)) {
+        logger.info('user has already submitted a guess');
+        return;
+      }
+ 
+      if (!await roomModel.submitGuess(roomId, userId, selectedCardId)) {
         logger.log('info', 'could not submit guess');
       }
       logger.log('info', `${userId} made guess`);
@@ -552,14 +566,17 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         }
       ];
 
+      // check if it's time to score
+      const scoringInfo = undefined;
+
       // add in scoringInfo information if exists, otherwise send patch without it
       if (scoringInfo) {
         operations.push({
           'op': 'replace',
           'path': '/gamePhase',
-          'value': scoringInfo.gamePhase
+          'value': 'scoring'
         });
-        scoringInfo.scoreList.forEach(([score, scoredThisRound], idx) => {
+        /*scoringInfo.scoreList.forEach(([score, scoredThisRound], idx) => {
           operations.push({
             'op': 'replace',
             'path': `/players/${idx}/score`,
@@ -570,10 +587,10 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
             'path': `/players/${idx}/scoredThisRound`,
             'value': scoredThisRound
           });
-        });
+        });*/
       }
 
-      io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: room.incrementUpdateCount()});
+      io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: await roomModel.incrementUpdateCount(roomId)});
     });
     
     socket.on('endScoring', request => {
