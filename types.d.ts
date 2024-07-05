@@ -1,6 +1,6 @@
 import { JSONPatchOperation } from 'immutable-json-patch';
 
-export interface CardInfo {
+export type CardInfo = {
   episode_key: string;
   season: number;
   episode: number;
@@ -14,13 +14,13 @@ export interface CardInfo {
   frinkiacLink: string?;
 }
 
-export interface GameCard extends Partial<CardInfo> {
+export type GameCard = {
   id: string;
   locator: string;
   submitter?: string;
-}
+} & Partial<CardInfo>
 
-export interface Player {
+export type Player = {
   playerId: string;
   playerName: string;
   score: number;
@@ -32,7 +32,7 @@ export interface Options {
   targetScore: number
 }
 
-export interface Room {
+export type Room = {
   players: Player[];
   gamePhase: 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlayersGuess' | 'scoring';
   storyCardId: string;
@@ -45,7 +45,6 @@ export interface Room {
   targetScore: number;
   playerTurn: number;
   readyForNextRound: string[];
-  lastModified: number;
   updateCount: number;
 }
 
