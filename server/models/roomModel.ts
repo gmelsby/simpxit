@@ -45,7 +45,7 @@ function createPlayer(playerId: string) {
 }
 
 export async function resetTTL(roomCode: string) {
-  client.expire(`room:${roomCode}`, roomTimeout);
+  await client.expire(roomPrefix(roomCode), roomTimeout);
 }
 
 // creates room with userId as admin
@@ -60,6 +60,7 @@ export async function createRoom(roomCode: string, userId: string) {
     console.log('room already exists');
     return null;
   }
+  await resetTTL(roomCode);
   // set ttl on key
   return roomCode;
 }

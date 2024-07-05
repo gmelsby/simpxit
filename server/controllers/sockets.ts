@@ -199,6 +199,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
           ],
           updateCount: await incrementUpdateCount(roomId)
         });
+        await resetTTL(roomId);
       }
       else {
         logger.log('info', 'unable to remove player');
@@ -237,6 +238,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
           ],
           updateCount: await incrementUpdateCount(roomId)
         });
+        await resetTTL(roomId);
       } else {
         logger.error('issue changing name in redis');
       }
@@ -280,6 +282,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         ],
         updateCount: await incrementUpdateCount(roomId)
       });
+      await resetTTL(roomId);
     });
     
     socket.on('startGame', request => {
