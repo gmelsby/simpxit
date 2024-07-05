@@ -40,7 +40,6 @@ export default function RoomPage({ userId }: {userId: string}) {
     storyCardId: '',
     guesses: {},
     readyForNextRound:  [],
-    lastModified: 0,
     updateCount: 0,
   });
   const [errorMessage, setErrorMessage] = useState('');

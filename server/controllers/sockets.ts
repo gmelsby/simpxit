@@ -96,7 +96,6 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       const {newPlayer, index} = result;
       // record that we have updated the room
       const updateCount = await roomModel.incrementUpdateCount(roomId);
-      await roomModel.resetTTL(roomId);
 
       // send joining player entire room state
       io.to(socket.id).emit('receiveRoomState', room);
@@ -147,7 +146,6 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       if (await roomModel.kickPlayer(roomId, kickUserId, kickIndex)) {
         logger.log('info', `kicked player ${kickUserId}`);
         const updateCount = await roomModel.incrementUpdateCount(roomId);
-        await roomModel.resetTTL(roomId);
         io.to(roomId).emit('receiveRoomPatch', {
           operations: [
             {
@@ -204,7 +202,6 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
           ],
           updateCount: await roomModel.incrementUpdateCount(roomId)
         });
-        await roomModel.resetTTL(roomId);
       }
       else {
         logger.log('info', 'unable to remove player');
@@ -249,7 +246,6 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
           ],
           updateCount: await roomModel.incrementUpdateCount(roomId)
         });
-        await roomModel.resetTTL(roomId);
       } else {
         logger.error('issue changing name in redis');
       }
@@ -293,7 +289,6 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         ],
         updateCount: await roomModel.incrementUpdateCount(roomId)
       });
-      await roomModel.resetTTL(roomId);
     });
     
     socket.on('startGame', async request => {
@@ -361,7 +356,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       }
     });
     
-    socket.on('submitStoryCard', request => {
+    socket.on('submitStoryCard', async request => {
       const { roomId, userId, selectedCardId, descriptor } = request;
       
       if ([roomId, userId, selectedCardId, descriptor].some(val => typeof val !== 'string') ) {
@@ -369,13 +364,40 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         return;
       }
 
-      const room = rooms[roomId];
-      if (!room) {
+      const trimmedDescriptor = descriptor.trim();
+      if (trimmedDescriptor === '' || trimmedDescriptor.length > 50) {
         return;
       }
-      const { card, playerIndex, handIndex, storyDescriptor, gamePhase } = room.submitStoryCard(userId, selectedCardId, descriptor.trim()); 
-      if (card === undefined || playerIndex === -1 || handIndex === -1) {
+
+      const storyTellerIndex = await roomModel.getStoryTellerIndex(roomId);
+      if (storyTellerIndex === null) {
+        logger.info('could not get storyTellerIndex');
+        return;
+      }
+      logger.info(JSON.stringify(storyTellerIndex));
+      const storyTeller = await roomModel.getPlayerAtIndex(roomId, storyTellerIndex);
+      logger.info(JSON.stringify(storyTeller));
+      if (!storyTeller || storyTeller.playerId !== userId) {
+        logger.info('userId does not match storyTellerId');
+        return;
+      }
+
+      // check if card is in hand
+      const handIndex = storyTeller.hand.findIndex(c => c.id === selectedCardId);
+      if (handIndex === -1) {
+        logger.info('card is not in storyteller hand');
+        return;
+      }
+
+      const card =  storyTeller.hand[handIndex]; 
+      if (card === undefined) {
         logger.log('info', 'unable to submit card');
+        return;
+      }
+
+      card.submitter = storyTeller.playerId;
+      if(!await roomModel.submitStoryCard(roomId, storyTellerIndex, handIndex, card, trimmedDescriptor)) {
+        logger.error('issue submitting storyteller card');
         return;
       }
 
@@ -395,19 +417,19 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
           {
             'op': 'replace',
             'path': '/storyDescriptor',
-            'value': storyDescriptor
+            'value': trimmedDescriptor
           },
           {
             'op': 'replace',
             'path': '/gamePhase',
-            'value': gamePhase
+            'value': 'otherPlayersPick'
           },
           {
             'op': 'remove',
-            'path': `/players/${playerIndex}/hand/${handIndex}`
+            'path': `/players/${storyTellerIndex}/hand/${handIndex}`
           }
         ],
-        updateCount: room.incrementUpdateCount()
+        updateCount: await roomModel.incrementUpdateCount(roomId)
       });
     });
 
@@ -590,7 +612,7 @@ async function populateHands(roomId: string) {
       const card = newCards.pop();
       if (card !== undefined) {
         const insertedIndex = await roomModel.putCardInPlayerHand(roomId, playerIndex, card);
-        if (insertedIndex !== -1) {
+        if (insertedIndex !== -1 || insertedIndex >= handSize) {
           newCardsForCurrentPlayer.push({card, handIndex: insertedIndex});
         }
         else {

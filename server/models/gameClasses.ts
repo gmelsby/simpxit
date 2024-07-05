@@ -150,7 +150,7 @@ export class Room implements IRoom {
     this.lastModified = Date.now();
     return this.removePlayer(kickId);
   }
-  
+ 
   // checks if player has been kicked from the game
   isKicked(uuid: string) {
     return this.kickedPlayers.includes(uuid);

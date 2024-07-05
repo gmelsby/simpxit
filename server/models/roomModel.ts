@@ -71,12 +71,14 @@ export async function getRoom(roomCode: string) {
 }
 
 // increments updatecount by 1 and returns 
+// also resets room ttl
 export async function incrementUpdateCount(roomCode: string) {
   const newCount = await client.json.numIncrBy(roomPrefix(roomCode), '$.updateCount', 1);
   if (newCount === null) {
     logger.error('unable to successfully increment updateCount');
     return -1;
   }
+  await resetTTL(roomCode);
   return typeof newCount === 'number' ? newCount : newCount[0];
 }
 
@@ -172,7 +174,7 @@ export async function getAllPlayerHands(roomCode: string) {
 }
 
 export async function getHandSize(roomCode: string) {
-  const result = await client.json.get(roomPrefix(roomCode), {path: '$..handSize'});
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.handSize'});
   if (result === null || !Array.isArray(result) || result.length === 0) {
     return null;
   }
@@ -188,5 +190,61 @@ export async function putCardInPlayerHand(roomCode: string, playerIndex: number,
   // subtract 1 from result (array's new size) to get index of inserted element
   const index = typeof result === 'number' ? result - 1 : result[0] - 1;
   return index;
+}
 
+// gets the current storyteller index
+export async function getStoryTellerIndex(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.playerTurn'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result[0] as number;
+}
+
+// gets the Player at the passed-in index
+export async function getPlayerAtIndex(roomCode: string, playerIndex: number) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: `$.players[${playerIndex}]`});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result[0] as Player;
+}
+
+// removes the card at index cardIndex from the hand of player at playerIndex
+// returns true if deletion successful, false if not
+async function removeCardFromPlayerHand(roomCode: string, playerIndex: number, cardIndex: number) {
+  return (await client.json.del(roomPrefix(roomCode), `$.players[${playerIndex}].hand[${cardIndex}]`) > 0);
+}
+
+// returns index of pushed card
+async function pushCardToSumbittedCards(roomCode: string, card: GameCard) {
+  const result = await client.json.arrAppend(roomPrefix(roomCode), '$.submittedCards', card);
+  if (result === null) {
+    return null;
+  }
+  
+  // subtract 1 from result (array's new size) to get index of inserted element
+  const index = Array.isArray(result) ? result[0] - 1 : result - 1;
+  return index;
+}
+
+async function changeStoryCardId(roomCode: string, storyCardId: string) {
+  return await client.json.set(roomPrefix(roomCode), '$.storyCardId', storyCardId);
+}
+
+async function changeStoryDescriptor(roomCode: string, storyDescriptor: string) {
+  return await client.json.set(roomPrefix(roomCode), '$.storyDescriptor', storyDescriptor);
+}
+
+// returns true if successful, false if not
+export async function submitStoryCard(roomCode: string, playerIndex: number, cardIndex: number, card: GameCard, descriptor: string) {
+  const promises = [
+    changeStoryCardId(roomCode, card.id),
+    pushCardToSumbittedCards(roomCode, card),
+    setGamePhase(roomCode, 'otherPlayersPick'),
+    changeStoryDescriptor(roomCode, descriptor),
+    removeCardFromPlayerHand(roomCode, playerIndex, cardIndex),
+  ];
+  const results = await Promise.all(promises);
+  return !results.some(result => result === null || result === false || (typeof result === 'number' && result <  0));
 }
