@@ -3,13 +3,15 @@ import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
 import { ClientToServerEvents, ServerToClientEvents } from '../../types.js';
 import { logger } from '../app.js';
+import {  addPlayerToRoom, getRoom, incrementUpdateCount } from '../models/roomModel.js';
+import { isCurrentPlayer } from '../utilities/roomUtils.js';
 
 export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>, rooms: {[key: string]: Room}) {
   io.on('connection', socket => {
     logger.log('info', `connection made: ${socket.id}`);
 
     // when client realizes something is wrong and needs to get the full room state
-    socket.on('requestRoomState', (request) => {
+    socket.on('requestRoomState', async request => {
       const { roomId, userId } = request;
 
       if (typeof roomId !== 'string' || typeof userId !== 'string') {
@@ -19,14 +21,14 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       logger.log('info', `request from user ${userId} for state of room ${roomId}`);
 
-      const room = rooms[roomId];
+      const room = await getRoom(roomId);
       // case where room does not exist
       if (!room) {
         logger.log('info', 'room does not exist');
         return;
       }
 
-      if(!room.isCurrentPlayer(userId)) {
+      if(!isCurrentPlayer(room, userId)) {
         logger.log('info', `user ${userId} is not a current member of room ${roomId}`);
         return;
       }
@@ -35,7 +37,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       io.to(socket.id).emit('receiveRoomState', room);
     });
 
-    socket.on('joinRoom', (request, callback) => {
+    socket.on('joinRoom', async (request, callback) => {
       const { roomId, userId } = request;
       if (typeof roomId !== 'string' || typeof userId !== 'string') {
         logger.log('info', 'invalid request');
@@ -45,7 +47,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       logger.log('info', `attempt to join room: roomId: ${roomId}, userId: ${userId}`);
 
-      const room = rooms[roomId];
+      const room = await getRoom(roomId);
       // case where room does not exist
       if (!room) {
         logger.log('info', 'room does not exist');
@@ -53,13 +55,13 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       }
       
       // case where user is banned from room
-      if (room.isKicked(userId)) {
+      if (room.kickedPlayers.includes(userId)) {
         logger.log('info', 'user has been kicked from room previously');
         return callback('You have been kicked from this room');
       }
 
       // case where user is already in room
-      if (room.isCurrentPlayer(userId)) {
+      if (room.players.some(p => p.playerId === userId)) {
         logger.log('info', `${userId} is current player`);
         // rejoins room
         socket.join(roomId);
@@ -68,8 +70,15 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         return;
       }
       
+      let roomIssue: undefined | string = undefined; 
       // if room is full sends error
-      const roomIssue = room.isNotJoinable();
+      if (room.players.length >= room.maxPlayers) {
+        roomIssue = 'room is full';
+      }
+      // if gameplay is in progress sends error
+      if (room.gamePhase !== 'lobby') {
+        roomIssue = 'gameplay is in progress';
+      }
       if (roomIssue !== undefined) {
         logger.log('info', `${userId} could not join room: ${roomIssue}`);
         return callback(`could not join room: ${roomIssue}`);
@@ -77,10 +86,10 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         
       // adds player to room
       logger.log('info', `adding ${userId} to player list`);
-      const {newPlayer, index} = room.addPlayer(userId);
+      const {newPlayer, index} = await addPlayerToRoom(roomId, userId);
 
       // record that we have updated the room
-      const updateCount = room.incrementUpdateCount();
+      const updateCount = await incrementUpdateCount(roomId);
 
       // send joining player entire room state
       io.to(socket.id).emit('receiveRoomState', room);
