@@ -131,5 +131,5 @@ export async function changeName(roomCode: string, userIndex: number, newName: s
 
 // changes options
 export async function changeOptions(roomCode: string, newOptions: number) {
-  return await client.json.set(roomPrefix(roomCode), '$.options', newOptions);
+  return await client.json.set(roomPrefix(roomCode), '$.targetScore', newOptions);
 }

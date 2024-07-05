@@ -285,7 +285,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       await resetTTL(roomId);
     });
     
-    socket.on('startGame', request => {
+    socket.on('startGame', async request => {
       const { roomId, userId } = request;
 
       if (typeof roomId !== 'string' || typeof userId !== 'string') {
@@ -297,7 +297,14 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       logger.log('info', `player ${userId} attempting to start game in room ${roomId}`);
       const room = rooms[roomId];
       if (room && room.startGame(userId)) {
-        io.to(roomId).emit('receiveRoomState', room);
+        io.to(roomId).emit('receiveRoomPatch', {
+          operations: [{
+            'op': 'replace',
+            'path': '/gamePhase',
+            'value': 'storyTellerPick'
+          }],
+          updateCount: await incrementUpdateCount(roomId)
+        });
         logger.log('info', 'game started. populating hands...');
         // populate hands returns a promise
         room.populateHands() 
