@@ -32,9 +32,12 @@ export interface Options {
   targetScore: number
 }
 
+export type GamePhase = 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlayersGuess' | 'scoring';
+
+
 export type Room = {
   players: Player[];
-  gamePhase: 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlayersGuess' | 'scoring';
+  gamePhase: GamePhase;
   storyCardId: string;
   storyDescriptor: string;
   kickedPlayers: string[];

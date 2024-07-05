@@ -1,9 +1,10 @@
 import { JSONPatchOperation } from 'immutable-json-patch';
 import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
-import { ClientToServerEvents, ServerToClientEvents } from '../../types.js';
+import { ClientToServerEvents, GameCard, ServerToClientEvents } from '../../types.js';
 import { logger } from '../app.js';
 import  * as roomModel from '../models/roomModel.js';
+import * as cardModel from '../models/cardModel.js';
 
 export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>, rooms: {[key: string]: Room}) {
   io.on('connection', socket => {
@@ -87,7 +88,12 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         
       // adds player to room
       logger.log('info', `adding ${userId} to player list`);
-      const {newPlayer, index} = await roomModel.addPlayerToRoom(roomId, userId);
+      const result = await roomModel.addPlayerToRoom(roomId, userId);
+      if (result === null) {
+        logger.error('issue adding player to room');
+        return;
+      }
+      const {newPlayer, index} = result;
       // record that we have updated the room
       const updateCount = await roomModel.incrementUpdateCount(roomId);
       await roomModel.resetTTL(roomId);
@@ -300,8 +306,26 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
 
       logger.log('info', `player ${userId} attempting to start game in room ${roomId}`);
-      const room = rooms[roomId];
-      if (room && room.startGame(userId)) {
+
+      // check that player names are not empty
+      const playerNames = await roomModel.getPlayerNames(roomId);
+      if (!playerNames || playerNames.some(p => p === '')) {
+        logger.log('info', 'could not start game, some player names are empty string');
+        return;
+      }
+
+      if (playerNames.length < 3) {
+        logger.log('info', 'could not start game, less than 3 players in room');
+        return;
+      }
+
+      const gamePhase = await roomModel.getGamePhase(roomId);
+      if (gamePhase !== 'lobby') {
+        logger.log('info', 'could not start game, gamePhase is not lobby');
+        return;
+      }
+
+      if (await roomModel.setGamePhase(roomId, 'storyTellerPick')) {
         io.to(roomId).emit('receiveRoomPatch', {
           operations: [{
             'op': 'replace',
@@ -311,36 +335,30 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
           updateCount: await roomModel.incrementUpdateCount(roomId)
         });
         logger.log('info', 'game started. populating hands...');
-        // populate hands returns a promise
-        room.populateHands() 
-          .then(newCardsPerPlayer => {
-            if (newCardsPerPlayer) {
-              logger.log('info', 'hands populated');
-              const operations: JSONPatchOperation[] = [];
-              room.players.forEach((player, playerIdx) => {
-                player.hand.forEach((card, cardIdx) => {
-                  operations.push(
-                    {
-                      'op': 'add',
-                      'path': `/players/${playerIdx}/hand/${cardIdx}`,
-                      'value': card,
-                    }
-                  );
-                });
+        
+
+        const newCardsPerPlayer = await populateHands(roomId);
+        if (newCardsPerPlayer) {
+          logger.log('info', 'hands populated');
+          const operations: JSONPatchOperation[] = [];
+          newCardsPerPlayer.forEach((cardDetails, playerIndex) => {
+            cardDetails.forEach(element => {
+              const {handIndex, card} = element;
+              operations.push({
+                'op': 'add',
+                'path': `/players/${playerIndex}/hand/${handIndex}`,
+                'value': card,
               });
-              
-              io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: room.incrementUpdateCount()});
-            }
-            else {
-              logger.log('info', 'unable to start game');
-            }
+            });
           });
-      }
-      
-      else {
+          io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: await roomModel.incrementUpdateCount(roomId)});
+        }
+        else {
+          logger.log('info', 'unable to start game');
+        }
+      } else {
         logger.log('info', 'unable to start game');
       }
-      
     });
     
     socket.on('submitStoryCard', request => {
@@ -549,4 +567,40 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       }
     });
   });
+}
+
+async function populateHands(roomId: string) {
+  const playerHands = await roomModel.getAllPlayerHands(roomId);
+  const handSize = await roomModel.getHandSize(roomId);
+  if (playerHands === null || handSize === null) {
+    logger.error('unable to get playerHands or handSize');
+    return;
+  }
+  const cardsNeededPerPlayer = playerHands.map(h => handSize - h.length);
+  const totalCardsNeeded =  cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0);
+  const currentCardIds = playerHands.map(h => h.map(c => c.id)).flat();
+  logger.log('info', `currentCardIds: ${JSON.stringify(currentCardIds)}`);
+  // get total number of cards needed in one database call
+  const newCards = await cardModel.drawCards(totalCardsNeeded, currentCardIds);
+  logger.log('info', `${cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0)} cards needed, ${newCards.length} cards drawn`);
+  const newCardsPerPlayer: {card: GameCard, handIndex: number}[][] = [];
+  for (const [playerIndex, hand] of playerHands.entries()) {
+    const newCardsForCurrentPlayer: {card: GameCard, handIndex: number}[] = [];
+    for (let handIndex = hand.length; handIndex < handSize; handIndex += 1) {
+      const card = newCards.pop();
+      if (card !== undefined) {
+        const insertedIndex = await roomModel.putCardInPlayerHand(roomId, playerIndex, card);
+        if (insertedIndex !== -1) {
+          newCardsForCurrentPlayer.push({card, handIndex: insertedIndex});
+        }
+        else {
+          logger.error(`unable to put card ${JSON.stringify(card)} in player ${playerIndex} hand`);
+        }
+      } else {
+        logger.error('something went wrong - not enough cards drawn');
+      }
+    }
+    newCardsPerPlayer.push(newCardsForCurrentPlayer);
+  }
+  return newCardsPerPlayer;
 }

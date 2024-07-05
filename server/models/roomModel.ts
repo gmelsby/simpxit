@@ -1,6 +1,6 @@
 import { createClient } from 'redis';
 import { logger } from '../app.js';
-import { Room, Player } from '../../types.js';
+import { Room, Player, GamePhase, GameCard } from '../../types.js';
 
 // how long rooms persist in redis until timeout
 const roomTimeout = 60 * 60;
@@ -85,6 +85,10 @@ export async function addPlayerToRoom(roomCode: string, playerId: string) {
   const newPlayer = createPlayer(playerId);
   const result = await client.json.arrAppend(roomPrefix(roomCode), '$.players', newPlayer);
   
+  if (result === null) {
+    return null;
+  }
+  
   // subtract 1 from result (array's new size) to get index of inserted element
   const index = typeof result === 'number' ? result - 1 : result[0] - 1;
   return {...{index, newPlayer}};
@@ -142,4 +146,47 @@ export async function changeName(roomCode: string, userIndex: number, newName: s
 // changes options
 export async function changeOptions(roomCode: string, newOptions: number) {
   return await client.json.set(roomPrefix(roomCode), '$.targetScore', newOptions);
+}
+
+// retrieves game phase
+export async function getGamePhase(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.gamePhase'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result[0] as string;
+}
+
+// sets game phase
+export async function setGamePhase(roomCode: string, newGamePhase: GamePhase) {
+  return await client.json.set(roomPrefix(roomCode), '$.gamePhase', newGamePhase);
+}
+
+// gets list of player hands
+export async function getAllPlayerHands(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.players..hand'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result as GameCard[][];
+}
+
+export async function getHandSize(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$..handSize'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result[0] as number;
+}
+
+export async function putCardInPlayerHand(roomCode: string, playerIndex: number, card: GameCard) {
+  const result = await client.json.arrAppend(roomPrefix(roomCode), `$.players[${playerIndex}].hand`, card);
+
+  if (result === null) {
+    return -1;
+  }
+  // subtract 1 from result (array's new size) to get index of inserted element
+  const index = typeof result === 'number' ? result - 1 : result[0] - 1;
+  return index;
+
 }
