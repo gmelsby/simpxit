@@ -3,8 +3,8 @@ import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
 import { ClientToServerEvents, ServerToClientEvents } from '../../types.js';
 import { logger } from '../app.js';
-import {  addPlayerToRoom, getPlayers, getRoom, incrementUpdateCount, kickPlayer, removePlayer, resetTTL } from '../models/roomModel.js';
-import { findPlayerIndex, isAdmin, isCurrentPlayer } from '../utilities/roomUtils.js';
+import {  addPlayerToRoom, changeName, getPlayers, getRoom, incrementUpdateCount, kickPlayer, removePlayer, resetTTL } from '../models/roomModel.js';
+import { approveNameChange, findPlayerIndex, isAdmin, isCurrentPlayer } from '../utilities/roomUtils.js';
 
 export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>, rooms: {[key: string]: Room}) {
   io.on('connection', socket => {
@@ -205,7 +205,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       }
     });
     
-    socket.on('changeName', request => {
+    socket.on('changeName', async request => {
       const { roomId, userId, newName } = request;
 
       if ([roomId, userId, newName].some(val => typeof val !== 'string') ) {
@@ -215,27 +215,31 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       const trimmedNewName = newName.trim();
       logger.log('info', `player ${userId} attempting to change name to ${trimmedNewName}`);
-      const room = rooms[roomId];
-      if (!room) {
+      const players = await getPlayers(roomId);
+      if (!players) {
         return;
       }
-
-      // attempts to change name
-      const { changedName, playerIndex } = room.changeName(userId, trimmedNewName);
+      
+      // check if name is identical to existing names or player is not in room
+      const { approvedName, playerIndex } = approveNameChange(players, userId, trimmedNewName);
       if (playerIndex === -1) {
         logger.log('info', `player ${userId} could not succesfully change name`);
         return;
       }
-      io.to(roomId).emit('receiveRoomPatch', {
-        operations: [
-          {
-            'op': 'replace',
-            'path': `/players/${playerIndex}/playerName`,
-            'value': changedName,
-          }
-        ],
-        updateCount: room.incrementUpdateCount()
-      });
+      if (await changeName(roomId, playerIndex, approvedName)) {
+        io.to(roomId).emit('receiveRoomPatch', {
+          operations: [
+            {
+              'op': 'replace',
+              'path': `/players/${playerIndex}/playerName`,
+              'value': approvedName,
+            }
+          ],
+          updateCount: await incrementUpdateCount(roomId)
+        });
+      } else {
+        logger.error('issue changing name in redis');
+      }
     });
 
     socket.on('changeOptions', request => {

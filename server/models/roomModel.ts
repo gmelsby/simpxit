@@ -111,3 +111,7 @@ export async function removePlayer(roomCode: string, userIndex: number) {
   const result = await client.json.del(roomPrefix(roomCode), `$.players[${userIndex}]`);
   return result > 0;
 }
+
+export async function changeName(roomCode: string, userIndex: number, newName: string) {
+  return await client.json.set(roomPrefix(roomCode), `$.players[${userIndex}].playerName`,newName);
+}
