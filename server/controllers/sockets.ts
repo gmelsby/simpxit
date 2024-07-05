@@ -549,7 +549,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       }
 
       const guessers = await roomModel.getGuessers(roomId);
-      if (guessers !== null && guessers.includes(userId)) {
+      if (guessers === null || guessers.includes(userId)) {
         logger.info('user has already submitted a guess');
         return;
       }
@@ -567,16 +567,25 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       ];
 
       // check if it's time to score
-      const scoringInfo = undefined;
-
-      // add in scoringInfo information if exists, otherwise send patch without it
-      if (scoringInfo) {
+      if(await roomModel.isOtherPlayerGuessOver(roomId)) {
+        const result = await roomModel.setGamePhase(roomId, 'scoring');
+        if (!result) {
+          logger.error('failed to set game state to scoring');
+          return;
+        }
         operations.push({
           'op': 'replace',
           'path': '/gamePhase',
           'value': 'scoring'
         });
-        /*scoringInfo.scoreList.forEach(([score, scoredThisRound], idx) => {
+        
+        const scoringInfo = await score(roomId); // scoring logic
+        if (!scoringInfo) {
+          logger.error('issue calculating score');
+          return;
+        }
+        console.log(JSON.stringify(scoringInfo));
+        scoringInfo.score.forEach((score, idx) => {
           operations.push({
             'op': 'replace',
             'path': `/players/${idx}/score`,
@@ -585,11 +594,10 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
           operations.push({
             'op': 'replace',
             'path': `/players/${idx}/scoredThisRound`,
-            'value': scoredThisRound
+            'value': scoringInfo.scoredThisRound[idx]
           });
-        });*/
+        });
       }
-
       io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: await roomModel.incrementUpdateCount(roomId)});
     });
     
@@ -688,4 +696,79 @@ async function populateHands(roomId: string) {
     newCardsPerPlayer.push(newCardsForCurrentPlayer);
   }
   return newCardsPerPlayer;
+}
+
+async function score(roomId: string) {
+  const guesses = await roomModel.getGuesses(roomId);
+  logger.debug(guesses);
+  if (guesses === null) {
+    logger.error('could not successfully get guesses');
+    return;
+  }
+  const storyCardId = await roomModel.getStoryCardId(roomId);
+  const playerIds = await roomModel.getPlayerIds(roomId);
+  if (playerIds === null) {
+    logger.error('could not successfully get playerIds');
+    return;
+  }
+  const correctGuessers = Object.keys(guesses).filter(guesserId => guesses[guesserId] === storyCardId);
+
+  const storyTellerIndex = await roomModel.getStoryTellerIndex(roomId);
+  if (storyTellerIndex === null) {
+    logger.error('could not retrieve storyTellerIndex');
+    return;
+  }
+
+  // some correct guesses, some incorrect guesses
+  if (correctGuessers.length > 0 && correctGuessers.length < playerIds.length - 1) {
+    logger.debug('some but not all correct');
+    // storyteller gets 3 points
+    const promises = [roomModel.addPoints(roomId, storyTellerIndex, 3)];
+    // players who guessed correctly get 3 points
+    correctGuessers.forEach(guesserId => {
+      promises.push(roomModel.addPoints(roomId, playerIds.indexOf(guesserId), 3));
+    });
+    const results = await Promise.all(promises);
+    if (results.includes(false)) {
+      logger.error('unsuccessful in assigning points to player');
+    }
+  }
+  // otherwise everyone but the storyteller gets 2 points
+  else {
+    logger.debug('all or none correct');
+    // storyteller gets 0 points
+    const promises: Promise<boolean>[] = [];
+    [...Array(playerIds.length).keys()]
+      .filter(idx => idx !== storyTellerIndex)
+      .forEach(idx => promises.push(roomModel.addPoints(roomId, idx, 2)));
+
+    const results = await Promise.all(promises);
+    if (results.includes(false)) {
+      logger.error('unsuccessful in assigning points to player');
+    }
+  }
+
+  // handle succesful deceit
+  const successfulFakes = Object.values(guesses).filter(cardId => cardId !== storyCardId);
+  if (successfulFakes.length > 0) {
+    logger.debug('successful fakes');
+    const submittedCards = await roomModel.getSubmittedCards(roomId);
+    if (submittedCards === null) {
+      logger.error('could not retrieve submitted cards');
+      return;
+    }
+
+    const promises: Promise<boolean>[] = [];
+    for (const fakeId of successfulFakes) {
+      const fakerId = submittedCards.find(c => c.id === fakeId)?.submitter;
+      if (fakerId === undefined) continue;
+      const fakerIndex = playerIds.indexOf(fakerId);
+      promises.push(roomModel.addPoints(roomId, fakerIndex, 1));
+    }
+    const results = await Promise.all(promises);
+    if (results.includes(false)) {
+      logger.error('unsuccessful in assigning points to player');
+    }
+  }
+  return await roomModel.getScoringInfo(roomId);
 }

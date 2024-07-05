@@ -1,6 +1,6 @@
 import { createClient } from 'redis';
 import { logger } from '../app.js';
-import { Room, Player, GamePhase, GameCard } from '../../types.js';
+import { Room, Player, GamePhase, GameCard, GuessMap } from '../../types.js';
 
 // how long rooms persist in redis until timeout
 const roomTimeout = 60 * 60;
@@ -57,7 +57,6 @@ export async function createRoom(roomCode: string, userId: string) {
 
   // case where room already exists
   if (result === null) {
-    console.log('room already exists');
     return null;
   }
   await resetTTL(roomCode);
@@ -232,6 +231,14 @@ async function changeStoryCardId(roomCode: string, storyCardId: string) {
   return await client.json.set(roomPrefix(roomCode), '$.storyCardId', storyCardId);
 }
 
+export async function getStoryCardId(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.storyCardId'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result[0] as string;
+}
+
 async function changeStoryDescriptor(roomCode: string, storyDescriptor: string) {
   return await client.json.set(roomPrefix(roomCode), '$.storyDescriptor', storyDescriptor);
 }
@@ -300,4 +307,56 @@ export async function getGuessers(roomCode: string) {
 
 export async function submitGuess(roomCode: string, userId: string, cardId: string) {
   return await client.json.set(roomPrefix(roomCode), `$.guesses.${userId}`, cardId);
+}
+
+export async function isOtherPlayerGuessOver(roomCode: string) {
+  const playerLengthResult = await client.json.arrLen(roomPrefix(roomCode), '$.players');
+  const guessLengthResult = await client.json.objLen(roomPrefix(roomCode), '$.guesses');
+
+  const playerLength = Array.isArray(playerLengthResult) ? playerLengthResult[0] : playerLengthResult;
+  const guessLengthProcessStep = Array.isArray(guessLengthResult) ? guessLengthResult[0] : guessLengthResult;
+  const guessLength = guessLengthProcessStep === null ? 0 : guessLengthProcessStep;
+  
+  return playerLength === guessLength + 1;
+}
+
+export async function getGuesses(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.guesses'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result[0] as GuessMap;
+}
+
+// adds points to player at index. Returns true if points are added successfully, else false
+export async function addPoints(roomCode: string, playerIndex: number, numberOfPoints: number) {
+  const results = await client.multi()
+    .json.numIncrBy(roomPrefix(roomCode), `$.players[${playerIndex}].scoredThisRound`, numberOfPoints)
+    .json.numIncrBy(roomPrefix(roomCode), `$.players[${playerIndex}].score`, numberOfPoints)
+    .exec();
+
+  return !results.some(result => result === null);
+}
+
+// gets submitttedCards object
+export async function getSubmittedCards(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.submittedCards'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result[0] as GameCard[];
+}
+
+// gets scoredThisRound and score for all players
+export async function getScoringInfo(roomCode: string) {
+  const scoreResult = await client.json.get(roomPrefix(roomCode), {path: '$.players..score'});
+  const scoredThisRoundResult = await client.json.get(roomPrefix(roomCode), {path: '$.players..scoredThisRound'});
+  if (scoreResult === null || scoredThisRoundResult === null) {
+    return null;
+  }
+  const scoringInfo = {
+    scoredThisRound: scoredThisRoundResult as number[],
+    score: scoreResult as number[],
+  };
+  return scoringInfo;
 }

@@ -34,6 +34,8 @@ export interface Options {
 
 export type GamePhase = 'lobby' | 'storyTellerPick' | 'otherPlayersPick' | 'otherPlayersGuess' | 'scoring';
 
+export type GuessMap = {[key: string]: string};
+
 
 export type Room = {
   players: Player[];
@@ -42,7 +44,7 @@ export type Room = {
   storyDescriptor: string;
   kickedPlayers: string[];
   submittedCards: GameCard[];
-  guesses: {[key: string]: string};
+  guesses: GuessMap;
   handSize: number;
   maxPlayers: number;
   targetScore: number;
