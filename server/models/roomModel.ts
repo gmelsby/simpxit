@@ -98,6 +98,16 @@ export async function getPlayers(roomCode: string) {
   return result[0] as Player[];
 }
 
+// gets the playerId of the player at index 0 in the room, if exists
+export async function getAdminId(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.players[0].playerId'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result[0];
+}
+
+// kicks player at specified index and adds id to banned list
 export async function kickPlayer(roomCode: string, kickUserId: string, kickIndex: number) {
   const result = await client.multi()
     .json.arrAppend(roomPrefix(roomCode), '$.kickedPlayers', kickUserId)
@@ -107,11 +117,18 @@ export async function kickPlayer(roomCode: string, kickUserId: string, kickIndex
   return !result.some(res => res === null);
 }
 
+// removes player at specified index, returns boolean indicating whether remove was successful
 export async function removePlayer(roomCode: string, userIndex: number) {
   const result = await client.json.del(roomPrefix(roomCode), `$.players[${userIndex}]`);
   return result > 0;
 }
 
+// changes name of player at specified index, returns 'OK' or null depending on success
 export async function changeName(roomCode: string, userIndex: number, newName: string) {
-  return await client.json.set(roomPrefix(roomCode), `$.players[${userIndex}].playerName`,newName);
+  return await client.json.set(roomPrefix(roomCode), `$.players[${userIndex}].playerName`, newName);
+}
+
+// changes options
+export async function changeOptions(roomCode: string, newOptions: number) {
+  return await client.json.set(roomPrefix(roomCode), '$.options', newOptions);
 }

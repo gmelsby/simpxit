@@ -3,7 +3,7 @@ import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
 import { ClientToServerEvents, ServerToClientEvents } from '../../types.js';
 import { logger } from '../app.js';
-import {  addPlayerToRoom, changeName, getPlayers, getRoom, incrementUpdateCount, kickPlayer, removePlayer, resetTTL } from '../models/roomModel.js';
+import {  addPlayerToRoom, changeName, changeOptions, getAdminId, getPlayers, getRoom, incrementUpdateCount, kickPlayer, removePlayer, resetTTL } from '../models/roomModel.js';
 import { approveNameChange, findPlayerIndex, isAdmin, isCurrentPlayer } from '../utilities/roomUtils.js';
 
 export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>, rooms: {[key: string]: Room}) {
@@ -242,7 +242,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       }
     });
 
-    socket.on('changeOptions', request => {
+    socket.on('changeOptions', async request => {
       const { roomId, userId, newOptions } = request;
 
       if (typeof roomId !== 'string' || typeof userId !== 'string' || typeof newOptions !== 'number') {
@@ -252,14 +252,18 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       logger.log('info', `player ${userId} attempting to change options to ${newOptions}`);
 
-      const room = rooms[roomId];
-      if (!room) {
-        logger.log('info', 'room does not exist');
+      // check that new options are within specified range
+      if (!Number.isInteger(newOptions) || newOptions < 5 || newOptions > 100) {
+        logger.log('info', 'could not change options');
         return;
       }
 
-      const changedOptions = room.changeOptions(userId, newOptions);
-      if (changedOptions === undefined) {
+      if (userId !== await getAdminId(roomId)) {
+        logger.log('info', 'room does not exist or user in not admin');
+        return;
+      }
+
+      if (await changeOptions(roomId, newOptions) === null) {
         logger.log('info', 'could not change options');
         return;
       }
@@ -271,10 +275,10 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
           {
             'op': 'replace',
             'path': '/targetScore',
-            'value': changedOptions,
+            'value': newOptions,
           }
         ],
-        updateCount: room.incrementUpdateCount()
+        updateCount: await incrementUpdateCount(roomId)
       });
     });
     
