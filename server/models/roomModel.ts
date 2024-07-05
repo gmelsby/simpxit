@@ -8,7 +8,6 @@ const roomPrefix = (roomCode: string) => {return `noderedis:room:${roomCode}`;};
 
 const client = await createClient({
   url: process.env.REDIS_URL,
-  password: process.env.REDIS_PASSWORD
 })
   .on('error', err => logger.error('Redis Client Error', err))
   .connect();
@@ -45,7 +44,7 @@ function createPlayer(playerId: string) {
   return newPlayer;
 }
 
-async function resetTTL(roomCode: string) {
+export async function resetTTL(roomCode: string) {
   client.expire(`room:${roomCode}`, roomTimeout);
 }
 
@@ -56,13 +55,11 @@ export async function createRoom(roomCode: string, userId: string) {
     NX: true,
   });
 
-  const ttlPromise = resetTTL(roomCode);
   // case where room already exists
   if (result === null) {
     console.log('room already exists');
     return null;
   }
-  await ttlPromise;
   // set ttl on key
   return roomCode;
 }
@@ -75,12 +72,10 @@ export async function getRoom(roomCode: string) {
 // increments updatecount by 1 and returns 
 export async function incrementUpdateCount(roomCode: string) {
   const newCount = await client.json.numIncrBy(roomPrefix(roomCode), '$.updateCount', 1);
-  const ttlPromise = resetTTL(roomCode);
   if (newCount === null) {
     logger.error('unable to successfully increment updateCount');
     return -1;
   }
-  await ttlPromise;
   return typeof newCount === 'number' ? newCount : newCount[0];
 }
 
@@ -88,10 +83,26 @@ export async function incrementUpdateCount(roomCode: string) {
 export async function addPlayerToRoom(roomCode: string, playerId: string) {
   const newPlayer = createPlayer(playerId);
   const result = await client.json.arrAppend(roomPrefix(roomCode), '$.players', newPlayer);
-  const ttlPromise = resetTTL(roomCode);
   
   // subtract 1 from result (array's new size) to get index of inserted element
   const index = typeof result === 'number' ? result - 1 : result[0] - 1;
-  await ttlPromise;
   return {...{index, newPlayer}};
+}
+
+// returns list of players if room exists, otherwise null
+export async function getPlayers(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.players'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result[0] as Player[];
+}
+
+export async function kickPlayer(roomCode: string, kickUserId: string, kickIndex: number) {
+  const result = await client.multi()
+    .json.arrAppend(roomPrefix(roomCode), '$.kickedPlayers', kickUserId)
+    .json.del(roomPrefix(roomCode), `$.players[${kickIndex}]`)
+    .exec();
+  // returns true if result has no null elemetns, false if it does
+  return !result.some(res => res === null);
 }

@@ -3,8 +3,8 @@ import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
 import { ClientToServerEvents, ServerToClientEvents } from '../../types.js';
 import { logger } from '../app.js';
-import {  addPlayerToRoom, getRoom, incrementUpdateCount } from '../models/roomModel.js';
-import { isCurrentPlayer } from '../utilities/roomUtils.js';
+import {  addPlayerToRoom, getPlayers, getRoom, incrementUpdateCount, kickPlayer, resetTTL } from '../models/roomModel.js';
+import { isAdmin, isCurrentPlayer } from '../utilities/roomUtils.js';
 
 export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>, rooms: {[key: string]: Room}) {
   io.on('connection', socket => {
@@ -28,11 +28,13 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         return;
       }
 
+
       if(!isCurrentPlayer(room, userId)) {
         logger.log('info', `user ${userId} is not a current member of room ${roomId}`);
         return;
       }
 
+      await resetTTL(roomId);
       logger.log('info', `socketid ${socket.id} requested room state: sending room data`);
       io.to(socket.id).emit('receiveRoomState', room);
     });
@@ -87,13 +89,16 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       // adds player to room
       logger.log('info', `adding ${userId} to player list`);
       const {newPlayer, index} = await addPlayerToRoom(roomId, userId);
-
       // record that we have updated the room
       const updateCount = await incrementUpdateCount(roomId);
+      await resetTTL(roomId);
 
       // send joining player entire room state
       io.to(socket.id).emit('receiveRoomState', room);
-      // send players already in room a patch with new player
+
+      // add new player to room socket
+      socket.join(roomId);
+      // send out patch with new player
       io.to(roomId).emit('receiveRoomPatch', {
         operations: [
           {
@@ -105,30 +110,39 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         updateCount: updateCount
       });
 
-      // add new player to room socket
-      socket.join(roomId);
       
       logger.log('info', `playerId ${userId} has joined room ${roomId}`);
       logger.log('info', `player list = ${JSON.stringify(room.players)}`);
     });
     
-    socket.on('kickPlayer', request => {
+    socket.on('kickPlayer', async request => {
       const { roomId, userId, kickUserId } = request;
       if ([roomId, userId, kickUserId].some(val => typeof val !== 'string') ) {
         logger.log('info', 'invalid request');
         return;
       }
 
-      const room = rooms[roomId];
+      const players = await getPlayers(roomId);
 
-      // successful kick
-      if (!room) {
+      if (!players) {
         return;
       } 
-      const kickedPlayerIndex = room.kickPlayer(userId, kickUserId);
-      if (kickedPlayerIndex !== -1) {
+
+      if (!isAdmin(players, userId)) {
+        logger.info('kicking player is not admin');
+        return;
+      }
+
+      // check that kicked user is in room
+      const kickIndex = players.findIndex(p => p.playerId === kickUserId);
+      if (kickIndex === -1) {
+        logger.info('player to be kicked is not in the room');
+      }
+      const result = await kickPlayer(roomId, kickUserId, kickIndex);
+      if (result) {
         logger.log('info', `kicked player ${kickUserId}`);
-        const updateCount = room.incrementUpdateCount();
+        const updateCount = await incrementUpdateCount(roomId);
+        await resetTTL(roomId);
         io.to(roomId).emit('receiveRoomPatch', {
           operations: [
             {
@@ -138,7 +152,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
             },
             {
               'op': 'remove',
-              'path': `/players/${kickedPlayerIndex}`
+              'path': `/players/${kickIndex}`
             },
           ],
           updateCount: updateCount

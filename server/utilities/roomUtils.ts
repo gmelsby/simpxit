@@ -1,4 +1,4 @@
-import { Room } from '../../types';
+import { Room, Player } from '../../types';
 
 // returns true if a player with the currently passed-in id is already in the room
 export function isCurrentPlayer(room: Room, uuid: string) {
@@ -7,4 +7,9 @@ export function isCurrentPlayer(room: Room, uuid: string) {
   }
   
   return false;
+}
+
+// returns true if player with passed-in id is admin, otherwise false
+export function isAdmin(players: Player[], uuid: string) {
+  return (players.length > 0 && players[0].playerId === uuid);
 }
