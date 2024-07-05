@@ -106,3 +106,8 @@ export async function kickPlayer(roomCode: string, kickUserId: string, kickIndex
   // returns true if result has no null elemetns, false if it does
   return !result.some(res => res === null);
 }
+
+export async function removePlayer(roomCode: string, userIndex: number) {
+  const result = await client.json.del(roomPrefix(roomCode), `$.players[${userIndex}]`);
+  return result > 0;
+}

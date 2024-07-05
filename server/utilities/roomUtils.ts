@@ -11,5 +11,9 @@ export function isCurrentPlayer(room: Room, uuid: string) {
 
 // returns true if player with passed-in id is admin, otherwise false
 export function isAdmin(players: Player[], uuid: string) {
-  return (players.length > 0 && players[0].playerId === uuid);
+  return findPlayerIndex(players, uuid) === 0;
+}
+
+export function findPlayerIndex(players: Player[], uuid: string) {
+  return players.findIndex(p => p.playerId === uuid);
 }

@@ -3,8 +3,8 @@ import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
 import { ClientToServerEvents, ServerToClientEvents } from '../../types.js';
 import { logger } from '../app.js';
-import {  addPlayerToRoom, getPlayers, getRoom, incrementUpdateCount, kickPlayer, resetTTL } from '../models/roomModel.js';
-import { isAdmin, isCurrentPlayer } from '../utilities/roomUtils.js';
+import {  addPlayerToRoom, getPlayers, getRoom, incrementUpdateCount, kickPlayer, removePlayer, resetTTL } from '../models/roomModel.js';
+import { findPlayerIndex, isAdmin, isCurrentPlayer } from '../utilities/roomUtils.js';
 
 export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>, rooms: {[key: string]: Room}) {
   io.on('connection', socket => {
@@ -134,12 +134,12 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       }
 
       // check that kicked user is in room
-      const kickIndex = players.findIndex(p => p.playerId === kickUserId);
+      const kickIndex = findPlayerIndex(players, kickUserId);
       if (kickIndex === -1) {
         logger.info('player to be kicked is not in the room');
       }
-      const result = await kickPlayer(roomId, kickUserId, kickIndex);
-      if (result) {
+      
+      if (await kickPlayer(roomId, kickUserId, kickIndex)) {
         logger.log('info', `kicked player ${kickUserId}`);
         const updateCount = await incrementUpdateCount(roomId);
         await resetTTL(roomId);
@@ -163,7 +163,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       }
     });
 
-    socket.on('leaveRoom', (request, callback) => {
+    socket.on('leaveRoom', async (request, callback) => {
       const { roomId, userId } = request;
 
       if (typeof roomId !== 'string' || typeof userId !== 'string') {
@@ -174,15 +174,21 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       logger.log('info', `player ${userId} attempting to leave room ${roomId}`);
       // check for existence of room
 
-      const room = rooms[roomId];
+      const players = await getPlayers(roomId);
 
-      if (!room) {
-        logger.log('info', 'left room does not exist');
+      if (!players) {
+        logger.log('info', 'room player is attempting to leave does not exist');
         return callback('Room does not exist');
       }
-      const playerIndex = room.removePlayer(userId);
+      const playerIndex = findPlayerIndex(players, userId);
+      if (playerIndex === -1) {
+        logger.log('info', 'player is not in room');
+        return callback('Player is not in room');
+      }
+
+      
       // successful exit
-      if (playerIndex !== -1) {
+      if (await removePlayer(roomId, playerIndex)) {
         logger.log('info', 'player removed successfully');
         io.to(roomId).emit('receiveRoomPatch', {
           operations: [
@@ -191,7 +197,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
               'path': `/players/${playerIndex}`
             }
           ],
-          updateCount: room.incrementUpdateCount()
+          updateCount: await incrementUpdateCount(roomId)
         });
       }
       else {
