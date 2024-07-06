@@ -227,7 +227,7 @@ async function pushCardToSumbittedCards(roomCode: string, card: GameCard) {
   return index;
 }
 
-async function changeStoryCardId(roomCode: string, storyCardId: string) {
+async function setStoryCardId(roomCode: string, storyCardId: string) {
   return await client.json.set(roomPrefix(roomCode), '$.storyCardId', storyCardId);
 }
 
@@ -239,17 +239,17 @@ export async function getStoryCardId(roomCode: string) {
   return result[0] as string;
 }
 
-async function changeStoryDescriptor(roomCode: string, storyDescriptor: string) {
+async function setStoryDescriptor(roomCode: string, storyDescriptor: string) {
   return await client.json.set(roomPrefix(roomCode), '$.storyDescriptor', storyDescriptor);
 }
 
 // returns true if successful, false if not
 export async function submitStoryCard(roomCode: string, playerIndex: number, cardIndex: number, card: GameCard, descriptor: string) {
   const promises = [
-    changeStoryCardId(roomCode, card.id),
+    setStoryCardId(roomCode, card.id),
     pushCardToSumbittedCards(roomCode, card),
     setGamePhase(roomCode, 'otherPlayersPick'),
-    changeStoryDescriptor(roomCode, descriptor),
+    setStoryDescriptor(roomCode, descriptor),
     removeCardFromPlayerHand(roomCode, playerIndex, cardIndex),
   ];
   const results = await Promise.all(promises);
@@ -408,14 +408,35 @@ async function incrementAndModPlayerTurn(roomCode: string) {
 }
 
 // resets round values to move from scoring to storyTellerPick
+// returns boolean indicating success
 export async function resetRoundValues(roomCode: string) {
   const promises = [
     setGamePhase(roomCode, 'storyTellerPick'),
     incrementAndModPlayerTurn(roomCode),
+    setStoryCardId(roomCode, ''),
+    setStoryDescriptor(roomCode, ''),
     client.json.set(roomPrefix(roomCode), '$.readyForNextRound', []),
     client.json.set(roomPrefix(roomCode), '$.submittedCards', []),
     client.json.set(roomPrefix(roomCode), '$.guesses', {}),
     client.json.set(roomPrefix(roomCode), '$.players..scoredThisRound', 0)
+  ];
+  const results = await Promise.all(promises);
+  return !results.some(result => result === null);
+}
+
+// resets to lobby
+export async function resetToLobby(roomCode: string) {
+  const promises = [
+    setGamePhase(roomCode, 'lobby'),
+    setStoryCardId(roomCode, ''),
+    setStoryDescriptor(roomCode, ''),
+    client.json.set(roomPrefix(roomCode), '$.playerTurn', 0),
+    client.json.set(roomPrefix(roomCode), '$.readyForNextRound', []),
+    client.json.set(roomPrefix(roomCode), '$.submittedCards', []),
+    client.json.set(roomPrefix(roomCode), '$.guesses', {}),
+    client.json.set(roomPrefix(roomCode), '$.players..scoredThisRound', 0),
+    client.json.set(roomPrefix(roomCode), '$.players..score', 0),
+    client.json.set(roomPrefix(roomCode), '$.players..hand', []),
   ];
   const results = await Promise.all(promises);
   return !results.some(result => result === null);

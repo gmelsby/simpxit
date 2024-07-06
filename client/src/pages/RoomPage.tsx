@@ -109,6 +109,8 @@ export default function RoomPage({ userId }: {userId: string}) {
       // console.log('resetting round values');
       setRoomState(produce(room => {
         room.gamePhase = 'storyTellerPick';
+        room.storyCardId = '';
+        room.storyDescriptor = '';
         room.playerTurn += 1;
         room.playerTurn %= room.players.length;
         room.readyForNextRound = [];

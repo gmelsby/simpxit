@@ -672,8 +672,10 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         }
       }
       else if (gamePhase === 'lobby') {
-        logger.log('info', 'reset to lobby');
-        io.to(roomId).emit('resetToLobby', await roomModel.incrementUpdateCount(roomId));
+        if(await roomModel.resetToLobby(roomId)) {
+          logger.log('info', 'reset to lobby');
+          io.to(roomId).emit('resetToLobby', await roomModel.incrementUpdateCount(roomId));
+        }
       }
     });
   });
