@@ -1,7 +1,8 @@
+import 'dotenv/config';
+import { createLogger, format, transports } from 'winston';
 import { generateRoomCode } from './utilities/generateUtils.js';
-import { Room } from './models/gameClasses.js';
 import socketHandler from './controllers/sockets.js';
-import { roomCleaner, supabasePing } from './utilities/cronJobs.js';
+import { supabasePing } from './utilities/cronJobs.js';
 import express from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';
@@ -10,7 +11,8 @@ import cors from 'cors';
 import path from 'node:path';
 import { retrieveCardInfo } from './models/cardModel.js';
 import { GameCard, ClientToServerEvents, ServerToClientEvents } from '../types.js';
-import { createLogger, format, transports } from 'winston';
+import { createRoom } from './models/roomModel.js';
+
 
 const PORT = process.env.PORT || 3000;
 
@@ -49,13 +51,10 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
 }
 );
 
-// will probably be changed to a database/redis? at some point
-const rooms: {[key: string]: Room} = {};
-roomCleaner(rooms, '*/30 * * * *', 30);
 supabasePing('0 5 * * *');
 
 // sets up socket connection logic
-socketHandler(io, rooms);
+socketHandler(io);
 
 // for caching card info, clears every 2 minutes
 let cardInfoCache: { [key: string]: GameCard } = {};
@@ -104,22 +103,30 @@ app.get('/api/cardinfo/:cardIdString', async (req, res) => {
 });
 
 // allows users to create a new room
-app.post('/api/room', (req, res) => {
+app.post('/api/room', async (req, res) => {
   logger.info(`received create room request with UUID ${req.body.userId}`);
   const uuid  = req.body.userId;
   if (!uuid) {
     res.status(403).send({error: 'User does not have UUID. Refresh page and try again.'});
     return;
   }
-  let newRoomCode = 'ABCD';
 
   // generate new room codes until one is unused
-  do {
-    newRoomCode = generateRoomCode();
-  } while (newRoomCode in rooms);
+  // give up after 20 tries
+  let newRoomCode = '';
+  for (let i = 0; i < 20; i += 1 ) {
+    const result = await createRoom(generateRoomCode(), uuid);
+    if (result !== null) {
+      newRoomCode = result;
+      break;
+    }
+  }
+  if (newRoomCode === '') {
+    res.status(503).send({error: 'unable to successfully create room'});
+    return;
+  }
 
   logger.info(`new room code is ${newRoomCode}`);
-  rooms[newRoomCode] = new Room(uuid);
   res.status(201).send({ newRoomCode });
 });
 

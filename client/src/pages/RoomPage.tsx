@@ -40,7 +40,6 @@ export default function RoomPage({ userId }: {userId: string}) {
     storyCardId: '',
     guesses: {},
     readyForNextRound:  [],
-    lastModified: 0,
     updateCount: 0,
   });
   const [errorMessage, setErrorMessage] = useState('');
@@ -110,6 +109,8 @@ export default function RoomPage({ userId }: {userId: string}) {
       // console.log('resetting round values');
       setRoomState(produce(room => {
         room.gamePhase = 'storyTellerPick';
+        room.storyCardId = '';
+        room.storyDescriptor = '';
         room.playerTurn += 1;
         room.playerTurn %= room.players.length;
         room.readyForNextRound = [];
