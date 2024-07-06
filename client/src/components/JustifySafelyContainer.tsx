@@ -6,7 +6,7 @@ import { Container } from 'react-bootstrap';
 export default function JustifySafelyContainer({justifyType, overflowType, className, children, containerRef}: 
   {
     justifyType: 'center' | 'evenly', 
-    overflowType?: 'auto' | 'visible', 
+    overflowType?: 'auto' | 'hidden' | 'visible', 
     className: string, children: ReactNode, 
     containerRef?: React.MutableRefObject<HTMLDivElement | null>
   }) {
@@ -21,8 +21,10 @@ export default function JustifySafelyContainer({justifyType, overflowType, class
       }
     };
 
-    // on component load
+    // on component load or ater change
     checkOverflowing();
+    // check again after event loop has had some time
+    const timeout = setTimeout(checkOverflowing, 100);
 
     const observer = new ResizeObserver(() => checkOverflowing);
     // keep updating every time a resize happens
@@ -33,6 +35,7 @@ export default function JustifySafelyContainer({justifyType, overflowType, class
     window.addEventListener('resize', checkOverflowing);
     // cleanup
     return (() => {
+      clearTimeout(timeout);
       window.removeEventListener('resize', checkOverflowing);
       observer.disconnect();
     });
