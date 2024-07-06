@@ -3,15 +3,15 @@ import { Container } from 'react-bootstrap';
 
 
 // justifies according to justifyType unless oveflow is detected, in which case it will justify content start
-export default function JustifySafelyContainer({justifyType, overflowType, className, children, ref}: 
+export default function JustifySafelyContainer({justifyType, overflowType, className, children, containerRef}: 
   {
     justifyType: 'center' | 'evenly', 
     overflowType?: 'auto' | 'visible', 
     className: string, children: ReactNode, 
-    ref?: React.MutableRefObject<HTMLDivElement | null>
+    containerRef?: React.MutableRefObject<HTMLDivElement | null>
   }) {
 
-  const containerElement = ref !== undefined ? ref : useRef<HTMLDivElement>(null);
+  const containerElement = containerRef !== undefined ? containerRef : useRef<HTMLDivElement>(null);
   const [overflowing, setOverflowing] = useState(false);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function JustifySafelyContainer({justifyType, overflowType, class
       window.removeEventListener('resize', checkOverflowing);
       observer.disconnect();
     });
-  }, [containerElement.current]);
+  }, [overflowType, containerElement.current]);
 
   return (
     <Container 
