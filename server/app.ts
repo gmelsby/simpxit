@@ -1,9 +1,8 @@
 import 'dotenv/config';
 import { createLogger, format, transports } from 'winston';
 import { generateRoomCode } from './utilities/generateUtils.js';
-import { Room } from './models/gameClasses.js';
 import socketHandler from './controllers/sockets.js';
-import { roomCleaner, supabasePing } from './utilities/cronJobs.js';
+import { supabasePing } from './utilities/cronJobs.js';
 import express from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';
@@ -52,13 +51,10 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
 }
 );
 
-// will probably be changed to a database/redis? at some point
-const rooms: {[key: string]: Room} = {};
-roomCleaner(rooms, '*/30 * * * *', 30);
 supabasePing('0 5 * * *');
 
 // sets up socket connection logic
-socketHandler(io, rooms);
+socketHandler(io);
 
 // for caching card info, clears every 2 minutes
 let cardInfoCache: { [key: string]: GameCard } = {};

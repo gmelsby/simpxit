@@ -1,12 +1,11 @@
 import { JSONPatchOperation } from 'immutable-json-patch';
-import { Room } from '../models/gameClasses.js';
 import { Server } from 'socket.io';
 import { ClientToServerEvents, GameCard, GamePhase, ServerToClientEvents } from '../../types.js';
 import { logger } from '../app.js';
 import  * as roomModel from '../models/roomModel.js';
 import * as cardModel from '../models/cardModel.js';
 
-export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>, rooms: {[key: string]: Room}) {
+export default function socketHandler(io: Server<ClientToServerEvents, ServerToClientEvents>) {
   io.on('connection', socket => {
     logger.log('info', `connection made: ${socket.id}`);
 
@@ -601,7 +600,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
       io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: await roomModel.incrementUpdateCount(roomId)});
     });
     
-    socket.on('endScoring', request => {
+    socket.on('endScoring', async request => {
       logger.log('info', 'received end scoring request');
       const {roomId, userId} = request;
 
@@ -610,53 +609,71 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         return;
       }
 
-      const room = rooms[roomId];
+      const playerIds = await roomModel.getPlayerIds(roomId);
 
-      if (!room) {
+      // check that player is in room
+      if (!playerIds || !playerIds.includes(userId)) {
         return;
       }
       const operations: JSONPatchOperation[] = [];
-      // signal that user is ready to move on to next phase
-      const { successful, gamePhase } = room.endScoring(userId);
-      if (!successful) {
+
+      const readyPlayerIds = await roomModel.getPlayersReadyForNextRound(roomId);
+      if (readyPlayerIds?.includes(userId)) {
+        logger.info('user is already ready for next round');
+      }
+
+      let gamePhase: GamePhase | undefined = undefined;
+      const readyPlayerCount = await roomModel.addPlayerToReadyForNextRound(roomId, userId);
+      if (readyPlayerCount < 1) {
+        logger.error('issue adding to ready players');
         return;
       }
 
-      // still waiting on other players
+      // all players ready for next round
+      if (readyPlayerCount === playerIds.length) {
+        gamePhase = 'storyTellerPick';
+        // if game is won go to lobby next
+        if (await roomModel.isGameWon(roomId)) {
+          gamePhase = 'lobby';
+        }
+      }
+      // if still waiting on other players
       if (gamePhase === undefined) {
         operations.push({
           'op': 'add',
           'path': '/readyForNextRound/-',
           'value': userId,
         });
-        io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: room.incrementUpdateCount()});
+        io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: await roomModel.incrementUpdateCount(roomId)});
         return;
       }
       // going into next round
       else if (gamePhase === 'storyTellerPick') {
         logger.log('info', 'going into next round');
-        room.populateHands()
-          .then(newCardsPerPlayer => {
-            if (newCardsPerPlayer) {
-              logger.log('info', 'populated hands for next round');
-              newCardsPerPlayer.forEach((cardDetails, playerIndex) => {
-                cardDetails.forEach(element => {
-                  const {handIndex, card} = element;
-                  operations.push({
-                    'op': 'add',
-                    'path': `/players/${playerIndex}/hand/${handIndex}`,
-                    'value': card,
-                  });
-                });
-              });
-              io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: room.incrementUpdateCount()});
-              io.to(roomId).emit('resetRoundValues', room.incrementUpdateCount());
-            }
+        const newCardsPerPlayer = await populateHands(roomId);
+        if (!newCardsPerPlayer) {
+          logger.error('could not populate hands for next round');
+          return;
+        }
+        logger.log('info', 'populated hands for next round');
+        newCardsPerPlayer.forEach((cardDetails, playerIndex) => {
+          cardDetails.forEach(element => {
+            const {handIndex, card} = element;
+            operations.push({
+              'op': 'add',
+              'path': `/players/${playerIndex}/hand/${handIndex}`,
+              'value': card,
+            });
           });
+        });
+        io.to(roomId).emit('receiveRoomPatch', {...{operations}, updateCount: await roomModel.incrementUpdateCount(roomId)});
+        if (await roomModel.resetRoundValues(roomId)) {
+          io.to(roomId).emit('resetRoundValues', await roomModel.incrementUpdateCount(roomId));
+        }
       }
       else if (gamePhase === 'lobby') {
         logger.log('info', 'reset to lobby');
-        io.to(roomId).emit('resetToLobby', room.incrementUpdateCount());
+        io.to(roomId).emit('resetToLobby', await roomModel.incrementUpdateCount(roomId));
       }
     });
   });
@@ -673,18 +690,20 @@ async function populateHands(roomId: string) {
   const totalCardsNeeded =  cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0);
   const currentCardIds = playerHands.map(h => h.map(c => c.id)).flat();
   logger.log('info', `currentCardIds: ${JSON.stringify(currentCardIds)}`);
+
   // get total number of cards needed in one database call
   const newCards = await cardModel.drawCards(totalCardsNeeded, currentCardIds);
   logger.log('info', `${cardsNeededPerPlayer.reduce((sum, a) => sum + a, 0)} cards needed, ${newCards.length} cards drawn`);
+
   const newCardsPerPlayer: {card: GameCard, handIndex: number}[][] = [];
   for (const [playerIndex, hand] of playerHands.entries()) {
     const newCardsForCurrentPlayer: {card: GameCard, handIndex: number}[] = [];
     for (let handIndex = hand.length; handIndex < handSize; handIndex += 1) {
       const card = newCards.pop();
       if (card !== undefined) {
-        const insertedIndex = await roomModel.putCardInPlayerHand(roomId, playerIndex, card);
+        const insertedIndex = await roomModel.putCardInPlayerHand(roomId, playerIndex, handIndex, card);
         if (insertedIndex !== -1 || insertedIndex >= handSize) {
-          newCardsForCurrentPlayer.push({card, handIndex: insertedIndex});
+          newCardsForCurrentPlayer.push({card, handIndex});
         }
         else {
           logger.error(`unable to put card ${JSON.stringify(card)} in player ${playerIndex} hand`);

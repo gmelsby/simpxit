@@ -180,8 +180,8 @@ export async function getHandSize(roomCode: string) {
   return result[0] as number;
 }
 
-export async function putCardInPlayerHand(roomCode: string, playerIndex: number, card: GameCard) {
-  const result = await client.json.arrAppend(roomPrefix(roomCode), `$.players[${playerIndex}].hand`, card);
+export async function putCardInPlayerHand(roomCode: string, playerIndex: number, handIndex: number, card: GameCard) {
+  const result = await client.json.arrInsert(roomPrefix(roomCode), `$.players[${playerIndex}].hand`, handIndex, card);
 
   if (result === null) {
     return -1;
@@ -359,4 +359,64 @@ export async function getScoringInfo(roomCode: string) {
     score: scoreResult as number[],
   };
   return scoringInfo;
+}
+
+// returns size of readyForNextRound array after insert
+export async function addPlayerToReadyForNextRound(roomCode: string, playerId: string) {
+  const result = await client.json.arrAppend(roomPrefix(roomCode), '$.readyForNextRound', playerId);
+  return typeof result === 'number' ? result : result[0];
+}
+
+// gets list of player ids ready for next round
+export async function getPlayersReadyForNextRound(roomCode: string) {
+  const result = await client.json.get(roomPrefix(roomCode), {path: '$.readyForNextRound'});
+  if (result === null || !Array.isArray(result) || result.length === 0) {
+    return null;
+  }
+  return result[0] as string[];
+}
+
+// return true if game is won, false if not
+export async function isGameWon(roomCode: string) {
+  const targetScoreResult = await client.json.get(roomPrefix(roomCode), {path: '$.targetScore'});
+  if (targetScoreResult === null || !Array.isArray(targetScoreResult) || targetScoreResult.length === 0 || targetScoreResult === null) {
+    throw Error;
+  }
+  const targetScore = targetScoreResult[0] as number;
+
+  const scoreResult = await client.json.get(roomPrefix(roomCode), {path: '$.players..score'});
+  if (scoreResult === null || !Array.isArray(scoreResult) || scoreResult.length === 0) {
+    throw Error;
+  }
+  const highScore = Math.max(...scoreResult as number[]);
+  return highScore >= targetScore;
+}
+
+async function incrementAndModPlayerTurn(roomCode: string) {
+  const queries = [];
+  queries.push(client.json.arrLen(roomPrefix(roomCode), '$.players'));
+  queries.push(client.json.get(roomPrefix(roomCode), {path: '$.playerTurn'}));
+  const results = await Promise.all(queries);
+  const mappedResults = results.map(r => Array.isArray(r) ? r[0] : r) as number[];
+  const [playerCount, playerTurn] = mappedResults;
+  if (playerCount === null || playerTurn === null) {
+    throw Error('could not find player length or playerTurn');
+  }
+  const newPlayerTurn = (playerTurn + 1) % playerCount;
+  const result = client.json.set(roomPrefix(roomCode), '$.playerTurn', newPlayerTurn);
+  return result;
+}
+
+// resets round values to move from scoring to storyTellerPick
+export async function resetRoundValues(roomCode: string) {
+  const promises = [
+    setGamePhase(roomCode, 'storyTellerPick'),
+    incrementAndModPlayerTurn(roomCode),
+    client.json.set(roomPrefix(roomCode), '$.readyForNextRound', []),
+    client.json.set(roomPrefix(roomCode), '$.submittedCards', []),
+    client.json.set(roomPrefix(roomCode), '$.guesses', {}),
+    client.json.set(roomPrefix(roomCode), '$.players..scoredThisRound', 0)
+  ];
+  const results = await Promise.all(promises);
+  return !results.some(result => result === null);
 }
