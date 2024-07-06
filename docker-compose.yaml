@@ -1,0 +1,23 @@
+services:
+  simpxit:
+    build:
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    environment:
+      - REDIS_URL=redis://redis:6379
+    ports: 
+      - 3000:3000
+    links:
+      - redis
+    depends_on:
+      - redis
+    
+  redis:
+    container_name: simpxit-redis
+    image: redis/redis-stack-server:latest
+    restart: unless-stopped
+
+networks:
+  default:
+    name: simpxit-network
+    driver: bridge
