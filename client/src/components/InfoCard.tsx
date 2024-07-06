@@ -43,7 +43,7 @@ function Back({ cardId, isFlipped }: { cardId: string, isFlipped: boolean }) {
   }, [isFlipped, backRef]);
 
   return (
-    <JustifySafelyContainer justifyType='center' overflowType='auto' 
+    <JustifySafelyContainer justifyType='center' overflowType={isFlipped ? 'auto' : 'hidden'}
       className={`d-flex flex-column bg-body flipcard-back card-img ${isFlipped ? '' : 'pe-none'}`}
       containerRef={backRef}
     >
