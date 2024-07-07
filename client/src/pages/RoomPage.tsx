@@ -257,7 +257,7 @@ export default function RoomPage({ userId }: {userId: string}) {
       {roomState.gamePhase !== 'lobby' && <ScoresSidebar players={roomState.players} targetScore={roomState.targetScore} {...{userId}} />}
       {!isConnected && 
         <div className="z-2 fluid position-absolute flex-column d-flex m-auto w-100 h-100 align-items-center text-center">
-          <Alert variant="danger" className="mt-5 mx-2">Connection with server interrupted. Attempting to reconnect...</Alert>
+          <Alert variant="warning" className="mt-5 mx-2">Connection with server interrupted. Attempting to reconnect...</Alert>
           <Container></Container>
         </div>
       }
