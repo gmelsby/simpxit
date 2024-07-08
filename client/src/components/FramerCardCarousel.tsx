@@ -7,6 +7,9 @@ import InfoCard from './InfoCard';
 import ScoringCard from './ScoringCard';
 import { Player } from '../../../types';
 
+// length which user drags to count as a swipe
+const dragLength = 25;
+
 export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, swipe, setSwipe, isInfo, scoring}: 
   {
     cards: GameCard[], 
@@ -74,11 +77,11 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
               onDragEnd={(e, info) => {
                 const lateralDrag = info.point.x - dragStartX;
                 // drag left
-                if (lateralDrag >= 20) {
+                if (lateralDrag >= dragLength) {
                   setSwipe('left');
                 }
                 // drag right
-                else if (lateralDrag <= -20) {
+                else if (lateralDrag <= -1 * dragLength) {
                   setActiveIndex(idx => (idx + 1) % cards.length);
                 }
               }}
