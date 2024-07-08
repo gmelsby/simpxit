@@ -16,6 +16,7 @@ import { ClientToServerEvents, Room, ServerToClientEvents } from '../../../types
 import { Socket } from 'socket.io-client'; 
 import Sidebar from '../components/Sidebar';
 import ScoresSidebar from '../components/ScoresSidebar';
+import ConnectionHeader from '../components/ConnectionHeader';
 
 
 export default function RoomPage({ userId }: {userId: string}) {
@@ -255,12 +256,7 @@ export default function RoomPage({ userId }: {userId: string}) {
       <Sidebar {...{currentName, changeName}}/>
       {isAdmin && roomState.gamePhase == 'lobby' && <OptionsModal currentOptions={{targetScore: roomState.targetScore}} changeOptions={changeOptions} />}
       {roomState.gamePhase !== 'lobby' && <ScoresSidebar players={roomState.players} targetScore={roomState.targetScore} {...{userId}} />}
-      {!isConnected && 
-        <div className="z-2 fluid position-absolute flex-column d-flex m-auto w-100 h-100 align-items-center text-center">
-          <Alert variant="warning" className="mt-5 mx-2">Connection with server interrupted. Attempting to reconnect...</Alert>
-          <Container></Container>
-        </div>
-      }
+      <ConnectionHeader {...{isConnected}}/>
       <KickModal kickUserId={kickUserId} setKickUserId={setKickUserId} kickPlayer={kickPlayer} players={roomState.players} />
     
       {roomState.gamePhase === 'lobby' && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
