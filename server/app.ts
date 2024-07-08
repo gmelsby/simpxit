@@ -10,7 +10,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import path from 'node:path';
 import { retrieveCardInfo } from './models/cardModel.js';
-import { GameCard, ClientToServerEvents, ServerToClientEvents } from '../types.js';
+import { ClientToServerEvents, ServerToClientEvents } from '../types.js';
 import { createRoom } from './models/roomModel.js';
 
 
@@ -56,14 +56,6 @@ supabasePing('0 5 * * *');
 // sets up socket connection logic
 socketHandler(io);
 
-// for caching card info, clears every 2 minutes
-let cardInfoCache: { [key: string]: GameCard } = {};
-setInterval(() => {
-  logger.verbose('clearing cardInfoCache');
-  cardInfoCache = {};
-}, 1000 * 60 * 2);
-
-
 // allows users to get the card info for a card
 app.get('/api/cardinfo/:cardIdString', async (req, res) => {
   const { cardIdString } = req.params;
@@ -71,13 +63,6 @@ app.get('/api/cardinfo/:cardIdString', async (req, res) => {
   logger.info(`received request for card info for card ${cardIdString}`);
   // card info based on id should not change, so set Cache-Control very high
   res.set('Cache-Control', 'public, max-age=31557600');
-
-  // case where value was cached
-  if (Object.keys(cardInfoCache).includes(cardIdString)) {
-    logger.verbose('returning cached value');
-    res.send(cardInfoCache[cardIdString]);
-    return;
-  }
 
   // check that cardIdString is parsable as bigint
   let cardId = BigInt(0);
@@ -95,9 +80,6 @@ app.get('/api/cardinfo/:cardIdString', async (req, res) => {
     res.status(404).send('card not found');
     return;
   }
-
-  // cache result to minimize db calls
-  cardInfoCache[cardIdString] = cardInfo;
 
   res.send(cardInfo);
 });

@@ -1,5 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { GameCard } from '../../types';
+import { logger } from '../app.js';
+import rc from './redisClient.js';
 
 const prisma = new PrismaClient();
 const imageBucketUrl = process.env.IMAGE_BUCKET;
@@ -37,6 +39,14 @@ export async function drawCards(count: number, currentCardIds: string[]): Promis
 
 // retrieves the card with passed in id if exists, oterwise returns null
 export async function retrieveCardInfo(cardId: bigint): Promise<GameCard | null> {
+  // check if cached card is in redis
+  const redisKey = `noderedis:card:${cardId}`;
+  const redisResult = await rc.json.get(redisKey) as GameCard | null;
+  if (redisResult !== null) {
+    logger.verbose(`retrieved cached cardInfo for cardId ${cardId}`);
+    return redisResult;
+  }
+
   const result = await prisma.card.findFirst({
     where: {
       id: {
@@ -52,7 +62,7 @@ export async function retrieveCardInfo(cardId: bigint): Promise<GameCard | null>
     return null;
   }
 
-  return {
+  const gameCardResult: GameCard = {
     id: result.id.toString(),
     locator: `${imageBucketUrl}/${result.locator}`,
     subtitles: result.subtitles,
@@ -65,4 +75,13 @@ export async function retrieveCardInfo(cardId: bigint): Promise<GameCard | null>
     airdate: result.episode.airdate,
     frinkiacLink: result.frinkiac_link,
   };
+
+  // cache result in redis
+  await rc.json.set(redisKey, '$', gameCardResult, {
+    NX: true
+  });
+  // set key to expire in 5 minutes
+  await rc.expire(redisKey, 60 * 5);
+
+  return gameCardResult;
 }

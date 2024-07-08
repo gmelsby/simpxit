@@ -583,7 +583,6 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
           logger.error('issue calculating score');
           return;
         }
-        console.log(JSON.stringify(scoringInfo));
         scoringInfo.score.forEach((score, idx) => {
           operations.push({
             'op': 'replace',

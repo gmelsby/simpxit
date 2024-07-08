@@ -1,16 +1,12 @@
-import { createClient } from 'redis';
 import { logger } from '../app.js';
 import { Room, Player, GamePhase, GameCard, GuessMap } from '../../types.js';
+import client from './redisClient.js';
 
 // how long rooms persist in redis until timeout
 const roomTimeout = 60 * 60;
 const roomPrefix = (roomCode: string) => {return `noderedis:room:${roomCode}`;};
 
-const client = await createClient({
-  url: process.env.REDIS_URL,
-})
-  .on('error', err => logger.error('Redis Client Error', err))
-  .connect();
+
 
 // creates a blank room with passed in userId as admin
 function createRoomWithUser(userId: string) {
