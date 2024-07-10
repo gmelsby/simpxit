@@ -47,7 +47,7 @@ export default function Sidebar({ currentName, changeName }: { players?: Player[
 
   return (
     <>
-      <Button variant="secondary" className="top-left-button position-absolute top-0 start-0 btn-outline-dark" onClick={handleShow}>
+      <Button variant="secondary" aria-label="Info" className="top-left-button position-absolute top-0 start-0 btn-outline-dark" onClick={handleShow}>
         <BiMenu />
       </Button>
 
