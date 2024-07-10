@@ -2,29 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { GameCard } from '../../../types';
 import GameImage from './GameImage';
-import { Container, Image, Row } from 'react-bootstrap';
+import { Col, Button, Container, Image, Row } from 'react-bootstrap';
+import { BsCaretLeftFill, BsCaretRightFill } from 'react-icons/bs';
 import InfoCard from './InfoCard';
 import ScoringCard from './ScoringCard';
 import { Player } from '../../../types';
 
 // length which user drags to count as a swipe
-const dragLength = 25;
+const dragLength = 5;
 
-export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, swipe, setSwipe, isInfo, scoring}: 
+export default function FramerCardCarousel({cards, isInfo, scoring, handleSelectCard}: 
   {
     cards: GameCard[], 
-    activeIndex: number, 
-    setActiveIndex: React.Dispatch<React.SetStateAction<number>>, 
-    swipe: 'left' | 'right' | undefined
-    setSwipe: React.Dispatch<React.SetStateAction<'left' | 'right' | undefined>>,
     isInfo?: boolean, 
     scoring?: {
       players: Player[];
       guesses: {[key:string]: string};
       storyTellerId: string;
-    }
+    },
+    handleSelectCard?: (selectedCard: GameCard) => void
   }) {
   const [dragStartX, setDragStartX] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [swipe, setSwipe] = useState<'left' | 'right' | undefined>(undefined);
+  const [isFrontFlipped, setIsFrontFlipped] = useState(false);
+
+  // in a 3-player game resets the carousel after the first card of two is picked
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [cards.length, setActiveIndex]);
+
+  // un-flips front card when front card changes
+  useEffect(() => {
+    setIsFrontFlipped(false);
+  }, [activeIndex]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined = undefined;
@@ -91,13 +102,14 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
                   animate={{ 
                     rotate: rotation,
                   }}>
-                  {isInfo && <InfoCard card={card} />}
+                  {isInfo && <InfoCard card={card} externalFlipControl={index === 0 ? isFrontFlipped : undefined}/>}
                   {scoring && 
                     <ScoringCard 
                       player={scoring.players.find(p => p.playerId === card.submitter)}
                       card={card}
                       guessedPlayerNames={scoring.players.filter(p => scoring.guesses[p.playerId] === card.id).map(p => p.playerName)}
                       isStoryTeller={scoring.players.find(p => p.playerId === card.submitter)?.playerId === scoring.storyTellerId}
+                      externalFlipControl={index === 0 ? isFrontFlipped : undefined}
                     />
                   }
                   {!isInfo && !scoring && <GameImage card={card} />}
@@ -128,5 +140,43 @@ export default function FramerCardCarousel({cards, activeIndex, setActiveIndex, 
           />
         )}
       </Row>
+      <CarouselController {...{cards, activeIndex, setSwipe}} 
+        buttonText={isInfo || scoring ? 'Flip' : 'Submit'} 
+        actOnSelectedCard={isInfo || scoring ? (() => setIsFrontFlipped(val => !val)) : handleSelectCard} 
+      />
     </div>);
+}
+
+function CarouselController({cards, activeIndex, setSwipe, actOnSelectedCard, buttonText}:
+  {
+    cards: GameCard[],
+    activeIndex: number,
+    setSwipe: React.Dispatch<React.SetStateAction<'left' | 'right' | undefined>>,
+    actOnSelectedCard?: (selectedCard: GameCard) => void
+    buttonText: string
+  }) {
+
+  return (
+    <Container className="mt-3 text-center">
+      <Row>
+        <Col>
+          <Button onClick={() => setSwipe('left')} className="px-3">
+            <BsCaretLeftFill />
+          </Button>
+        </Col>
+        <Col>
+          { actOnSelectedCard !== undefined && 
+          <Button
+            onClick={() => actOnSelectedCard(cards[activeIndex])}>
+            {buttonText}
+          </Button>}
+        </Col>
+        <Col>
+          <Button onClick={() => setSwipe('right')} className="px-3">
+            <BsCaretRightFill />
+          </Button>
+        </Col>
+      </Row>
+    </Container>
+  );
 }

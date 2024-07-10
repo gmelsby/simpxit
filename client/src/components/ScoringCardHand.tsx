@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import ScoringCard from './ScoringCard';
 import { GameCard, Player } from '../../../types';
-import CarouselController from './CarouselController';
 import FramerCardCarousel from './FramerCardCarousel';
 
 export default function ScoringCardHand({storyTeller,
@@ -15,10 +14,6 @@ export default function ScoringCardHand({storyTeller,
                                          submittedCards: GameCard[],
                                          guesses: {[key: string]: string}
                                         }) {
-
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [swipe, setSwipe] =  useState<'left' | 'right' | undefined>(undefined);
-  
   // returns list of player names that guessed the card
   const playersWhoGuessed = (cardId: string) => {
     return players.filter(p => guesses[p.playerId] === cardId);
@@ -53,8 +48,7 @@ export default function ScoringCardHand({storyTeller,
 
 
       <Container className="d-xs-flex d-md-none">
-        <FramerCardCarousel cards={submittedCards} {...{activeIndex, setActiveIndex, swipe, setSwipe, scoring}}/>
-        <CarouselController hand={submittedCards} {...{activeIndex, setSwipe}} />
+        <FramerCardCarousel cards={submittedCards} {...{ scoring }}/>
       </Container>
     </>
   );
