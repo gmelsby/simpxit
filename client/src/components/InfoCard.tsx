@@ -5,11 +5,19 @@ import CardInfoWrapper from './CardInfoWrapper';
 import GameImage from './GameImage';
 import JustifySafelyContainer from './JustifySafelyContainer';
 
-export default function InfoCard({ card }: { card: GameCard}) {
-  const [isFlipped, setIsFlipped] = useState(false);
+export default function InfoCard({ card, externalFlipControl }: { card: GameCard, externalFlipControl?: boolean}) {
+  const [isFlipped, setIsFlipped] = useState(externalFlipControl !== undefined ? externalFlipControl : false);
+  // keep isFlipped in sync with externalFlipControl
+  // if externalFlipControl becomes undefined set to front
+  useEffect(() => {
+    setIsFlipped(externalFlipControl === undefined ? false : externalFlipControl);
+  }, [externalFlipControl]);
+
   return (
     <div className="flipcard selectable-no-grow" onClick={() => {
-      setIsFlipped(current => !current);
+      if (externalFlipControl === undefined) {
+        setIsFlipped(current => !current);
+      }
     }}
     >
       <div className={`flipcard-inner ${isFlipped ? 'flipped' : ''}`}>

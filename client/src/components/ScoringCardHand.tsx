@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import ScoringCard from './ScoringCard';
 import { GameCard, Player } from '../../../types';
-import CarouselController from './CarouselController';
 import FramerCardCarousel from './FramerCardCarousel';
 
 export default function ScoringCardHand({storyTeller,
@@ -15,7 +14,6 @@ export default function ScoringCardHand({storyTeller,
                                          submittedCards: GameCard[],
                                          guesses: {[key: string]: string}
                                         }) {
-
   // returns list of player names that guessed the card
   const playersWhoGuessed = (cardId: string) => {
     return players.filter(p => guesses[p.playerId] === cardId);

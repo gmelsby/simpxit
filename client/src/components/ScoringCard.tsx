@@ -4,10 +4,16 @@ import CardInfoWrapper from './CardInfoWrapper';
 import { Player, GameCard } from '../../../types';
 import GameImage from './GameImage';
 
-export default function ScoringCard({ player, card, guessedPlayerNames, isStoryTeller }:
-  {player: Player | undefined, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean}) {
-  // returns the html code for the number in a cicle for numbers 1-8
-  const [isFlipped, setIsFlipped] = useState(false);
+export default function ScoringCard({ player, card, guessedPlayerNames, isStoryTeller, externalFlipControl }:
+  {player: Player | undefined, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean, externalFlipControl?: boolean}) {
+
+  const [isFlipped, setIsFlipped] = useState(externalFlipControl !== undefined ? externalFlipControl : false);
+  // keep isFlipped in sync with externalFlipControl
+  // if externalFlipControl becomes undefined set to front
+  useEffect(() => {
+    setIsFlipped(externalFlipControl === undefined ? false : externalFlipControl);
+  }, [externalFlipControl]);
+
   return (
     <div className="flipcard selectable-no-grow" onClick={() => setIsFlipped(current => !current)}>
       <div className={`flipcard-inner ${isFlipped ? 'flipped' : ''}`}>
@@ -43,6 +49,7 @@ export default function ScoringCard({ player, card, guessedPlayerNames, isStoryT
 function Front({ player, card, guessedPlayerNames, isStoryTeller }:
   {player: Player | undefined, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean}) {
 
+  // returns the html code for the number in a cicle for numbers 1-8
   const circleNumberHtmlCalc = useCallback(((n: number) => String.fromCharCode(0x245F + n)), []);
 
   return (

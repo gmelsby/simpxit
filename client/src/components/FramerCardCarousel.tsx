@@ -25,12 +25,17 @@ export default function FramerCardCarousel({cards, isInfo, scoring, handleSelect
   const [dragStartX, setDragStartX] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [swipe, setSwipe] = useState<'left' | 'right' | undefined>(undefined);
+  const [isFrontFlipped, setIsFrontFlipped] = useState(false);
 
   // in a 3-player game resets the carousel after the first card of two is picked
   useEffect(() => {
     setActiveIndex(0);
   }, [cards.length, setActiveIndex]);
 
+  // un-flips front card when front card changes
+  useEffect(() => {
+    setIsFrontFlipped(false);
+  }, [activeIndex]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined = undefined;
@@ -97,13 +102,14 @@ export default function FramerCardCarousel({cards, isInfo, scoring, handleSelect
                   animate={{ 
                     rotate: rotation,
                   }}>
-                  {isInfo && <InfoCard card={card} />}
+                  {isInfo && <InfoCard card={card} externalFlipControl={index === 0 ? isFrontFlipped : undefined}/>}
                   {scoring && 
                     <ScoringCard 
                       player={scoring.players.find(p => p.playerId === card.submitter)}
                       card={card}
                       guessedPlayerNames={scoring.players.filter(p => scoring.guesses[p.playerId] === card.id).map(p => p.playerName)}
                       isStoryTeller={scoring.players.find(p => p.playerId === card.submitter)?.playerId === scoring.storyTellerId}
+                      externalFlipControl={index === 0 ? isFrontFlipped : undefined}
                     />
                   }
                   {!isInfo && !scoring && <GameImage card={card} />}
@@ -134,7 +140,10 @@ export default function FramerCardCarousel({cards, isInfo, scoring, handleSelect
           />
         )}
       </Row>
-      <CarouselController {...{cards, activeIndex, setSwipe}} buttonText={isInfo ? 'Flip' : 'Submit'} actOnSelectedCard={isInfo? (card => console.log(card)) : handleSelectCard} />
+      <CarouselController {...{cards, activeIndex, setSwipe}} 
+        buttonText={isInfo || scoring ? 'Flip' : 'Submit'} 
+        actOnSelectedCard={isInfo || scoring ? (() => setIsFrontFlipped(val => !val)) : handleSelectCard} 
+      />
     </div>);
 }
 

@@ -32,7 +32,7 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
 
   return(
     <>
-      <div>
+      <div className="d-none d-md-block">
         <Row 
           xs={lengthMap.has(hand.length) ? lengthMap.get(hand.length) : Math.min(Math.max(hand.length, 2), 3)} 
           className="justify-content-center maxwidth-67svw g-2 my-3 mx-auto d-none d-md-flex">
