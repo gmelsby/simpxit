@@ -1,12 +1,11 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { lazy, useCallback, useEffect } from 'react';
 import { v4 } from 'uuid';
-import 'bootstrap/dist/css/bootstrap.min.css'; 
-import './App.css';
+import './App.scss';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import RoomPage from './pages/RoomPage';
 import useSessionStorage from './hooks/useSessionStorage';
-import FourOhFour from './pages/FourOhFour';
+import HomePage from './pages/HomePage';
+const RoomPage = lazy(() => import('./pages/RoomPage'));
+const FourOhFour = lazy(() => import('./pages/FourOhFour')) ;
 
 
 
@@ -25,7 +24,7 @@ function App() {
   }, [userId, generateUuid]);
 
   return (
-    <>
+    <React.Suspense fallback={<></>}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage userId={userId} />} />
@@ -36,7 +35,7 @@ function App() {
           <Route path="*" element={<FourOhFour />}/>
         </Routes>
       </BrowserRouter>
-    </>
+    </React.Suspense>
   );
 }
 

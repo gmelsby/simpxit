@@ -1,6 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Walter+Turncoat&display=swap');
 
+@import "bootstrap/scss/mixins/banner";
+@include bsBanner("");
+
+// Configuration
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+// Layout & components
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/alert";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/close";
+@import "bootstrap/scss/offcanvas";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+
+// Helpers
+@import "bootstrap/scss/helpers";
+
+// Utilities
+@import "bootstrap/scss/utilities/api";
+
 #root {
   height: 100%;
 }
@@ -29,16 +62,7 @@ body {
   transition: transform 200ms ease-in-out;
 }
 
-.card-img {
-  border-color: black;
-  border-radius: 1rem;
-  border-width: 0.25rem;
-  border-style: solid;
-}
 
-.carousel .carousel-item {
-  transition-duration: 300ms;
-}
 
 @keyframes spin {
   from {transform: rotateZ(0deg);}
@@ -77,24 +101,6 @@ body {
   }
   .selectable-no-grow:hover {
     cursor: pointer;
-  }
-}
-
-.shimmer {
-  background: #000000;
-  background-image: linear-gradient(to right, #1a1a15 0%, #5b5b57 20%, #1a1a15 40%, #55554b 70%, #0f100e 90%, #1a1a15 100%);
-  background-size: 200% 100%;
-  animation: shimmer 3s infinite;
-  height: 100%;
-  width: 100%;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
   }
 }
 
@@ -137,56 +143,8 @@ body {
   max-width: 90vw;
 }
 
-.flipcard {
-  perspective: 1500px;
-  width: 100%;
-  height: 100%;
-}
-
-.flipcard-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-}
-
-.flipped {
-  transform: rotateY(180deg);
-}
-
-.flipcard-front, .flipcard-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden; /* Safari */
-  backface-visibility: hidden;
-}
-
-.flipcard-front {
-  transform: rotateY(0deg);
-}
-
-.flipcard-back {
-  transform: rotateY(180deg);
-  z-index: 1;
-}
-
 /* fixes for scrolling when flexboxes overflow */
 .justify-content-center-safe {
   overflow: auto;
   justify-content: safe center;
 }
-
-/* for Hand to not overwhelm medium screen size */
-.maxwidth-67svw {
-  max-width: 67svw;
-}
-
-.maxwidth-60svw {
-  max-width: 60svw;
-}
-
-/*# sourceMappingURL=App.css.map */
