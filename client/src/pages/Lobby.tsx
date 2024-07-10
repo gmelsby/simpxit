@@ -68,7 +68,7 @@ function NameForm({ players, roomId, userId, socket }:
   {players: Player[], roomId: string, userId: string, socket: Socket | null}) {
   const currentName = players.find(player => player.playerId === userId)?.playerName;
   const [isEditingName, setIsEditingName] = useState(false);
-  const [newName, setNewName] = useState(currentName);
+  const [newName, setNewName] = useState(currentName ? currentName : '');
   const nameFormRef = useRef<HTMLInputElement>(null);
 
   const handleNameChange = useCallback((e: Event | React.SyntheticEvent) => {

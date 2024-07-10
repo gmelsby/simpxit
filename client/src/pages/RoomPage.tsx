@@ -202,7 +202,7 @@ export default function RoomPage({ userId }: {userId: string}) {
     return (<LeaveRedirect kick />);
   }
   
-  // case where player has been removed form server due to leave attempt
+  // case where player has been removed from server due to leave attempt
   if (!(roomState.players.map(player => player.playerId).includes(userId)) && leaveAttempt) {
     return (<LeaveRedirect />);
 

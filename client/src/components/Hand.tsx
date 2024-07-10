@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Col, Row, Container } from 'react-bootstrap';
 import GameImage from './GameImage';
 import { GameCard } from '../../../types';
 import InfoCard from './InfoCard';
 import FramerCardCarousel from './FramerCardCarousel';
-import CarouselController from './CarouselController';
 
 export default function Hand( { hand, setSelectedCard, isGallery, isInfo }: 
   {
@@ -14,13 +13,6 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
     isInfo?: boolean
   }) {
 
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [swipe, setSwipe] = useState<'left' | 'right' | undefined>(undefined);
-
-  // in a 3-player game resets the carousel after the first card of two is picked
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [hand.length, setActiveIndex]);
 
   const handleSelectCard = (card: GameCard) => {
     if (setSelectedCard !== undefined) {
@@ -57,18 +49,17 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
       </div>
       <Container className="d-xs-flex d-md-none justify-content-center">
         {hand.length > 1 && 
-          <>
-            <FramerCardCarousel cards={hand} {...{activeIndex, setActiveIndex, swipe, setSwipe, isInfo}} />
-            <CarouselController hand={hand} {...{activeIndex, setSwipe}} 
+            <FramerCardCarousel cards={hand} {...{ isInfo }} 
               handleSelectCard={isGallery || isInfo ? undefined : handleSelectCard}/>
-          </>
         }
         {hand.length === 1 &&
           <div>
             {isInfo ?
               <>
                 <InfoCard card={hand[0]} />
-                <h6 className='my-3 opacity-75'>{'ontouchstart' in window ? 'Tap' : 'Click'} card{hand.length > 1 ? 's': ''} for more info!</h6>
+                {!('ontouchstart' in window) && 
+                  <h6 className='my-3 opacity-75'>Click card{hand.length > 1 ? 's': ''} for more info!</h6>
+                }
               </>
               :
               <GameImage card={hand[0]} selectablecard={selectablecard} />
