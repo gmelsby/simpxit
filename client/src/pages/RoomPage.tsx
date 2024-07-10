@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { immutableJSONPatch } from 'immutable-json-patch';
 import { produce } from 'immer';
 import { useParams } from 'react-router-dom';
@@ -7,16 +7,16 @@ import KickModal from '../components/KickModal';
 import OptionsModal from '../components/OptionsModal';
 import LeaveRedirect from '../components/LeaveRedirect';
 import Lobby from './Lobby';
-import StoryTellerPick from './StoryTellerPick';
-import OtherPlayersPick from './OtherPlayersPick';
-import OtherPlayersGuess from './OtherPlayersGuess';
-import Scoring from './Scoring';
 import { io } from 'socket.io-client';
 import { ClientToServerEvents, Room, ServerToClientEvents } from '../../../types';
 import { Socket } from 'socket.io-client'; 
 import Sidebar from '../components/Sidebar';
 import ScoresSidebar from '../components/ScoresSidebar';
 import ConnectionHeader from '../components/ConnectionHeader';
+const StoryTellerPick = lazy(() => import('./StoryTellerPick')) ;
+const OtherPlayersPick = lazy(() => import('./OtherPlayersPick')) ;
+const OtherPlayersGuess = lazy(() => import('./OtherPlayersGuess')) ;
+const Scoring = lazy(() => import('./Scoring')) ;
 
 
 export default function RoomPage({ userId }: {userId: string}) {
@@ -262,19 +262,21 @@ export default function RoomPage({ userId }: {userId: string}) {
       {roomState.gamePhase === 'lobby' && <Lobby players={roomState.players} roomId={roomId} userId={userId} handleLeave={handleLeave} 
         isAdmin={isAdmin} setKickUserId={setKickUserId} socket={socket}/>}
 
-      {roomState.gamePhase === 'storyTellerPick' && <StoryTellerPick userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
-        handSize={roomState.handSize} />}
-      
-      {roomState.gamePhase === 'otherPlayersPick' && <OtherPlayersPick userId={userId} storyTeller={storyTeller} roomId={roomId}
-        storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards} />}
+      <Suspense fallback={<></>}>
+        {roomState.gamePhase === 'storyTellerPick' && <StoryTellerPick userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
+          handSize={roomState.handSize} />}
+        
+        {roomState.gamePhase === 'otherPlayersPick' && <OtherPlayersPick userId={userId} storyTeller={storyTeller} roomId={roomId}
+          storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards} />}
 
-      {roomState.gamePhase === 'otherPlayersGuess' && <OtherPlayersGuess userId={userId} storyTeller={storyTeller} roomId={roomId}
-        storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards}
-        submittedGuesses={roomState.guesses} />}
-      
-      {roomState.gamePhase === 'scoring' && <Scoring userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
-        players={roomState.players} submittedCards={roomState.submittedCards} readyPlayers={roomState.readyForNextRound}
-        storyCardId={roomState.storyCardId} guesses={roomState.guesses} targetScore={roomState.targetScore} />} 
+        {roomState.gamePhase === 'otherPlayersGuess' && <OtherPlayersGuess userId={userId} storyTeller={storyTeller} roomId={roomId}
+          storyDescriptor={roomState.storyDescriptor} socket={socket} players={roomState.players} submittedCards={roomState.submittedCards}
+          submittedGuesses={roomState.guesses} />}
+        
+        {roomState.gamePhase === 'scoring' && <Scoring userId={userId} storyTeller={storyTeller} roomId={roomId} socket={socket}
+          players={roomState.players} submittedCards={roomState.submittedCards} readyPlayers={roomState.readyForNextRound}
+          storyCardId={roomState.storyCardId} guesses={roomState.guesses} targetScore={roomState.targetScore} />} 
+      </Suspense>
     </>
   );
 }
