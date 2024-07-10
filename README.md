@@ -2,7 +2,7 @@
 ## A web app that lets users play _Dixit_ with screencaps from _The Simpsons_
 
 Simpxit is a web app that uses Express and the Socket.IO library to facilitate a multiplayer game with the rules of [_Dixit_](https://boardgamegeek.com/boardgame/39856/dixit) and images from [_The Simpsons_](https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x) provided by [Frinkiac](https://frinkiac.com)'s API. \
- The frontend is a React app, and the game is currently deployed at [https://simpxit.fly.dev/](https://simpxit.gregexp.com).
+ The frontend is a React app, and the game is currently deployed at [https://simpxit.gregexp.com/](https://simpxit.gregexp.com).
 
 Players start a game by either creating a room or joining an existing room with a 4-letter code.
 Once more than 3 players are in a room, the player who created the room can start the game by clicking the "Start Game" button. 
