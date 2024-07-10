@@ -1,7 +1,6 @@
 import React, { lazy, useCallback, useEffect } from 'react';
 import { v4 } from 'uuid';
-import 'bootstrap/dist/css/bootstrap.min.css'; 
-import './App.css';
+import './App.scss';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import useSessionStorage from './hooks/useSessionStorage';
 import HomePage from './pages/HomePage';

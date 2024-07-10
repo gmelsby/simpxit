@@ -1,4 +1,5 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
+import '../RoomPage.scss';
 import { immutableJSONPatch } from 'immutable-json-patch';
 import { produce } from 'immer';
 import { useParams } from 'react-router-dom';
