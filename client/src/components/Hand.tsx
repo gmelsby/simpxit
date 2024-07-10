@@ -57,9 +57,7 @@ export default function Hand( { hand, setSelectedCard, isGallery, isInfo }:
             {isInfo ?
               <>
                 <InfoCard card={hand[0]} />
-                {!('ontouchstart' in window) && 
-                  <h6 className='my-3 opacity-75'>Click card{hand.length > 1 ? 's': ''} for more info!</h6>
-                }
+                {isInfo && <h6 className='my-3 opacity-75'>{'ontouchstart' in window ? 'Tap' : 'Click'} card{hand.length > 1 ? 's': ''} for more info!</h6>}
               </>
               :
               <GameImage card={hand[0]} selectablecard={selectablecard} />

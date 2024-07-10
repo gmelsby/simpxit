@@ -15,7 +15,11 @@ export default function ScoringCard({ player, card, guessedPlayerNames, isStoryT
   }, [externalFlipControl]);
 
   return (
-    <div className="flipcard selectable-no-grow" onClick={() => setIsFlipped(current => !current)}>
+    <div className="flipcard selectable-no-grow" onClick={() => {
+      if (externalFlipControl === undefined) {
+        setIsFlipped(current => !current);
+      }
+    }}>
       <div className={`flipcard-inner ${isFlipped ? 'flipped' : ''}`}>
         <Front {...{ player, card, guessedPlayerNames, isStoryTeller }} />
         <Back cardId={card.id} {...{isFlipped, guessedPlayerNames}}  />
