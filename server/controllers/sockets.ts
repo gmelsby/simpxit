@@ -373,9 +373,9 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
         logger.info('could not get storyTellerIndex');
         return;
       }
-      logger.info(JSON.stringify(storyTellerIndex));
+      logger.debug(JSON.stringify(storyTellerIndex));
       const storyTeller = await roomModel.getPlayerAtIndex(roomId, storyTellerIndex);
-      logger.info(JSON.stringify(storyTeller));
+      logger.debug(JSON.stringify(storyTeller));
       if (!storyTeller || storyTeller.playerId !== userId) {
         logger.info('userId does not match storyTellerId');
         return;
@@ -470,7 +470,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       // check that user has not already submitted card
       const cardSubmitters = await roomModel.getCardSubmitters(roomId);
-      logger.info(`submitters: ${cardSubmitters}`);
+      logger.debug(`submitters: ${cardSubmitters}`);
       const submissionCount = cardSubmitters?.filter(id => id === userId).length;
       // in a 3 player game, users get to submit 2 cards
       if (submissionCount === undefined || 
