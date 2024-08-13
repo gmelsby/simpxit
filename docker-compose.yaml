@@ -5,6 +5,9 @@ services:
     restart: unless-stopped
     environment:
       - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=${DATABASE_URL}
+      - DIRECT_URL=${DIRECT_URL}
+      - IMAGE_BUCKET=${IMAGE_BUCKET}
     ports: 
       - 3000:3000
     links:
