@@ -115,7 +115,7 @@ export default function socketHandler(io: Server<ClientToServerEvents, ServerToC
 
       
       logger.log('info', `playerId ${userId} has joined room ${roomId}`);
-      logger.log('info', `player list = ${JSON.stringify(room.players)}`);
+      logger.debug(`player list = ${JSON.stringify(room.players)}`);
     });
     
     socket.on('kickPlayer', async request => {
