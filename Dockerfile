@@ -1,4 +1,4 @@
-FROM node:20-alpine as build
+FROM node:20-alpine AS build
 WORKDIR /usr/src/app
 COPY package*.json ./
 COPY tsconfig.json ./
