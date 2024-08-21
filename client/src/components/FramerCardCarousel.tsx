@@ -9,7 +9,7 @@ import ScoringCard from './ScoringCard';
 import { Player } from '../../../types';
 
 // length which user drags to count as a swipe
-const dragLength = 5;
+const dragLength = 25;
 
 export default function FramerCardCarousel({cards, isInfo, scoring, handleSelectCard}: 
   {
