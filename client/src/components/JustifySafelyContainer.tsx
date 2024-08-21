@@ -32,8 +32,11 @@ export default function JustifySafelyContainer({
     // on component load or ater change
     checkOverflowing();
     // check again after event loop has had some time
-    const timeout = setTimeout(checkOverflowing, 100);
-    const timeout2 = setTimeout(checkOverflowing, 500);
+    const timeouts = [setTimeout(checkOverflowing, 100)];
+    timeouts.push(setTimeout(checkOverflowing, 200));
+    timeouts.push(setTimeout(checkOverflowing, 300));
+    timeouts.push(setTimeout(checkOverflowing, 400));
+    timeouts.push(setTimeout(checkOverflowing, 500));
 
     const observer = new ResizeObserver(() => checkOverflowing);
     // keep updating every time a resize happens
@@ -44,8 +47,7 @@ export default function JustifySafelyContainer({
     window.addEventListener('resize', checkOverflowing);
     // cleanup
     return () => {
-      clearTimeout(timeout);
-      clearTimeout(timeout2);
+      timeouts.forEach(t => clearTimeout(t));
       window.removeEventListener('resize', checkOverflowing);
       observer.disconnect();
     };
