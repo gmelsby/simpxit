@@ -115,7 +115,7 @@ app.post('/api/room', async (req, res) => {
 
 // basic healthcheck
 app.get('/api/healthcheck', (req, res) => {
-  res.status(200).send();
+  res.status(200).send('OK');
 });
 
 // serves react app for all other routes
