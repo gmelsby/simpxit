@@ -115,6 +115,7 @@ app.post('/api/room', async (req, res) => {
 
 // basic healthcheck
 app.get('/api/healthcheck', (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
   res.status(200).send('OK');
 });
 
