@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Card as BootstrapCard, Col, Container, Image, Row} from 'react-bootstrap';
+import { Card as BootstrapCard, Col, Container, Image, Row } from 'react-bootstrap';
 import CardInfoWrapper from './CardInfoWrapper';
 import { Player, GameCard } from '../../../types';
 import GameImage from './GameImage';
 
 export default function ScoringCard({ player, card, guessedPlayerNames, isStoryTeller, externalFlipControl }:
-  {player: Player | undefined, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean, externalFlipControl?: boolean}) {
+  { player: Player | undefined, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean, externalFlipControl?: boolean }) {
 
   const [isFlipped, setIsFlipped] = useState(externalFlipControl !== undefined ? externalFlipControl : false);
   // keep isFlipped in sync with externalFlipControl
@@ -22,7 +22,7 @@ export default function ScoringCard({ player, card, guessedPlayerNames, isStoryT
     }}>
       <div className={`flipcard-inner ${isFlipped ? 'flipped' : ''}`}>
         <Front {...{ player, card, guessedPlayerNames, isStoryTeller }} />
-        <Back cardId={card.id} {...{isFlipped, guessedPlayerNames}}  />
+        <Back cardId={card.id} {...{ isFlipped, guessedPlayerNames }} />
         <div className='opacity-0'>
           <Col>
             <BootstrapCard className="card-img selectable-no-grow">
@@ -41,7 +41,7 @@ export default function ScoringCard({ player, card, guessedPlayerNames, isStoryT
                   </Col>
                 </Row>
               </BootstrapCard.Header>
-              <Image src='/image-placeholder.svg' className="card-img"/>
+              <Image src='/image-placeholder.svg' className="card-img" />
             </BootstrapCard>
           </Col>
         </div>
@@ -51,7 +51,7 @@ export default function ScoringCard({ player, card, guessedPlayerNames, isStoryT
 }
 
 function Front({ player, card, guessedPlayerNames, isStoryTeller }:
-  {player: Player | undefined, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean}) {
+  { player: Player | undefined, card: GameCard, guessedPlayerNames: string[], isStoryTeller: boolean }) {
 
   // returns the html code for the number in a cicle for numbers 1-8
   const circleNumberHtmlCalc = useCallback(((n: number) => String.fromCharCode(0x245F + n)), []);
@@ -78,7 +78,7 @@ function Front({ player, card, guessedPlayerNames, isStoryTeller }:
               </Col>
             </Row>
           </BootstrapCard.Header>
-          <GameImage card={card} className="card-img"/>
+          <GameImage card={card} className="card-img" />
         </BootstrapCard>
       </Col>
     </div>
@@ -97,17 +97,17 @@ function Back({ cardId, isFlipped, guessedPlayerNames }: { cardId: string, isFli
   }, [isFlipped, backRef]);
 
   return (
-    <BootstrapCard className={`d-flex flex-column bg-body justify-content-start ${isFlipped ?  'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
-      {guessedPlayerNames.length !== 0 && 
-      <BootstrapCard.Header>
-        <Container className=''>
-          <h6><b>Guessed By</b></h6>
-          {guessedPlayerNames.map(playerName => <h2 key={playerName}>{playerName}</h2>)}
-        </Container>
-      </BootstrapCard.Header>
+    <BootstrapCard className={`d-flex flex-column bg-body justify-content-start ${isFlipped ? 'overflow-auto' : 'overflow-hidden'} flipcard-back card-img`}>
+      {guessedPlayerNames.length !== 0 &&
+        <BootstrapCard.Header>
+          <Container className=''>
+            <h6><b>Guessed By</b></h6>
+            {guessedPlayerNames.map(playerName => <h2 key={playerName}>{playerName}</h2>)}
+          </Container>
+        </BootstrapCard.Header>
       }
       <BootstrapCard.Body className='py-4'>
-        <CardInfoWrapper cardId={cardId} load={isFlipped}/>
+        <CardInfoWrapper cardId={cardId} load={isFlipped} />
       </BootstrapCard.Body>
     </BootstrapCard>
   );

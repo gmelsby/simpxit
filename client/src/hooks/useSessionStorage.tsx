@@ -10,7 +10,7 @@ const PREFIX = 'simpxit-';
 
 
 export default function useSessionStorage<T>(key: string, initialValue: T) {
-  
+
   // key to store our value, prefix to limit collision with other apps
   key = PREFIX + key;
   const [storedValue, setStoredValue] = useState(() => {

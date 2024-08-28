@@ -11,13 +11,13 @@ export default function OtherPlayerModal({
   storyDescriptor,
   handleSubmit
 }:
-                                    {
-                                      use: 'deceive' | 'guess',
-                                      selectedCard: GameCard | null,
-                                      setSelectedCard: React.Dispatch<React.SetStateAction<GameCard | null>>,
-                                      storyDescriptor: string,
-                                      handleSubmit: () => void
-                                    }) {
+  {
+    use: 'deceive' | 'guess',
+    selectedCard: GameCard | null,
+    setSelectedCard: React.Dispatch<React.SetStateAction<GameCard | null>>,
+    storyDescriptor: string,
+    handleSubmit: () => void
+  }) {
 
   const handleCloseSelect = () => {
     setSelectedCard(null);
@@ -35,7 +35,7 @@ export default function OtherPlayerModal({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <GameImage card={selectedCard ? selectedCard : {id: '-1', locator:'/image-placeholder.svg'}} className="card-img" />
+        <GameImage card={selectedCard ? selectedCard : { id: '-1', locator: '/image-placeholder.svg' }} className="card-img" />
       </Modal.Body>
       <Modal.Footer>
         <Stack direction="horizontal" gap={3}>

@@ -44,7 +44,7 @@ export default function ScoresSidebar({ players, userId, targetScore }: { player
         Scoreboard
       </Button>
 
-      <Offcanvas placement={'end'} show={show} onHide={handleClose} className="offcanvas" {...{onTouchStart, onTouchMove, onTouchEnd}}>
+      <Offcanvas placement={'end'} show={show} onHide={handleClose} className="offcanvas" {...{ onTouchStart, onTouchMove, onTouchEnd }}>
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>Scoreboard</Offcanvas.Title>
         </Offcanvas.Header>
@@ -57,7 +57,7 @@ export default function ScoresSidebar({ players, userId, targetScore }: { player
               <h5><b>{targetScore}</b></h5>
             </Col>
           </Row>
-          <PlayerList {...{players, userId}} isScoreboard />
+          <PlayerList {...{ players, userId }} isScoreboard />
         </Offcanvas.Body>
       </Offcanvas>
     </>

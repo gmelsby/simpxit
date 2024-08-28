@@ -4,20 +4,21 @@ import ScoringCard from './ScoringCard';
 import { GameCard, Player } from '../../../types';
 import FramerCardCarousel from './FramerCardCarousel';
 
-export default function ScoringCardHand({storyTeller,
+export default function ScoringCardHand({ storyTeller,
   players,
   submittedCards,
-  guesses                            
+  guesses
 }:
-                                        {storyTeller: Player,
-                                         players: Player[],
-                                         submittedCards: GameCard[],
-                                         guesses: {[key: string]: string}
-                                        }) {
+  {
+    storyTeller: Player,
+    players: Player[],
+    submittedCards: GameCard[],
+    guesses: { [key: string]: string }
+  }) {
   // returns list of player names that guessed the card
   const playersWhoGuessed = (cardId: string) => {
     return players.filter(p => guesses[p.playerId] === cardId);
-  };                                          
+  };
 
   // maps from length of hand to length of row
   const lengthMap = new Map([
@@ -34,13 +35,13 @@ export default function ScoringCardHand({storyTeller,
 
   return (
     <>
-      <Row 
+      <Row
         xs={lengthMap.has(submittedCards.length) ? lengthMap.get(submittedCards.length) : 3}
         className="g-2 mx-auto my-3 d-none d-md-flex maxwidth-60svw justify-content-center">
-        {submittedCards.map(c => 
+        {submittedCards.map(c =>
           <Col key={c.id} className="d-flex flex-column justify-content-center">
             <ScoringCard key={c.id} player={players.filter(p => p.playerId === c.submitter)[0]} card={c}
-              guessedPlayerNames={playersWhoGuessed(c.id).map(p => p.playerName)} 
+              guessedPlayerNames={playersWhoGuessed(c.id).map(p => p.playerName)}
               isStoryTeller={c.submitter === storyTeller.playerId} />
           </Col>
         )}
@@ -48,7 +49,7 @@ export default function ScoringCardHand({storyTeller,
 
 
       <Container className="d-xs-flex d-md-none">
-        <FramerCardCarousel cards={submittedCards} {...{ scoring }}/>
+        <FramerCardCarousel cards={submittedCards} {...{ scoring }} />
       </Container>
     </>
   );

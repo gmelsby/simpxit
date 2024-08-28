@@ -7,21 +7,21 @@ import JustifySafelyContainer from './JustifySafelyContainer';
 
 
 
-export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn }:  {use: 'storyTeller' | 'deceive' | 'guess',
+export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn }: {
+  use: 'storyTeller' | 'deceive' | 'guess',
   storyDescriptor: string,
   cards: GameCard[],
   waitingOn: Player[]
-  }) 
-{
+}) {
 
   const demonstrative = cards.length > 1 ? 'these' : 'this';
   const directObject = `card${cards.length > 1 ? 's' : ''}`;
   const phrase = `${demonstrative} ${directObject}`;
 
   const phraseMap = {
-    storyTeller : ['You submitted the descriptor', `for ${phrase}`],
-    deceive : ['For the descriptor', `you submitted ${phrase}`],
-    guess : ['For the descriptor', `you guessed ${phrase}`]
+    storyTeller: ['You submitted the descriptor', `for ${phrase}`],
+    deceive: ['For the descriptor', `you submitted ${phrase}`],
+    guess: ['For the descriptor', `you guessed ${phrase}`]
   };
 
   return (
@@ -31,15 +31,15 @@ export default function CardInfoWaiting({ use, storyDescriptor, cards, waitingOn
           {phraseMap[use][0]}
         </h3>
         <h2>
-          <b>{storyDescriptor}</b> 
+          <b>{storyDescriptor}</b>
         </h2>
         <h3>
           {phraseMap[use][1]}
         </h3>
 
-        <Hand hand={cards} isInfo/>
+        <Hand hand={cards} isInfo />
       </Container>
- 
+
       <Container className="text-center my-2">
         <WaitingOn waitingOn={waitingOn} />
       </Container>

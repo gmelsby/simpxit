@@ -2,11 +2,11 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Alert } from 'react-bootstrap';
 
-export default function ConnectionHeader({ isConnected }: {isConnected: boolean}) {
+export default function ConnectionHeader({ isConnected }: { isConnected: boolean }) {
   return (
     <AnimatePresence>
-      {!isConnected && 
-        <motion.div 
+      {!isConnected &&
+        <motion.div
           className="z-2 fluid position-absolute flex-column d-flex m-auto w-100 align-items-center text-center"
           key="connection-header"
           initial={{ y: -100, opacity: 0 }}

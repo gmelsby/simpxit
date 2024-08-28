@@ -10,7 +10,7 @@ export default function Sidebar({ currentName, changeName }: { players?: Player[
   const [tabKey, setTabKey] = useState('rules');
   useEffect(() => {
     if (currentName !== undefined) setNewName(currentName);
-  }, [currentName, setNewName]);  
+  }, [currentName, setNewName]);
 
 
   // for swipe detection
@@ -51,7 +51,7 @@ export default function Sidebar({ currentName, changeName }: { players?: Player[
         <BiMenu />
       </Button>
 
-      <Offcanvas show={show} onHide={handleClose} className="offcanvas" {...{onTouchStart, onTouchMove, onTouchEnd}}>
+      <Offcanvas show={show} onHide={handleClose} className="offcanvas" {...{ onTouchStart, onTouchMove, onTouchEnd }}>
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>Info and Options</Offcanvas.Title>
         </Offcanvas.Header>
@@ -64,7 +64,7 @@ export default function Sidebar({ currentName, changeName }: { players?: Player[
             <Tab eventKey={'rules'} title="Rules">
               <Rules />
             </Tab>
-            {changeName !== undefined && 
+            {changeName !== undefined &&
               <Tab eventKey={'changeName'} title="Change Name">
                 <Form onSubmit={(e: React.SyntheticEvent) => {
                   e.preventDefault();

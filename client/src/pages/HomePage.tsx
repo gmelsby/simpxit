@@ -6,8 +6,8 @@ import Sidebar from '../components/Sidebar';
 import JustifySafelyContainer from '../components/JustifySafelyContainer';
 
 
-export default function HomePage( { userId }: { userId: string}) {
-  
+export default function HomePage({ userId }: { userId: string }) {
+
   const [enteredRoomId, setEnteredRoomId] = useState('');
   const [roomIdSubmitted, setroomIdSubmitted] = useState(false);
 
@@ -22,14 +22,14 @@ export default function HomePage( { userId }: { userId: string}) {
     if (roomIdSubmitted) navigate(`/room/${enteredRoomId}`);
   }, [roomIdSubmitted]);
 
-  
+
   const roomCodeSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setroomIdSubmitted(true);
   };
-  
-  
-  
+
+
+
   // to make a new room before automatically being sent there
   const handleCreateRoom = async () => {
     const adminId = { userId };
@@ -40,23 +40,23 @@ export default function HomePage( { userId }: { userId: string}) {
         'Content-Type': 'application/json',
       }
     });
-    
+
     if (response.status === 201) {
       const data = await response.json();
       setEnteredRoomId(data.newRoomCode);
       setroomIdSubmitted(true);
     }
-    
+
     else if (response.status === 403) {
       const data = await response.json();
       alert(`Failed to create room: ${data.error}`);
     }
-    
+
     else {
       alert(`Failed to create room: ${response.status}`);
     }
   };
-  
+
   return (
     <>
       <Sidebar />
@@ -64,20 +64,20 @@ export default function HomePage( { userId }: { userId: string}) {
         <Row className='m-5'>
           <h1 className='rock-salt-regular'>Simpxit</h1>
           <h4>A Simpsons/Dixit Fan Game!</h4>
-          <h5>Mashup of the board game 
-            <a href="https://boardgamegeek.com/boardgame/39856/dixit" 
+          <h5>Mashup of the board game
+            <a href="https://boardgamegeek.com/boardgame/39856/dixit"
               target="_blank" rel="noopener noreferrer">
               &nbsp;Dixit
-            </a> 
-            &nbsp;with screencaps of 
-            <a href="https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x" 
-              target="_blank" 
+            </a>
+            &nbsp;with screencaps of
+            <a href="https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x"
+              target="_blank"
               rel="noopener noreferrer">
               &nbsp;The Simpsons
-            </a> 
-            &nbsp;via 
-            <a href="https://frinkiac.com/" 
-              target="_blank" 
+            </a>
+            &nbsp;via
+            <a href="https://frinkiac.com/"
+              target="_blank"
               rel="noopener noreferrer">
               &nbsp;Frinkiac
             </a>
@@ -102,7 +102,7 @@ export default function HomePage( { userId }: { userId: string}) {
                     </div>
                   </Col>
                   <Col xs={4} md={2} lg={1} className='align-items-left p-0 mx-1'>
-                    <Form.Control className="text-center" type="text" id='input-code' name="input-room-code" 
+                    <Form.Control className="text-center" type="text" id='input-code' name="input-room-code"
                       required maxLength={4} placeholder="XYZW" pattern="[A-Z]{4}"
                       value={enteredRoomId}
                       onChange={e => setEnteredRoomId(e.target.value.toUpperCase())} />

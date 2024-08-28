@@ -8,7 +8,7 @@ import { Socket } from 'socket.io-client';
 import { GameCard, Player } from '../../../types';
 import JustifySafelyContainer from '../components/JustifySafelyContainer';
 
-export default function OtherPlayersGuess({ 
+export default function OtherPlayersGuess({
   userId,
   storyTeller,
   roomId,
@@ -18,16 +18,16 @@ export default function OtherPlayersGuess({
   submittedCards,
   submittedGuesses
 }:
-                                        {
-                                          userId: string,
-                                          storyTeller: Player,
-                                          roomId: string,
-                                          storyDescriptor: string,
-                                          socket: Socket | null,
-                                          players: Player[],
-                                          submittedCards: GameCard[],
-                                          submittedGuesses: {[key: string]: string};
-                                        }) {
+  {
+    userId: string,
+    storyTeller: Player,
+    roomId: string,
+    storyDescriptor: string,
+    socket: Socket | null,
+    players: Player[],
+    submittedCards: GameCard[],
+    submittedGuesses: { [key: string]: string };
+  }) {
 
   // scroll to top of page automatically
   useEffect(() => {
@@ -36,8 +36,8 @@ export default function OtherPlayersGuess({
 
   const [selectedCard, setSelectedCard] = useState<GameCard | null>(null);
   const guessedCardId = submittedGuesses[userId];
-  
-  
+
+
   const waitingOn = players.filter(p => !(Object.keys(submittedGuesses).includes(p.playerId)) && !Object.is(p, storyTeller));
 
   const [shuffleOrder, setShuffleOrder] = useState<number[]>([]);
@@ -58,30 +58,30 @@ export default function OtherPlayersGuess({
     .map(idx => submittedCards[idx])
     .filter(card => card.submitter !== userId);
 
-  
+
   if (userId !== storyTeller.playerId) {
     const handleSubmit = () => {
       if (selectedCard && socket !== null) {
         const selectedCardId = selectedCard.id;
-        socket.emit('guess', {roomId, userId, selectedCardId} );
+        socket.emit('guess', { roomId, userId, selectedCardId });
       }
     };
-    
+
     if (guessedCardId) {
       const guessedCard = Object.values(submittedCards).filter(c => c.id === guessedCardId)[0];
 
       return (
-        <CardInfoWaiting use="guess" cards={[guessedCard]} storyDescriptor={storyDescriptor} 
+        <CardInfoWaiting use="guess" cards={[guessedCard]} storyDescriptor={storyDescriptor}
           waitingOn={waitingOn} />
       );
     }
 
     return (
       <>
-        <OtherPlayerModal use="guess" selectedCard={selectedCard} 
+        <OtherPlayerModal use="guess" selectedCard={selectedCard}
           setSelectedCard={setSelectedCard} storyDescriptor={storyDescriptor}
           handleSubmit={handleSubmit} />
-        <JustifySafelyContainer justifyType='evenly' className="h-100 d-flex flex-column text-center p-0"> 
+        <JustifySafelyContainer justifyType='evenly' className="h-100 d-flex flex-column text-center p-0">
           <Container className="mt-4 mt-sm-0">
             <h3>The storyteller submitted the descriptor</h3>
             <h2><b>{storyDescriptor}</b></h2>
@@ -92,9 +92,9 @@ export default function OtherPlayersGuess({
       </>
     );
   }
-  
+
   return (
-    <JustifySafelyContainer justifyType='evenly' className="h-100 d-flex flex-column text-center p-0"> 
+    <JustifySafelyContainer justifyType='evenly' className="h-100 d-flex flex-column text-center p-0">
       <h3 className="mt-5 mt-sm-0"> Here are all the cards that were submitted</h3>
       <h5>Wait for other players to guess...</h5>
       <Hand hand={Object.values(submittedCards)} isInfo />

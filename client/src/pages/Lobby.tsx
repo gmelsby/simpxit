@@ -15,15 +15,15 @@ export default function Lobby({ players,
   setKickUserId,
   socket
 }:
-                              {
-                                players: Player[],
-                                roomId: string,
-                                userId: string,
-                                handleLeave: React.MouseEventHandler<HTMLButtonElement>,
-                                isAdmin: boolean,
-                                setKickUserId: (value: React.SetStateAction<string>) => void,
-                                socket: Socket | null
-                              }) {
+  {
+    players: Player[],
+    roomId: string,
+    userId: string,
+    handleLeave: React.MouseEventHandler<HTMLButtonElement>,
+    isAdmin: boolean,
+    setKickUserId: (value: React.SetStateAction<string>) => void,
+    socket: Socket | null
+  }) {
 
   // scroll to top of page automatically
   useEffect(() => {
@@ -33,22 +33,22 @@ export default function Lobby({ players,
 
   function handleStartGame() {
     if (socket !== null) {
-      socket.emit('startGame', { roomId, userId } );
+      socket.emit('startGame', { roomId, userId });
     }
   }
 
- 
+
   return (
     <JustifySafelyContainer justifyType='evenly' className="h-100 d-flex flex-column text-center">
       <Container className="mt-5 mt-md-0">
-        <h1>Room Code: <b>{roomId}</b> <CopyIcon text={roomId} descriptor='Room Code'/></h1>
-        <h5 className="my-0">Share this code</h5> 
-        <h4 className="my-0">(or the page&apos;s url <CopyIcon text={window.location.href} descriptor="Room URL"/>)</h4>
+        <h1>Room Code: <b>{roomId}</b> <CopyIcon text={roomId} descriptor='Room Code' /></h1>
+        <h5 className="my-0">Share this code</h5>
+        <h4 className="my-0">(or the page&apos;s url <CopyIcon text={window.location.href} descriptor="Room URL" />)</h4>
         <h6>to let players join this room!</h6>
       </Container>
       <Container className="my-1">
         <Row className="mb-1 mb-md-5">
-          <NameForm players={players} roomId={roomId} userId={userId} socket={socket}/>
+          <NameForm players={players} roomId={roomId} userId={userId} socket={socket} />
         </Row>
         <h3 className="mb-3 mb-md-4">Player List</h3>
         <PlayerList players={players} setKickUserId={setKickUserId} userId={userId} isAdmin={isAdmin} />
@@ -65,7 +65,7 @@ export default function Lobby({ players,
 
 // allows for in-line editing of player name
 function NameForm({ players, roomId, userId, socket }:
-  {players: Player[], roomId: string, userId: string, socket: Socket | null}) {
+  { players: Player[], roomId: string, userId: string, socket: Socket | null }) {
   const currentName = players.find(player => player.playerId === userId)?.playerName;
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(currentName ? currentName : '');
@@ -143,7 +143,7 @@ function NameForm({ players, roomId, userId, socket }:
             </Col>
             <Col xs="auto">
               <Form.Control className="px-1 mx-0" type="text" required name="new-name"
-                maxLength={20} 
+                maxLength={20}
                 value={newName}
                 onChange={e => setNewName(e.target.value.trimStart())}
                 autoFocus={true}
@@ -159,7 +159,7 @@ function NameForm({ players, roomId, userId, socket }:
     <>
       <h4>
         Your Name: {currentName}
-        <BiPencil className="mx-2 selectable" onClick={() => {setIsEditingName(true);}}></BiPencil>
+        <BiPencil className="mx-2 selectable" onClick={() => { setIsEditingName(true); }}></BiPencil>
       </h4>
     </>
   );

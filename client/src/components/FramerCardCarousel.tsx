@@ -11,13 +11,13 @@ import { Player } from '../../../types';
 // length which user drags to count as a swipe
 const dragLength = 25;
 
-export default function FramerCardCarousel({cards, isInfo, scoring, handleSelectCard}: 
+export default function FramerCardCarousel({ cards, isInfo, scoring, handleSelectCard }:
   {
-    cards: GameCard[], 
-    isInfo?: boolean, 
+    cards: GameCard[],
+    isInfo?: boolean,
     scoring?: {
       players: Player[];
-      guesses: {[key:string]: string};
+      guesses: { [key: string]: string };
       storyTellerId: string;
     },
     handleSelectCard?: (selectedCard: GameCard) => void
@@ -50,7 +50,7 @@ export default function FramerCardCarousel({cards, isInfo, scoring, handleSelect
 
   const orderedCards = cards.slice(activeIndex, cards.length).concat(cards.slice(0, activeIndex));
   return (
-    <div className='d-flex flex-column' style={{position: 'relative'}}>
+    <div className='d-flex flex-column' style={{ position: 'relative' }}>
 
       <div>
         {orderedCards.map((card, index) => {
@@ -71,18 +71,18 @@ export default function FramerCardCarousel({cards, isInfo, scoring, handleSelect
           }
 
           return (
-            <motion.div style={{position: 'absolute', transformOrigin: 'center'}}
-              key={card.id} 
+            <motion.div style={{ position: 'absolute', transformOrigin: 'center' }}
+              key={card.id}
               animate={{
                 zIndex: orderedCards.length - index,
                 y: deltaY,
                 x: deltaX,
               }}
-              transition={{type: 'tween'}}
+              transition={{ type: 'tween' }}
               drag={index === 0 ? 'x' : false}
               dragConstraints={{
                 left: 0,
-                right: 0, 
+                right: 0,
               }}
               onDragStart={(e, info) => setDragStartX(info.point.x)}
               onDragEnd={(e, info) => {
@@ -97,14 +97,14 @@ export default function FramerCardCarousel({cards, isInfo, scoring, handleSelect
                 }
               }}
             >
-              <Container style={{pointerEvents: index !== 0 ? 'none' : 'all'}}>
+              <Container style={{ pointerEvents: index !== 0 ? 'none' : 'all' }}>
                 <motion.div
-                  animate={{ 
+                  animate={{
                     rotate: rotation,
                   }}>
-                  {isInfo && <InfoCard card={card} externalFlipControl={index === 0 ? isFrontFlipped : undefined}/>}
-                  {scoring && 
-                    <ScoringCard 
+                  {isInfo && <InfoCard card={card} externalFlipControl={index === 0 ? isFrontFlipped : undefined} />}
+                  {scoring &&
+                    <ScoringCard
                       player={scoring.players.find(p => p.playerId === card.submitter)}
                       card={card}
                       guessedPlayerNames={scoring.players.filter(p => scoring.guesses[p.playerId] === card.id).map(p => p.playerName)}
@@ -120,8 +120,8 @@ export default function FramerCardCarousel({cards, isInfo, scoring, handleSelect
       </div>
 
 
-      <div className='opacity-0' style={{zIndex: -1, pointerEvents: 'none'}}> 
-        {scoring === undefined && <Image className='card-img' src='/image-placeholder.svg' />} 
+      <div className='opacity-0' style={{ zIndex: -1, pointerEvents: 'none' }}>
+        {scoring === undefined && <Image className='card-img' src='/image-placeholder.svg' />}
         {scoring !== undefined && <ScoringCard {...{
           player: scoring.players.slice(1).reduce((acc, p) => {
             return p.playerName.length > acc.playerName.length ? p : acc;
@@ -129,25 +129,25 @@ export default function FramerCardCarousel({cards, isInfo, scoring, handleSelect
           card: scoring.players[0].hand[0],
           guessedPlayerNames: [],
           isStoryTeller: false,
-        }}/>}
+        }} />}
       </div>
-      
-      <Row className='d-flex justify-content-center' style={{zIndex: 20}}>
-        {[...Array(cards.length).keys()].map(i => 
-          <span key={i} 
-            style={{height: '7px', width: '15px', backgroundColor: i === activeIndex ? '#FFFFFF' : '#6c757d', borderRadius: '20%'}} 
+
+      <Row className='d-flex justify-content-center' style={{ zIndex: 20 }}>
+        {[...Array(cards.length).keys()].map(i =>
+          <span key={i}
+            style={{ height: '7px', width: '15px', backgroundColor: i === activeIndex ? '#FFFFFF' : '#6c757d', borderRadius: '20%' }}
             className='mx-1'
           />
         )}
       </Row>
-      <CarouselController {...{cards, activeIndex, setSwipe}} 
-        buttonText={isInfo || scoring ? 'Flip' : 'Submit'} 
-        actOnSelectedCard={isInfo || scoring ? (() => setIsFrontFlipped(val => !val)) : handleSelectCard} 
+      <CarouselController {...{ cards, activeIndex, setSwipe }}
+        buttonText={isInfo || scoring ? 'Flip' : 'Submit'}
+        actOnSelectedCard={isInfo || scoring ? (() => setIsFrontFlipped(val => !val)) : handleSelectCard}
       />
     </div>);
 }
 
-function CarouselController({cards, activeIndex, setSwipe, actOnSelectedCard, buttonText}:
+function CarouselController({ cards, activeIndex, setSwipe, actOnSelectedCard, buttonText }:
   {
     cards: GameCard[],
     activeIndex: number,
@@ -165,11 +165,11 @@ function CarouselController({cards, activeIndex, setSwipe, actOnSelectedCard, bu
           </Button>
         </Col>
         <Col>
-          { actOnSelectedCard !== undefined && 
-          <Button
-            onClick={() => actOnSelectedCard(cards[activeIndex])}>
-            {buttonText}
-          </Button>}
+          {actOnSelectedCard !== undefined &&
+            <Button
+              onClick={() => actOnSelectedCard(cards[activeIndex])}>
+              {buttonText}
+            </Button>}
         </Col>
         <Col>
           <Button onClick={() => setSwipe('right')} className="px-3">

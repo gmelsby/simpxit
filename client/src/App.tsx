@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import useSessionStorage from './hooks/useSessionStorage';
 import HomePage from './pages/HomePage';
 const RoomPage = lazy(() => import('./pages/RoomPage'));
-const FourOhFour = lazy(() => import('./pages/FourOhFour')) ;
+const FourOhFour = lazy(() => import('./pages/FourOhFour'));
 
 
 
@@ -30,9 +30,9 @@ function App() {
           <Route path="/" element={<HomePage userId={userId} />} />
           <Route path="/room">
             <Route path=":roomId" element={<RoomPage userId={userId} />} />
-            <Route path="/room" element={<FourOhFour />}/>
+            <Route path="/room" element={<FourOhFour />} />
           </Route>
-          <Route path="*" element={<FourOhFour />}/>
+          <Route path="*" element={<FourOhFour />} />
         </Routes>
       </BrowserRouter>
     </React.Suspense>

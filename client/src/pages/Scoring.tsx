@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Container } from 'react-bootstrap';
 import ButtonTimer from '../components/ButtonTimer';
 import ScoringCardHand from '../components/ScoringCardHand';
@@ -7,7 +7,7 @@ import { Player, GameCard } from '../../../types';
 import { Socket } from 'socket.io-client';
 import JustifySafelyContainer from '../components/JustifySafelyContainer';
 
-export default function Scoring({ 
+export default function Scoring({
   userId,
   storyTeller,
   roomId,
@@ -19,18 +19,18 @@ export default function Scoring({
   readyPlayers,
   targetScore
 }:
-                                 {
-                                  userId: string,
-                                  storyTeller: Player,
-                                  roomId: string,
-                                  socket: Socket | null,
-                                  players: Player[],
-                                  storyCardId: string,
-                                  submittedCards: GameCard[],
-                                  guesses: {[key: string]: string},
-                                  readyPlayers: string[],
-                                  targetScore: number
-                                 }) {
+  {
+    userId: string,
+    storyTeller: Player,
+    roomId: string,
+    socket: Socket | null,
+    players: Player[],
+    storyCardId: string,
+    submittedCards: GameCard[],
+    guesses: { [key: string]: string },
+    readyPlayers: string[],
+    targetScore: number
+  }) {
 
   // scroll to top of page automatically
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function Scoring({
 
   const handleReady = () => {
     if (!(isReady) && socket !== null) {
-      socket.emit('endScoring', {roomId, userId});
+      socket.emit('endScoring', { roomId, userId });
     }
   };
 
@@ -58,7 +58,7 @@ export default function Scoring({
     const playerString = guessedPlayerNames.length === 1 ?
       guessedPlayerNames[0]
       :
-      `${guessedPlayerNames.slice(0, -1).join(', ')} & ${guessedPlayerNames[guessedPlayerNames.length-1]}`;
+      `${guessedPlayerNames.slice(0, -1).join(', ')} & ${guessedPlayerNames[guessedPlayerNames.length - 1]}`;
 
     topMessage = `${playerString} guessed the storyteller's card.`;
   }
@@ -70,8 +70,8 @@ export default function Scoring({
 
   return (
     <JustifySafelyContainer justifyType='evenly' className="text-center h-100 d-flex flex-column">
-      <Container className= "mt-5 mt-md-1">
-        { winners.length !== 0 && <h1>{winners.map(p => p.playerName).join(', ')} win{winners.length === 1 && 's'}!</h1>}
+      <Container className="mt-5 mt-md-1">
+        {winners.length !== 0 && <h1>{winners.map(p => p.playerName).join(', ')} win{winners.length === 1 && 's'}!</h1>}
         <h3 className="mb-1">{topMessage}</h3>
       </Container>
       <ScoringCardHand storyTeller={storyTeller} players={players} submittedCards={submittedCards} guesses={guesses} />

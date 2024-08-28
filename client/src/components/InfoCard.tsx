@@ -5,7 +5,7 @@ import CardInfoWrapper from './CardInfoWrapper';
 import GameImage from './GameImage';
 import JustifySafelyContainer from './JustifySafelyContainer';
 
-export default function InfoCard({ card, externalFlipControl }: { card: GameCard, externalFlipControl?: boolean}) {
+export default function InfoCard({ card, externalFlipControl }: { card: GameCard, externalFlipControl?: boolean }) {
   const [isFlipped, setIsFlipped] = useState(externalFlipControl !== undefined ? externalFlipControl : false);
   // keep isFlipped in sync with externalFlipControl
   // if externalFlipControl becomes undefined set to front
@@ -24,7 +24,7 @@ export default function InfoCard({ card, externalFlipControl }: { card: GameCard
         <Front card={card} />
         <Back cardId={card.id} isFlipped={isFlipped} />
         <div>
-          <Image src='/image-placeholder.svg' fluid/>
+          <Image src='/image-placeholder.svg' fluid />
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@ function Back({ cardId, isFlipped }: { cardId: string, isFlipped: boolean }) {
       containerRef={backRef}
     >
       <Container className='py-4'>
-        <CardInfoWrapper cardId={cardId} load={isFlipped}/>
+        <CardInfoWrapper cardId={cardId} load={isFlipped} />
       </Container>
     </JustifySafelyContainer>
   );

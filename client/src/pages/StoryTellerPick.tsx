@@ -6,20 +6,20 @@ import { GameCard, Player } from '../../../types';
 import { Socket } from 'socket.io-client';
 import JustifySafelyContainer from '../components/JustifySafelyContainer';
 
-export default function StoryTellerPick({ 
+export default function StoryTellerPick({
   userId,
   storyTeller,
   roomId,
   socket,
   handSize
 }:
-                                        {
-                                          userId: string,
-                                          storyTeller: Player,
-                                          roomId: string,
-                                          socket: Socket | null,
-                                          handSize: number
-                                        }) {
+  {
+    userId: string,
+    storyTeller: Player,
+    roomId: string,
+    socket: Socket | null,
+    handSize: number
+  }) {
 
   // scroll to top of page automatically
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function StoryTellerPick({
     const handleSubmit = () => {
       if (selectedCard && socket !== null) {
         const selectedCardId = selectedCard.id;
-        socket.emit('submitStoryCard', {roomId, userId, selectedCardId, descriptor} );
+        socket.emit('submitStoryCard', { roomId, userId, selectedCardId, descriptor });
       }
     };
 
@@ -48,7 +48,7 @@ export default function StoryTellerPick({
 
     return (
       <>
-        <StoryModal selectedCard={selectedCard} setSelectedCard={setSelectedCard} descriptor={descriptor} 
+        <StoryModal selectedCard={selectedCard} setSelectedCard={setSelectedCard} descriptor={descriptor}
           setDescriptor={setDescriptor} handleSubmit={handleSubmit} />
         <JustifySafelyContainer justifyType='evenly' className="d-flex flex-column text-center align-items-center h-100 m-auto">
           <Row className='my-2'>

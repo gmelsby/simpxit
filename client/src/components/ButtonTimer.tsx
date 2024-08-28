@@ -12,7 +12,7 @@ interface TimerButtonProps extends ButtonProps {
 */
 export default function ButtonTimer(props: TimerButtonProps) {
   // copy props and store children seperately
-  const buttonProps = {...props};
+  const buttonProps = { ...props };
   const children = buttonProps.children;
   delete buttonProps.children;
 
@@ -26,7 +26,7 @@ export default function ButtonTimer(props: TimerButtonProps) {
   const [recentlyClicked, setRecentlyClicked] = useState(false);
 
   // modify passed-in onClick to use a timer
-  buttonProps.onClick  = (event) => {
+  buttonProps.onClick = (event) => {
     setRecentlyClicked(true);
     if (props.onClick !== undefined) {
       props.onClick(event);
@@ -38,14 +38,15 @@ export default function ButtonTimer(props: TimerButtonProps) {
 
   // keep button disabled if props indicate, otherwise disable when recently clicked
   buttonProps.disabled = props.disabled || recentlyClicked;
-  
+
   if (recentlyClicked) {
     return (
       <Button {...buttonProps}>
         <Spinner as="span" animation="border" size="sm" />
         {' ' + children}
       </Button>
-    );}
+    );
+  }
 
   return (<Button {...buttonProps}>{children}</Button>);
 

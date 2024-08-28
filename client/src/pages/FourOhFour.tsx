@@ -6,7 +6,7 @@ export default function FourOhFour() {
 
   const navigate = useNavigate();
 
-  return(
+  return (
     <Container className="h-75 d-flex flex-column text-center justify-content-center">
       <Alert variant="warning">Page Not Found</Alert>
       <Container className="text-center mt-5">

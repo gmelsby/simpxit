@@ -24,7 +24,7 @@ export default function JustifySafelyContainer({
       if (containerElement.current !== null) {
         setOverflowing(
           containerElement.current.scrollHeight >
-            containerElement.current.offsetHeight,
+          containerElement.current.offsetHeight,
         );
       }
     };
@@ -55,11 +55,11 @@ export default function JustifySafelyContainer({
 
   return (
     <Container
-      className={`${
-        overflowing
+      className={
+        `${overflowing
           ? `justify-content-start overflow-${overflowType ? overflowType : 'visible'}`
           : `justify-content-${justifyType}`
-      }
+        }
       ${className}`}
       ref={containerElement}
     >

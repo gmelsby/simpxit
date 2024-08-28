@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Container, Row, Col, Form, Modal } from 'react-bootstrap';
 import { Options } from '../../../types';
 
-export default function OptionsModal({ currentOptions, changeOptions }:{ currentOptions: Options, changeOptions: (score: number) => void }) {
+export default function OptionsModal({ currentOptions, changeOptions }: { currentOptions: Options, changeOptions: (score: number) => void }) {
 
   const [showOptions, setShowOptions] = useState(false);
   const [newOptions, setNewOptions] = useState(25);
@@ -21,10 +21,10 @@ export default function OptionsModal({ currentOptions, changeOptions }:{ current
     setShowOptions(true);
     setNewOptions(currentOptions.targetScore);
   };
-  
+
   return (
     <>
-      <Button variant="warning" className="top-right-button position-absolute top-0 end-0 btn-outline-dark"  onClick={handleShowOptions}>
+      <Button variant="warning" className="top-right-button position-absolute top-0 end-0 btn-outline-dark" onClick={handleShowOptions}>
         Options
       </Button>
 

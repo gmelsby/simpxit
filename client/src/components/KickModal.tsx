@@ -3,7 +3,8 @@ import { Button, Modal } from 'react-bootstrap';
 import { Player } from '../../../types';
 
 export default function KickModal({ kickUserId, setKickUserId, kickPlayer, players }: {
-  kickUserId: string | undefined, setKickUserId: React.Dispatch<React.SetStateAction<string>>, kickPlayer: () => void, players: Player[]}) {
+  kickUserId: string | undefined, setKickUserId: React.Dispatch<React.SetStateAction<string>>, kickPlayer: () => void, players: Player[]
+}) {
   // Citation:
   // Modified from https://react-bootstrap.github.io/components/modal/
   // Date: 07/09/2022
@@ -14,8 +15,8 @@ export default function KickModal({ kickUserId, setKickUserId, kickPlayer, playe
   const handleKickButton = () => {
     kickPlayer();
   };
-  
-  const playerName = kickUserId === ''? '' : players.filter(p => p.playerId === kickUserId)[0].playerName;
+
+  const playerName = kickUserId === '' ? '' : players.filter(p => p.playerId === kickUserId)[0].playerName;
 
   return (
     <>
@@ -26,7 +27,7 @@ export default function KickModal({ kickUserId, setKickUserId, kickPlayer, playe
         <Modal.Body>
           <h5>Are you sure you want to kick {playerName}?</h5>
           <p>
-              They will not be able to rejoin the room.
+            They will not be able to rejoin the room.
           </p>
         </Modal.Body>
         <Modal.Footer>
