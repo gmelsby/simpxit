@@ -6,10 +6,10 @@ import rc from './redisClient.js';
 const prisma = new PrismaClient();
 const imageBucketUrl = process.env.IMAGE_BUCKET;
 
-export async function drawCards(count: number, currentCardIds: string[]): Promise<GameCard[]>  {
-  const newCards = currentCardIds.length ? 
+export async function drawCards(count: number, currentCardIds: string[]): Promise<GameCard[]> {
+  const newCards = currentCardIds.length ?
     // case where we have currentCardIds with episodes we want to filter out
-    await prisma.$queryRaw<{id: bigint, locator: string}[]>`
+    await prisma.$queryRaw<{ id: bigint, locator: string }[]>`
       SELECT DISTINCT ON (episode_id) id, locator FROM "Card"
       WHERE episode_id NOT IN 
       (
@@ -19,10 +19,10 @@ export async function drawCards(count: number, currentCardIds: string[]): Promis
       ORDER BY episode_id, random()
       LIMIT ${count}
       OFFSET floor(random() * ((SELECT COUNT(DISTINCT episode_id) FROM "Card") - ${currentCardIds.length} - ${count} + 1))::int;
-    ` 
+    `
     :
     // case where therer are no currentCardIds to worry about
-    await prisma.$queryRaw<{id: bigint, locator: string}[]>`
+    await prisma.$queryRaw<{ id: bigint, locator: string }[]>`
       SELECT DISTINCT ON (episode_id) id, locator FROM "Card"
       ORDER BY episode_id, random()
       LIMIT ${count}

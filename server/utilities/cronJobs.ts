@@ -6,7 +6,7 @@ import { logger } from '../app.js';
 /*
 * Sets up a recurring job to keep Supabase project alive
 * cronString: String to set cron job timing
-*/  
+*/
 export function supabasePing(cronString: string) {
   cron.schedule(cronString, () => {
     drawCards(1, [])

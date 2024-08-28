@@ -22,7 +22,7 @@ export const logger = createLogger({
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss'
     }),
-    format.errors({stack: true}),
+    format.errors({ stack: true }),
     format.splat(),
     format.json()),
   transports: [new transports.Console()]
@@ -46,8 +46,8 @@ app.use(express.static(path.resolve(path.dirname(''), './client/dist')));
 
 const server = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
-  pingTimeout:5000,
-  pingInterval:6000,
+  pingTimeout: 5000,
+  pingInterval: 6000,
 }
 );
 
@@ -87,16 +87,16 @@ app.get('/api/cardinfo/:cardIdString', async (req, res) => {
 // allows users to create a new room
 app.post('/api/room', async (req, res) => {
   logger.info(`received create room request with UUID ${req.body.userId}`);
-  const uuid  = req.body.userId;
+  const uuid = req.body.userId;
   if (!uuid) {
-    res.status(403).send({error: 'User does not have UUID. Refresh page and try again.'});
+    res.status(403).send({ error: 'User does not have UUID. Refresh page and try again.' });
     return;
   }
 
   // generate new room codes until one is unused
   // give up after 20 tries
   let newRoomCode = '';
-  for (let i = 0; i < 20; i += 1 ) {
+  for (let i = 0; i < 20; i += 1) {
     const result = await createRoom(generateRoomCode(), uuid);
     if (result !== null) {
       newRoomCode = result;
@@ -104,7 +104,7 @@ app.post('/api/room', async (req, res) => {
     }
   }
   if (newRoomCode === '') {
-    res.status(503).send({error: 'unable to successfully create room'});
+    res.status(503).send({ error: 'unable to successfully create room' });
     return;
   }
 
