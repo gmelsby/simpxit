@@ -68,20 +68,19 @@ app.get('/api/cardinfo/:cardIdString', async (req, res) => {
     cardId = BigInt(cardIdString);
   } catch (err) {
     res.status(400);
-    res.send('query param was unable to be parsed as a bigint');
+    res.send({ error: 'query param was unable to be parsed as a bigint' });
     return;
   }
 
   const cardInfo = await retrieveCardInfo(cardId);
 
   if (cardInfo === null) {
-    res.status(404).send('card not found');
+    res.status(404).send({ error: 'card not found' });
     return;
   }
 
   // card info based on id should not change, so set Cache-Control very high
   res.set('Cache-Control', 'public, max-age=31557600');
-
   res.send(cardInfo);
 });
 
