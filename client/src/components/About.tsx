@@ -21,10 +21,13 @@ export default function About() {
         <a href="https://frinkiac.com/"
           target="_blank"
           rel="noopener noreferrer">
-          Frinkiac
+          Frinkiac&apos;s
         </a>
-        .
+        &nbsp;API.
       </p>
+    </p>
+    <p>
+      There are over 20,000 possible cards, and each card added to a game is randomly chosen with measures taken to avoid duplicates.
     </p>
     <p>
       I do not own and have no relation to the holders of any intellectual property related to <em>The Simpsons</em>, <em>Dixit</em>, or <em>Frinkiac</em>.
