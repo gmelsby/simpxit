@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BiCopy, BiCheck } from 'react-icons/bi';
 import { Alert } from 'react-bootstrap';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // icon that when clicked copies text to browser clipboard
 export function CopyIcon({ text, descriptor }: { text: string, descriptor: string }) {
@@ -17,7 +18,7 @@ export function CopyIcon({ text, descriptor }: { text: string, descriptor: strin
         setClicked(true);
       })
       .finally(() => {
-        setTimeout(resetAlert, 2000);
+        setTimeout(resetAlert, 1500);
       });
   };
 
@@ -28,13 +29,25 @@ export function CopyIcon({ text, descriptor }: { text: string, descriptor: strin
 
   return (
     <>
-      <div className={clicked ? 'z-1 position-absolute d-flex justify-content-center top-0 start-0 w-100 mt-5 align-items-center' : 'd-none'}>
-        <Alert variant={isSuccessful ? 'success' : 'danger'} className="rounded">
-          <p>
-            {isSuccessful ? `Copied ${descriptor} to clipboard` : 'Error copying to clipboard'}
-          </p>
-        </Alert>
-      </div>
+      <AnimatePresence>
+        {clicked &&
+          <motion.div
+            className='z-1 position-absolute d-flex justify-content-center top-0 start-0 w-100 mt-5 align-items-center'
+            key="copy-notification"
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -100, opacity: 0 }}
+            transition={{ mass: 5 }}
+          >
+            <Alert variant={isSuccessful ? 'success' : 'danger'} className="rounded">
+              <p>
+                {isSuccessful ? `Copied ${descriptor} to clipboard` : 'Error copying to clipboard'}
+              </p>
+            </Alert>
+          </motion.div>}
+      </AnimatePresence>
+
+
       {clicked ?
         <BiCheck className='text-success copying' /> :
         <BiCopy className='selectable' onClick={putTextInClipboard} />
