@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Button, Col, Form, Offcanvas, Row, Tab, Tabs } from 'react-bootstrap';
 import { BiMenu } from 'react-icons/bi';
 import Rules from './Rules';
+import About from './About';
 import { Player } from '../../../types';
 
 export default function Sidebar({ currentName, changeName }: { players?: Player[], userId?: string, currentName?: string, changeName?: (newName: string) => void, targetScore?: number }) {
   const [show, setShow] = useState(false);
   const [newName, setNewName] = useState(currentName !== undefined ? currentName : '');
-  const [tabKey, setTabKey] = useState('rules');
+  const [tabKey, setTabKey] = useState('about');
   useEffect(() => {
     if (currentName !== undefined) setNewName(currentName);
   }, [currentName, setNewName]);
@@ -61,6 +62,9 @@ export default function Sidebar({ currentName, changeName }: { players?: Player[
             onSelect={key => key !== null && setTabKey(key)}
             className="mb-2"
           >
+            <Tab eventKey={'about'} title="About">
+              <About />
+            </Tab>
             <Tab eventKey={'rules'} title="Rules">
               <Rules />
             </Tab>
