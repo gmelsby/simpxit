@@ -63,36 +63,18 @@ export default function HomePage({ userId }: { userId: string }) {
       <JustifySafelyContainer justifyType='evenly' className="d-flex flex-column text-center align-items-center h-100 m-auto">
         <Row className='m-5'>
           <h1 className='rock-salt-regular'>Simpxit</h1>
-          <h4>A Simpsons/Dixit Fan Game!</h4>
-          <h5>Mashup of the board game
-            <a href="https://boardgamegeek.com/boardgame/39856/dixit"
-              target="_blank" rel="noopener noreferrer">
-              &nbsp;Dixit
-            </a>
-            &nbsp;with screencaps of
-            <a href="https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x"
-              target="_blank"
-              rel="noopener noreferrer">
-              &nbsp;The Simpsons
-            </a>
-            &nbsp;via
-            <a href="https://frinkiac.com/"
-              target="_blank"
-              rel="noopener noreferrer">
-              &nbsp;Frinkiac
-            </a>
-            .
-          </h5>
+          <h4>A Mashup of <em>The Simpsons</em> and <em>Dixit</em></h4>
+
         </Row>
         <Row className='justify-content-center'>
           <Row>
-            <h5>To play, create a room or join an already existing room.</h5>
+            <h4>To play, create a room or join an already existing room.</h4>
             <Col>
               <ButtonTimer className="my-3" onClick={handleCreateRoom}>Create Room</ButtonTimer>
             </Col>
           </Row>
           <Row className="justify-content-center">
-            <h4 className="mt-5">Join Existing Room</h4>
+            <h5 className="mt-5">Join Existing Room</h5>
             <Form onSubmit={roomCodeSubmit}>
               <Form.Group>
                 <Row className="justify-content-center mb-1">
