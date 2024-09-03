@@ -68,7 +68,7 @@ export default function HomePage({ userId }: { userId: string }) {
         </Row>
         <Row className='justify-content-center'>
           <Row>
-            <h4>To play, create a room or join an already existing room.</h4>
+            <h5>To play, create a room or join an existing room.</h5>
             <Col>
               <ButtonTimer className="my-3" onClick={handleCreateRoom}>Create Room</ButtonTimer>
             </Col>
