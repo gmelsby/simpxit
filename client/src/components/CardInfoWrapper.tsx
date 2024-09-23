@@ -2,8 +2,9 @@ import React from 'react';
 import { useState, useCallback, useEffect } from 'react';
 import CardInfoText from './CardInfoText';
 
-export default function CardInfoWrapper({ cardId, load }: { cardId: string, load: boolean }) {
+export default function CardInfoWrapper({ cardId, load, transparentBuffer }: { cardId: string, load: boolean, transparentBuffer?: boolean }) {
   // 'load' functions as a trigger for intial load. This helps enables lazy loading
+  // if 'transparentBuffer' is true, temporarily makes the container transparent upon data load
   const [cardInfo, setCardInfo] = useState(undefined);
   const [recentlyLoaded, setRecentlyLoaded] = useState(false);
 
@@ -23,7 +24,7 @@ export default function CardInfoWrapper({ cardId, load }: { cardId: string, load
   }, [cardId, cardInfo, loadCardInfo, load]);
 
   return (
-    <div className={recentlyLoaded ? 'opacity-0' : ''}>
+    <div className={recentlyLoaded && transparentBuffer ? 'opacity-0' : ''}>
       <CardInfoText cardInfo={cardInfo} />
     </div>
   );
