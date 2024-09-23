@@ -56,7 +56,7 @@ function Back({ cardId, isFlipped }: { cardId: string, isFlipped: boolean }) {
       containerRef={backRef}
     >
       <Container className='py-4'>
-        <CardInfoWrapper cardId={cardId} load={isFlipped} />
+        <CardInfoWrapper cardId={cardId} load={isFlipped} transparentBuffer />
       </Container>
     </JustifySafelyContainer>
   );
