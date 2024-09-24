@@ -9,6 +9,7 @@ const imageBucketUrl = process.env.IMAGE_BUCKET;
 export async function drawCards(count: number, currentCardIds: string[]): Promise<GameCard[]> {
   const newCards = currentCardIds.length ?
     // case where we have currentCardIds with episodes we want to filter out
+    // make sure cards are coming from distinct episodes to avoid repeats
     await prisma.$queryRaw<{ id: bigint, locator: string }[]>`
       SELECT DISTINCT ON (episode_id) id, locator FROM "Card"
       WHERE episode_id NOT IN 
@@ -21,7 +22,8 @@ export async function drawCards(count: number, currentCardIds: string[]): Promis
       OFFSET floor(random() * ((SELECT COUNT(DISTINCT episode_id) FROM "Card") - ${currentCardIds.length} - ${count} + 1))::int;
     `
     :
-    // case where therer are no currentCardIds to worry about
+    // case where there are no currentCardIds to worry about
+    // make sure cards are coming from distinct episodes
     await prisma.$queryRaw<{ id: bigint, locator: string }[]>`
       SELECT DISTINCT ON (episode_id) id, locator FROM "Card"
       ORDER BY episode_id, random()
@@ -47,6 +49,7 @@ export async function retrieveCardInfo(cardId: bigint): Promise<GameCard | null>
     return redisResult;
   }
 
+  // get card info
   const result = await prisma.card.findFirst({
     where: {
       id: {
@@ -58,10 +61,12 @@ export async function retrieveCardInfo(cardId: bigint): Promise<GameCard | null>
     },
   });
 
+  // case where cardId was not found in postgres
   if (result === null) {
     return null;
   }
 
+  // cast card info
   const gameCardResult: GameCard = {
     id: result.id.toString(),
     locator: `${imageBucketUrl}/${result.locator}`,
