@@ -2,7 +2,7 @@
 ## A web app that lets users play _Dixit_ with screencaps from _The Simpsons_
 
 Simpxit is a multiplayer web app game with the rules of [_Dixit_](https://boardgamegeek.com/boardgame/39856/dixit) which uses images from [_The Simpsons_](https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x) as cards.  
-The Simpsons screencaps were sourced from [Frinkiac](https://frinkiac.com)'s API.
+The Simpsons screencaps, episode info, and subtitles were sourced from [Frinkiac](https://frinkiac.com)'s API.
 
 The backend is composed of a Node application that communicates with the frontend using Express and Socket.IO, a Postgres database that holds info about the screencaps that serve as cards, an S3-compatible bucket for screencap storage, and a Redis instance that stores game state and temporarily caches card info upon retrieval from Postgres.
 
