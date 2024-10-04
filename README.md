@@ -4,18 +4,27 @@
 Simpxit is a multiplayer web app game with the rules of [_Dixit_](https://boardgamegeek.com/boardgame/39856/dixit) which uses images from [_The Simpsons_](https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x) as cards.  
 The Simpsons screencaps, episode info, and subtitles were sourced from [Frinkiac](https://frinkiac.com)'s API.
 
+The game is currently deployed at [https://simpxit.gregexp.com/](https://simpxit.gregexp.com).
+
+Players start a game by either creating a room or joining an existing room with a 4-letter code.
+Once more than 3 players are in a room and every player has entered a name, the player who created the room can start the game by clicking the "Start Game" button. 
+
+### Gameplay Clips
+![mobile room creation](./gifs/mobile/create%20room.gif)
+![desktop gameplay](./gifs/desktop/storyteller%20submit.gif)
+![mobile gameplay](./gifs/mobile/guess%20card.gif)
+![more mobile gameplay](./gifs/mobile/submit%20nonstoryteller%20card.gif)
+![desktop scoring](./gifs/desktop/scoring%20screen%20and%20scoreboard.gif)
+![mobile scoring](./gifs/mobile/scoring.gif)
+
+## Technical Details
 The backend is composed of a Node application that communicates with the frontend using Express and Socket.IO, a Postgres database that holds info about the screencaps that serve as cards, an S3-compatible bucket for screencap storage, and a Redis instance that stores game state and temporarily caches card info upon retrieval from Postgres.
 
 The frontend is a React app that makes use of Bootstrap and Framer Motion.   
 
 Python Image Library (PIL) was used to flag images that were predominantly dark due to the unsuitability of _Simpsons_ credits screencaps for gameplay.
 
-The game is currently deployed at [https://simpxit.gregexp.com/](https://simpxit.gregexp.com).
 
-Players start a game by either creating a room or joining an existing room with a 4-letter code.
-Once more than 3 players are in a room and every player has entered a name, the player who created the room can start the game by clicking the "Start Game" button. 
-
-## Technical Details
 
 ### Json Patch
 A prior version of this project sent the entire game state to the client every time an update occurred.
