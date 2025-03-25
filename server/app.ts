@@ -124,6 +124,14 @@ app.get('*', (req, res) => {
   res.sendFile(path.resolve(path.dirname(''), './client/dist', 'index.html'));
 });
 
+// serves error for bad requests (i.e. URI failed decode error)
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (!err) return next();
+  logger.info(`error: ${err}`);
+  return res.status(400).json({
+    error: 'Bad Request'
+  });
+});
 
 server.listen(PORT, () => {
   logger.info(`Server listening on port ${PORT}...`);
