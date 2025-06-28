@@ -34,7 +34,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      'img-src': ['\'self\'', `${process.env.IMAGE_BUCKET}`, 'data:'],
+      'img-src': ['\'self\'', `${process.env.IMAGE_BUCKET}/`, 'data:'],
     }
   },
   crossOriginEmbedderPolicy: false
