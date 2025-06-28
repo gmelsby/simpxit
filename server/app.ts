@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { createLogger, format, transports } from 'winston';
 import { generateRoomCode } from './utilities/generateUtils.js';
 import socketHandler from './controllers/sockets.js';
-import { supabasePing } from './utilities/cronJobs.js';
 import express from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';
@@ -50,8 +49,6 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
   pingInterval: 6000,
 }
 );
-
-supabasePing('0 5 * * *');
 
 // sets up socket connection logic
 socketHandler(io);
