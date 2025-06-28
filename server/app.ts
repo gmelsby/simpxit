@@ -45,8 +45,8 @@ app.use(express.static(path.resolve(path.dirname(''), './client/dist')));
 
 const server = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
-  pingTimeout: 5000,
-  pingInterval: 6000,
+  pingTimeout: 20000,
+  pingInterval: 25000,
 }
 );
 
