@@ -1,5 +1,5 @@
 services:
-  simpxit:
+  frinkxit:
     build:
       dockerfile: ./Dockerfile
     restart: unless-stopped
@@ -15,11 +15,11 @@ services:
       - redis
     
   redis:
-    container_name: simpxit-redis
+    container_name: frinkxit-redis
     image: redis/redis-stack-server:latest
     restart: unless-stopped
 
 networks:
   default:
-    name: simpxit-network
+    name: frinkxit-network
     driver: bridge

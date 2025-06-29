@@ -62,7 +62,7 @@ export default function HomePage({ userId }: { userId: string }) {
       <Sidebar />
       <JustifySafelyContainer justifyType='evenly' className="d-flex flex-column text-center align-items-center h-100 m-auto">
         <Row className='m-5'>
-          <h1 className='rock-salt-regular'>Simpxit</h1>
+          <h1 className='rock-salt-regular'>Frinkxit</h1>
           <h4>A Mashup of <em>The Simpsons</em> and <em>Dixit</em></h4>
 
         </Row>

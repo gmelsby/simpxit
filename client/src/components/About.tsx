@@ -3,7 +3,7 @@ import React from 'react';
 export default function About() {
   return <>
     <p>
-      Simpxit is a fan-made game that enables users to play the board game&nbsp;
+      Frinkxit is a fan-made game that enables users to play the board game&nbsp;
       <a href="https://boardgamegeek.com/boardgame/39856/dixit"
         target="_blank" rel="noopener noreferrer">
         Dixit

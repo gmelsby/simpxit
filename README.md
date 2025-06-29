@@ -1,10 +1,10 @@
-# Simpxit
+# Frinkxit
 ## A web app that lets users play _Dixit_ with screencaps from _The Simpsons_
 
-Simpxit is a multiplayer web app game with the rules of [_Dixit_](https://boardgamegeek.com/boardgame/39856/dixit) which uses images from [_The Simpsons_](https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x) as cards.  
+Frinkxit is a multiplayer web app game with the rules of [_Dixit_](https://boardgamegeek.com/boardgame/39856/dixit) which uses images from [_The Simpsons_](https://www.disneyplus.com/series/the-simpsons/3ZoBZ52QHb4x) as cards.  
 The Simpsons screencaps, episode info, and subtitles were sourced from [Frinkiac](https://frinkiac.com)'s API.
 
-The game is currently deployed at [https://simpxit.gregexp.com/](https://simpxit.gregexp.com).
+The game is currently deployed at [https://frinkxit.gregexp.com/](https://frinkxit.gregexp.com).
 
 Players start a game by either creating a room or joining an existing room with a 4-letter code.
 Once more than 3 players are in a room and every player has entered a name, the player who created the room can start the game by clicking the "Start Game" button. 

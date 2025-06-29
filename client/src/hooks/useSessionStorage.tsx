@@ -6,7 +6,7 @@
 // But for testing in my browsers I need storage by tab, not browser
 import { useState } from 'react';
 
-const PREFIX = 'simpxit-';
+const PREFIX = 'frinkxit-';
 
 
 export default function useSessionStorage<T>(key: string, initialValue: T) {
