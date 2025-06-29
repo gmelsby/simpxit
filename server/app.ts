@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { createLogger, format, transports } from 'winston';
 import { generateRoomCode } from './utilities/generateUtils.js';
 import socketHandler from './controllers/sockets.js';
-import { supabasePing } from './utilities/cronJobs.js';
 import express from 'express';
 import helmet from 'helmet';
 import { createServer } from 'http';
@@ -34,7 +33,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      'img-src': ['\'self\'', `${process.env.IMAGE_BUCKET}`, 'data:'],
+      'img-src': ['\'self\'', `${process.env.IMAGE_BUCKET}/`, 'data:'],
     }
   },
   crossOriginEmbedderPolicy: false
@@ -46,12 +45,10 @@ app.use(express.static(path.resolve(path.dirname(''), './client/dist')));
 
 const server = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
-  pingTimeout: 5000,
-  pingInterval: 6000,
+  pingTimeout: 20000,
+  pingInterval: 25000,
 }
 );
-
-supabasePing('0 5 * * *');
 
 // sets up socket connection logic
 socketHandler(io);
